@@ -1,0 +1,93 @@
+#ifndef __LOG_H
+#define __LOG_H
+
+#include "main.h"
+#include "rtc.h"
+#include "gps.h"
+#include "rs485.h"
+
+typedef struct{
+	float temperature;                        //温度
+	float pressure;                           //气压
+	float salinity;                           //盐度
+	
+	float pH;                                 //ph
+	
+	float DO_mg_L;                            //溶解氧mgl
+	float DO_percent;                         //溶解氧%
+	
+	float FCL_mg_L;                           //余氯
+	
+	float EC_us_cm;                           //电导率
+	
+	float Tur_NTU;                            //浊度
+	
+	float ORP_mV;                             //氧化还原电位
+	
+	float NH4_mg_L;                           //铵离子
+	
+	float F_mg_L;                             //氟离子
+	
+	float Cl_mg_L;                            //氯离子
+	
+	float Chl_ug_L;                           //叶绿素
+	
+	float Bga_cells_mL;                       //蓝绿藻
+	
+	float CODuv_mg_L;                         //化学需氧量
+}log_FloatData_t;
+
+typedef struct{
+	char type_str[6];                         //设备类型
+	
+	datetime_t time;                          //日期时间
+	
+	char sn[13];                              //探头sn
+	
+	char E_W[E_W_Length];		                  //2   E/W
+	char N_S[N_S_Length];		                  //2   N/S
+	char latitude[latitude_Length];		        //12  纬度
+	char longitude[longitude_Length];		      //12  经度
+	
+	log_FloatData_t log_data;
+}log_t;
+
+typedef union{
+	log_t log;
+	uint8_t log_arr[sizeof(log_t)];
+}log_union;
+
+typedef struct{
+	uint8_t head[3];
+	log_union logu;
+	uint8_t crc[2];
+}log_send_t;
+
+typedef union{
+	log_send_t log_send;
+	uint8_t log_send_arr[sizeof(log_send_t)];
+}log_send_union;
+
+
+
+void log_ReadLogCount(void);
+
+
+uint8_t log_SaveData(SENSOR_TYPE sensor_type);
+
+void log_SetLogCount(uint16_t count);
+
+void log_ReadData(log_union*p ,uint16_t index);
+
+uint16_t log_GetLogCount(void);
+
+void log_PrintfLogOffset(void);
+
+void log_SendBytes(uint16_t index);
+void log_SendCount(void);
+
+#endif
+
+
+
+
