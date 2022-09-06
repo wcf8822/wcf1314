@@ -6,7 +6,7 @@ static double sum=0.0;
 static uint8_t count = 1;
 static uint8_t flag_BlinkBattery = 0;
 
-bat_flag_t bat_flags={//·ÀÖ¹ad²¨¶¯È»ºóµçÁ¿±ä¶à¾ÍÖ»Òª³öÏÖÒ»´ÎÁíÒ»µµµçÑ¹ÕâµµµçÑ¹¾Í¹Ø±ÕÁË
+bat_flag_t bat_flags={//é˜²æ­¢adæ³¢åŠ¨ç„¶åŽç”µé‡å˜å¤šå°±åªè¦å‡ºçŽ°ä¸€æ¬¡å¦ä¸€æ¡£ç”µåŽ‹è¿™æ¡£ç”µåŽ‹å°±å…³é—­äº†
 	.bat_lvlnone = 0,
 	.bat_lvl1 = 0,
 	.bat_lvl2 = 0,
@@ -68,15 +68,15 @@ void battery_draw(float ad_value)
 	{
 		if(!bat_flags.bat_lvl3)
 		{
-			GUI_LoadPic(130, 4, (uint8_t *)BATTERY_LAVEL_ARR3, 22, 11); //ÏÔÊ¾Èý¸ñµç
+			GUI_LoadPic(130, 4, (uint8_t *)BATTERY_LAVEL_ARR3, 22, 11); //æ˜¾ç¤ºä¸‰æ ¼ç”µ
 		}
 	}
 	else if(ad_value >= BATTERY_LAVEL_2 && ad_value < BATTERY_LAVEL_3)
 	{
-		bat_flags.bat_lvl3 = 1;//¹Ø±ÕÉÏÒ»µµÈë¿Ú
+		bat_flags.bat_lvl3 = 1;//å…³é—­ä¸Šä¸€æ¡£å…¥å£
 		if(!bat_flags.bat_lvl2)
 		{
-			GUI_LoadPic(130, 4, (uint8_t *)BATTERY_LAVEL_ARR2, 22, 11); //ÏÔÊ¾Á½¸ñµç
+			GUI_LoadPic(130, 4, (uint8_t *)BATTERY_LAVEL_ARR2, 22, 11); //æ˜¾ç¤ºä¸¤æ ¼ç”µ
 		}
 	}
 	else if(ad_value >= BATTERY_LAVEL_1 && ad_value < BATTERY_LAVEL_2)
@@ -84,7 +84,7 @@ void battery_draw(float ad_value)
 		bat_flags.bat_lvl2 = 1;//
 		if(!bat_flags.bat_lvl1)
 		{
-			GUI_LoadPic(130, 4, (uint8_t *)BATTERY_LAVEL_ARR1, 22, 11); //ÏÔÊ¾Ò»¸ñµç
+			GUI_LoadPic(130, 4, (uint8_t *)BATTERY_LAVEL_ARR1, 22, 11); //æ˜¾ç¤ºä¸€æ ¼ç”µ
 		}
 	}
 	else if(ad_value >= BATTERY_LAVEL_USB && ad_value < BATTERY_LAVEL_1)
@@ -96,14 +96,14 @@ void battery_draw(float ad_value)
 	
 	if(bat_flags.bat_lvlnone)
 	{
-		flag_BlinkBattery = !flag_BlinkBattery;                      //Í¼±ê¿ªÊ¼ÉÁÁË
+		flag_BlinkBattery = !flag_BlinkBattery;                      //å›¾æ ‡å¼€å§‹é—ªäº†
 		if(flag_BlinkBattery)
 		{
-			GUI_LoadPic(130, 4, (uint8_t *)BATTERY_LAVEL_ARR0, 22, 11);//Ã»¸ñ×ÓÁË
+			GUI_LoadPic(130, 4, (uint8_t *)BATTERY_LAVEL_ARR0, 22, 11);//æ²¡æ ¼å­äº†
 		}
 		else
 		{
-			GUI_LoadPic(130, 4, (uint8_t *)BATTERY_LAVEL_ARRNONE, 22, 11);//Ã»¸ñ×ÓÁË
+			GUI_LoadPic(130, 4, (uint8_t *)BATTERY_LAVEL_ARRNONE, 22, 11);//æ²¡æ ¼å­äº†
 		}
 	}
 	if(ad_value < BATTERY_LAVEL_USB)

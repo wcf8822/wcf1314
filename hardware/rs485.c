@@ -5,8 +5,8 @@
 
 //STATIC rs485_sent_type sent_type = none_type;
 
-//STATIC uint8_t device_count = 0; //ÒÑÁ¬½ÓÉè±¸¼ÆÊı
-//STATIC uint8_t resend_count = 0;//ÖØ·¢¼ÆÊı
+//STATIC uint8_t device_count = 0; //å·²è¿æ¥è®¾å¤‡è®¡æ•°
+//STATIC uint8_t resend_count = 0;//é‡å‘è®¡æ•°
 
 STATIC uint8_t is_change_senesor = 0;
 
@@ -29,12 +29,12 @@ void rs485_ClearIsChangeSenesor(void)
 	is_change_senesor = 0;
 }
 
-/*µ±Ç°Á¬½ÓµÄÉè±¸ÀàĞÍ*/
-void rs485_SetSensorType(SENSOR_TYPE st)//ÉèÖÃµ±Ç°´«¸ĞÆ÷ÀàĞÍ
+/*å½“å‰è¿æ¥çš„è®¾å¤‡ç±»å‹*/
+void rs485_SetSensorType(SENSOR_TYPE st)//è®¾ç½®å½“å‰ä¼ æ„Ÿå™¨ç±»å‹
 {
 	connected_probe.current_sensor_type = st;
 }
-SENSOR_TYPE rs485_GetSensorType(void)//»ñÈ¡µ±Ç°´«¸ĞÆ÷ÀàĞÍ
+SENSOR_TYPE rs485_GetSensorType(void)//è·å–å½“å‰ä¼ æ„Ÿå™¨ç±»å‹
 {
 	return connected_probe.current_sensor_type;
 }
@@ -42,7 +42,7 @@ SENSOR_TYPE rs485_GetSensorType(void)//»ñÈ¡µ±Ç°´«¸ĞÆ÷ÀàĞÍ
 
 
 
-/*Íâ²¿»ñÈ¡ÖØ·¢´ÎÊı*/
+/*å¤–éƒ¨è·å–é‡å‘æ¬¡æ•°*/
 uint8_t get_ResendCount(void)
 {
 	return rs485_usart.resend_count;
@@ -89,7 +89,7 @@ uint8_t rs485_GetCircularSentStatus(void)
 {
 	return rs485_usart.rs485_circular_sent;
 }
-void rs485_SetCircularSentStatus(void)     //ÖÃÕâ¸ö±êÖ¾»áÑ­»··¢ËÍ
+void rs485_SetCircularSentStatus(void)     //ç½®è¿™ä¸ªæ ‡å¿—ä¼šå¾ªç¯å‘é€
 {
 	rs485_usart.rs485_circular_sent = 1;
 }
@@ -103,7 +103,7 @@ uint8_t rs485_GetNeedSendStatus(void)
 {
 	return rs485_usart.rs485_need_sent;
 }
-void rs485_SetNeedSendStatus(void)          //ÖÃÕâ¸ö±êÖ¾»á·¢ËÍÒ»´Î
+void rs485_SetNeedSendStatus(void)          //ç½®è¿™ä¸ªæ ‡å¿—ä¼šå‘é€ä¸€æ¬¡
 {
 	rs485_usart.rs485_need_sent = 1;
 }
@@ -125,7 +125,7 @@ uint8_t rs485_GetIsDisconnect(void)
 	return rs485_usart.rs485_is_disconnect;
 }
 
-PtrToDOProbe* rs485_GetDoList(void) //»ñÈ¡ÒÑÁ¬½ÓÉè±¸µÄdoÉè±¸ÁĞ±í
+PtrToDOProbe* rs485_GetDoList(void) //è·å–å·²è¿æ¥è®¾å¤‡çš„doè®¾å¤‡åˆ—è¡¨
 {
 	return &(connected_probe.DO_list);
 }
@@ -139,8 +139,8 @@ void rs485_UartInit(UART_HandleTypeDef *huart);
 	.rs485_circular_sent = 0,
 	.rs485_need_sent = 0,
 	.sent_type = DO_SendType_None,
-	.device_count = 0, //ÒÑÁ¬½ÓÉè±¸¼ÆÊı
-	.resend_count = 0,  //ÖØ·¢¼ÆÊı
+	.device_count = 0, //å·²è¿æ¥è®¾å¤‡è®¡æ•°
+	.resend_count = 0,  //é‡å‘è®¡æ•°
 	.rs485_is_disconnect = 0
 	 
 };
@@ -149,8 +149,8 @@ void rs485_UartInit(UART_HandleTypeDef *huart)
 {
 	
 	rs485_usart.huart = huart;
-	__HAL_UART_ENABLE_IT(rs485_usart.huart, UART_IT_IDLE);      //¿ªÆô¿ÕÏĞÖĞ¶Ï
-	HAL_UART_Receive_DMA(rs485_usart.huart, rs485_usart.rx_buf, RS485_RXBUFFSIZE);//¿ªÊ¼dma½ÓÊÕ
+	__HAL_UART_ENABLE_IT(rs485_usart.huart, UART_IT_IDLE);      //å¼€å¯ç©ºé—²ä¸­æ–­
+	HAL_UART_Receive_DMA(rs485_usart.huart, rs485_usart.rx_buf, RS485_RXBUFFSIZE);//å¼€å§‹dmaæ¥æ”¶
 }
 
 
@@ -163,25 +163,25 @@ void rs485_RxCallBack(UART_HandleTypeDef *huart)
 }
 
 
-/*485´®¿ÚµÄ¿ÕÏĞÖĞ¶Ï*/
+/*485ä¸²å£çš„ç©ºé—²ä¸­æ–­*/
 void rs485_IDLECallBack(UART_HandleTypeDef *huart)
 {
 	
 	if(huart->Instance == RS485_USART)
 	{
-		__HAL_UART_CLEAR_IDLEFLAG(huart);		//ÇåÖĞ¶Ï
+		__HAL_UART_CLEAR_IDLEFLAG(huart);		//æ¸…ä¸­æ–­
 
-		HAL_UART_AbortReceive(huart);	//ÒÑ¾­½ÓÊÕÍêÒ»Ö¡Êı¾İ,ËùÒÔÕâÀïÒªÍ£Ö¹½ÓÊÕ,È»ºóÔÙÖØĞÂ½ÓÊÕ		
+		HAL_UART_AbortReceive(huart);	//å·²ç»æ¥æ”¶å®Œä¸€å¸§æ•°æ®,æ‰€ä»¥è¿™é‡Œè¦åœæ­¢æ¥æ”¶,ç„¶åå†é‡æ–°æ¥æ”¶		
 		
-		rs485_usart.rx_size = RS485_RXBUFFSIZE - hdma_usart3_rx.Instance->CNDTR;  //½ÓÊÕµ½¶àÉÙÊı¾İ
+		rs485_usart.rx_size = RS485_RXBUFFSIZE - hdma_usart3_rx.Instance->CNDTR;  //æ¥æ”¶åˆ°å¤šå°‘æ•°æ®
 		
 		rs485_SetRxFlag();
 		
-		HAL_UART_Receive_DMA(huart, rs485_usart.rx_buf, RS485_RXBUFFSIZE); //¿ªÆôDMA½ÓÊÕ
+		HAL_UART_Receive_DMA(huart, rs485_usart.rx_buf, RS485_RXBUFFSIZE); //å¼€å¯DMAæ¥æ”¶
 	}
 }
 
-/*Çå³ıÖØ·¢¼ÆÊı*/
+/*æ¸…é™¤é‡å‘è®¡æ•°*/
 void rs485_ClearResendCount(void)
 {
 	rs485_usart.resend_count = 0;
@@ -189,7 +189,7 @@ void rs485_ClearResendCount(void)
 
 
 
-/*Çå¿Õ½ÓÊÕbuf*/
+/*æ¸…ç©ºæ¥æ”¶buf*/
 void rs485_ClearRxBuf(void)
 {
 	clear_buf(rs485_usart.rx_buf, RS485_RXBUFFSIZE);
@@ -206,16 +206,16 @@ void rs485_send(void)
 	RS485_DE_L();
 }
 
-/*½«·¢ËÍbuf·¢ËÍ³öÈ¥*/
-void rs485_SendBuf(void)//Õâ¸öÒ²ÊÇÔÚmainº¯ÊıÀïÃæÔËĞĞµÄ
+/*å°†å‘é€bufå‘é€å‡ºå»*/
+void rs485_SendBuf(void)//è¿™ä¸ªä¹Ÿæ˜¯åœ¨mainå‡½æ•°é‡Œé¢è¿è¡Œçš„
 {
 	
-	if(rs485_GetSentType() != DO_SendType_GetModbusId && ++rs485_usart.resend_count >= RESEND_MAX)//µ±²»ÊÇËÑË÷Éè±¸µÄÊ±ºò·¢ËÍ´ÎÊı³¬¹ıÉè¶¨Öµ ¾Í·ÅÆúÕâ¸öÉè±¸
+	if(rs485_GetSentType() != DO_SendType_GetModbusId && ++rs485_usart.resend_count >= RESEND_MAX)//å½“ä¸æ˜¯æœç´¢è®¾å¤‡çš„æ—¶å€™å‘é€æ¬¡æ•°è¶…è¿‡è®¾å®šå€¼ å°±æ”¾å¼ƒè¿™ä¸ªè®¾å¤‡
 	{
-		rs485_ClearCircularSentStatus(); //¹Ø±ÕÑ­»··¢ËÍ
-		rs485_ClearResendCount();    //Çå¼ÆÊı
+		rs485_ClearCircularSentStatus(); //å…³é—­å¾ªç¯å‘é€
+		rs485_ClearResendCount();    //æ¸…è®¡æ•°
 		rs485_SetIsDisconnect();
-		return;//²»ÈÃËüÔÙ·¢ÁË
+		return;//ä¸è®©å®ƒå†å‘äº†
 	}
 	
 	rs485_send();
@@ -234,8 +234,8 @@ void rs485_TimHandle(void)
 {
 	if(rs485_GetCircularSentStatus() && ++rs485_tim_count >= RS485_CIRCULAR_TIM)
 	{
-		rs485_ClearRs485Tim(); //Çå¶¨Ê±Æ÷¼ÆÊı
-		rs485_SetNeedSendStatus();//ÉèÖÃĞèÒªÓĞ¶«Î÷·¢ËÍ
+		rs485_ClearRs485Tim(); //æ¸…å®šæ—¶å™¨è®¡æ•°
+		rs485_SetNeedSendStatus();//è®¾ç½®éœ€è¦æœ‰ä¸œè¥¿å‘é€
 	}
 	
 }

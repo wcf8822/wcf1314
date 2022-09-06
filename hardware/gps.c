@@ -6,11 +6,11 @@
 
 
 #if !GPS_SMALLER
-uint8_t GPS_RX_BUF[USART_REC_LEN];     //½ÓÊÕ»º³å,×î´óUSART_REC_LEN¸ö×Ö½Ú.
+uint8_t GPS_RX_BUF[USART_REC_LEN];     //æ¥æ”¶ç¼“å†²,æœ€å¤§USART_REC_LENä¸ªå­—èŠ‚.
 #endif
 
-const uint8_t GPS_RESET[14] = {0x24 ,0x50 ,0x43 ,0x41 ,0x53 ,0x31 ,0x30 ,0x2C ,0x33 ,0x2A ,0x31 ,0x46 ,0x0D ,0x0A};//ÒÔ³ö³§Ä£Ê½ÖØÆô£¨£©
-const uint8_t GPS_HOT[14]   = {0x24 ,0x50 ,0x43 ,0x41 ,0x53 ,0x31 ,0x30 ,0x2C ,0x30 ,0x2A ,0x31 ,0x43 ,0x0D ,0x0A};//ÒÔÈÈÆô¶¯·½Ê½ÖØÆô
+const uint8_t GPS_RESET[14] = {0x24 ,0x50 ,0x43 ,0x41 ,0x53 ,0x31 ,0x30 ,0x2C ,0x33 ,0x2A ,0x31 ,0x46 ,0x0D ,0x0A};//ä»¥å‡ºå‚æ¨¡å¼é‡å¯ï¼ˆï¼‰
+const uint8_t GPS_HOT[14]   = {0x24 ,0x50 ,0x43 ,0x41 ,0x53 ,0x31 ,0x30 ,0x2C ,0x30 ,0x2A ,0x31 ,0x43 ,0x0D ,0x0A};//ä»¥çƒ­å¯åŠ¨æ–¹å¼é‡å¯
 const uint8_t GPS_OUTSINGLE[28] = {0x24, 0x50, 0x43, 0x41, 0x53, 0x30, 0x33, 0x2C, 0x30, 0x2C, 
 																	0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x31, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2A, 0x30, 0x33, 0x0D, 0x0A };
 
@@ -22,11 +22,11 @@ gps_t gps_usart = {
 	.init = gps_UartInit,
 };
 
-/*Çå¿Õ½ÓÊÕbuf*/
+/*æ¸…ç©ºæ¥æ”¶buf*/
 #if !GPS_SMALLER
 void Clr_Buf(void)
 {
-	memset(GPS_RX_BUF, 0, USART_REC_LEN);      //Çå¿Õ          
+	memset(GPS_RX_BUF, 0, USART_REC_LEN);      //æ¸…ç©º          
 }
 #endif
 void Clr_LocationBuf(void)
@@ -42,14 +42,14 @@ void Clr_LongitudeBuf(void)
 	memset(gps_usart.longitude,  0, longitude_Length);
 }
 
-/*Çå½á¹¹Ìå*/
+/*æ¸…ç»“æ„ä½“*/
 void Clr_GPSStruct(void)
 {
 	gps_usart.isGetData = false;
 	gps_usart.isParseData = false;
 	gps_usart.isUsefully = false;
 	
-	memset(gps_usart.GPS_Buffer, 0, GPS_Buffer_Length);      //Çå¿Õ
+	memset(gps_usart.GPS_Buffer, 0, GPS_Buffer_Length);      //æ¸…ç©º
 	memset(gps_usart.UTCTime,    0, UTCTime_Length);
 	memset(gps_usart.latitude,   0, latitude_Length);
 	memset(gps_usart.N_S,        0, N_S_Length);
@@ -58,7 +58,7 @@ void Clr_GPSStruct(void)
 }
 
 
-/*gpsÄ£¿é³õÊ¼»¯*/
+/*gpsæ¨¡å—åˆå§‹åŒ–*/
 void gps_UartInit(UART_HandleTypeDef *huart)
 {
 #if !GPS_SMALLER
@@ -66,29 +66,29 @@ void gps_UartInit(UART_HandleTypeDef *huart)
 #endif
 	Clr_GPSStruct();
 	gps_usart.huart = huart;
-	__HAL_UART_ENABLE_IT(gps_usart.huart, UART_IT_IDLE);      //¿ªÆô¿ÕÏĞÖĞ¶Ï
+	__HAL_UART_ENABLE_IT(gps_usart.huart, UART_IT_IDLE);      //å¼€å¯ç©ºé—²ä¸­æ–­
 	
 	
 #if GPS_SMALLER
 	
-	HAL_UART_Transmit(gps_usart.huart, (uint8_t *)GPS_OUTSINGLE, sizeof(GPS_OUTSINGLE), 200);//ÈÃgpsÒÔ³ö³§·½Ê½Æô¶¯
-	HAL_UART_Receive_DMA(gps_usart.huart, (uint8_t *)gps_usart.GPS_Buffer, sizeof(gps_usart.GPS_Buffer));//¿ªÊ¼dma½ÓÊÕ
-	HAL_UART_Transmit(gps_usart.huart, (uint8_t *)GPS_RESET, sizeof(GPS_RESET), 200);//ÈÃgpsÒÔ³ö³§·½Ê½Æô¶¯
+	HAL_UART_Transmit(gps_usart.huart, (uint8_t *)GPS_OUTSINGLE, sizeof(GPS_OUTSINGLE), 200);//è®©gpsä»¥å‡ºå‚æ–¹å¼å¯åŠ¨
+	HAL_UART_Receive_DMA(gps_usart.huart, (uint8_t *)gps_usart.GPS_Buffer, sizeof(gps_usart.GPS_Buffer));//å¼€å§‹dmaæ¥æ”¶
+	HAL_UART_Transmit(gps_usart.huart, (uint8_t *)GPS_RESET, sizeof(GPS_RESET), 200);//è®©gpsä»¥å‡ºå‚æ–¹å¼å¯åŠ¨
 #else
-	HAL_UART_Receive_DMA(gps_usart.huart, GPS_RX_BUF, USART_REC_LEN);//¿ªÊ¼dma½ÓÊÕ
-	HAL_UART_Transmit(gps_usart.huart, (uint8_t *)GPS_RESET, sizeof(GPS_RESET), 200);//ÈÃgpsÒÔ³ö³§·½Ê½Æô¶¯
+	HAL_UART_Receive_DMA(gps_usart.huart, GPS_RX_BUF, USART_REC_LEN);//å¼€å§‹dmaæ¥æ”¶
+	HAL_UART_Transmit(gps_usart.huart, (uint8_t *)GPS_RESET, sizeof(GPS_RESET), 200);//è®©gpsä»¥å‡ºå‚æ–¹å¼å¯åŠ¨
 #endif
 	
 }
 
 
 
-/*½ÓÊÕÖĞ¶Ï»Øµ÷*/
+/*æ¥æ”¶ä¸­æ–­å›è°ƒ*/
 void gps_RxCallBack(UART_HandleTypeDef *huart)
 {
 	if(gps_usart.huart == huart)
 	{
-		//ÕâÀï¿ÉÒÔÖÃ±êÖ¾
+		//è¿™é‡Œå¯ä»¥ç½®æ ‡å¿—
 	}
 }
 
@@ -98,35 +98,35 @@ void cpy_GpsData(void)
 	char *temp1,*temp2;
 	temp1 = strstr((const char *)GPS_RX_BUF,"$GNRMC");
   temp2 = strstr((const char *)temp1+1,"$");
-	memcpy(gps_usart.GPS_Buffer, temp1, temp2 - temp1);//»ñÈ¡×î¼ò×ø±êĞÅÏ¢
+	memcpy(gps_usart.GPS_Buffer, temp1, temp2 - temp1);//è·å–æœ€ç®€åæ ‡ä¿¡æ¯
 }
 #endif
 
-/*gps´®¿Ú¿ÕÏĞ»Øµ÷£¬Ö÷ÒªÊÇÇåbufºÍ¿½Êı¾İ*/
+/*gpsä¸²å£ç©ºé—²å›è°ƒï¼Œä¸»è¦æ˜¯æ¸…bufå’Œæ‹·æ•°æ®*/
 void gps_IDLECallBack(UART_HandleTypeDef *huart)
 {
 	if(huart->Instance == GPS_USART)
 	{
-		__HAL_UART_CLEAR_IDLEFLAG(huart);		//ÇåÖĞ¶Ï
+		__HAL_UART_CLEAR_IDLEFLAG(huart);		//æ¸…ä¸­æ–­
 
-		HAL_UART_AbortReceive(huart);	//ÒÑ¾­½ÓÊÕÍêÒ»Ö¡Êı¾İ,ËùÒÔÕâÀïÒªÍ£Ö¹½ÓÊÕ,È»ºóÔÙÖØĞÂ½ÓÊÕ		
+		HAL_UART_AbortReceive(huart);	//å·²ç»æ¥æ”¶å®Œä¸€å¸§æ•°æ®,æ‰€ä»¥è¿™é‡Œè¦åœæ­¢æ¥æ”¶,ç„¶åå†é‡æ–°æ¥æ”¶		
 		
-		//receive_size = USART_REC_LEN - hdma_usart2_rx.Instance->CNDTR;  //½ÓÊÕµ½¶àÉÙÊı¾İ
+		//receive_size = USART_REC_LEN - hdma_usart2_rx.Instance->CNDTR;  //æ¥æ”¶åˆ°å¤šå°‘æ•°æ®
 		
 		
 #if GPS_SMALLER
-		HAL_UART_Receive_DMA(huart, (uint8_t *)gps_usart.GPS_Buffer, sizeof(gps_usart.GPS_Buffer));//¿ªÊ¼dma½ÓÊÕ
+		HAL_UART_Receive_DMA(huart, (uint8_t *)gps_usart.GPS_Buffer, sizeof(gps_usart.GPS_Buffer));//å¼€å§‹dmaæ¥æ”¶
 #else
 		Clr_LocationBuf();
-		cpy_GpsData();//Ö±½Ó¿½±´ÅÂµÈÏÂÔÚ¿½±´ÖĞÍ¾ÓĞÖĞ¶Ï·¢Éú
-		HAL_UART_Receive_DMA(huart, GPS_RX_BUF, USART_REC_LEN); //¿ªÆôDMA½ÓÊÕ
+		cpy_GpsData();//ç›´æ¥æ‹·è´æ€•ç­‰ä¸‹åœ¨æ‹·è´ä¸­é€”æœ‰ä¸­æ–­å‘ç”Ÿ
+		HAL_UART_Receive_DMA(huart, GPS_RX_BUF, USART_REC_LEN); //å¼€å¯DMAæ¥æ”¶
 #endif
 	}
 }
 
 
 
-/*½âÎögpsÊı¾İ´ÓÊı¾İÖĞ½âÎö³ö¾­Î³¶È*/
+/*è§£ægpsæ•°æ®ä»æ•°æ®ä¸­è§£æå‡ºç»çº¬åº¦*/
 void get_GpsData(void)
 {
 	char *subString;
@@ -151,15 +151,15 @@ void get_GpsData(void)
 				char usefullyBuffer[2]; 
 				switch(i)
 				{
-					case 1://»ñÈ¡UTCÊ±¼ä
+					case 1://è·å–UTCæ—¶é—´
 						memcpy(gps_usart.UTCTime, subString, subStringNext - subString);
 						break;  	
-					case 2://»ñÈ¡Êı¾İÀàĞÍ A¶¨Î» Vµ¼º½
+					case 2://è·å–æ•°æ®ç±»å‹ Aå®šä½ Vå¯¼èˆª
 						memcpy(usefullyBuffer, subString, subStringNext - subString);
-						gps_usart.isUsefully = usefullyBuffer[0] == 'A' ? true : false;
+						gps_usart.isUsefully = ((usefullyBuffer[0] == 'A') ? true : false);
 						break;	      
 					
-					case 3://»ñÈ¡Î³¶ÈĞÅÏ¢
+					case 3://è·å–çº¬åº¦ä¿¡æ¯
 						if(gps_usart.isUsefully)
 						{
 							double latitude = 0.0;
@@ -176,13 +176,13 @@ void get_GpsData(void)
 							snprintf(gps_usart.latitude, sizeof(gps_usart.latitude), "%.7f", temp + (latitude - temp)*100/60);
 						}
 						break;	
-					case 4://»ñÈ¡N/S
+					case 4://è·å–N/S
 						if(gps_usart.isUsefully)
 						{
 							memcpy(gps_usart.N_S, subString, subStringNext - subString);
 						}
 						break;	      
-					case 5://»ñÈ¡¾­¶ÈĞÅÏ¢
+					case 5://è·å–ç»åº¦ä¿¡æ¯
 						if(gps_usart.isUsefully)
 						{
 							double longitude = 0.0;
@@ -199,7 +199,7 @@ void get_GpsData(void)
 							snprintf(gps_usart.longitude, sizeof(gps_usart.longitude), "%.7f", temp + (longitude - temp)*100/60);
 						}
 						break;	
-					case 6://»ñÈ¡E/W
+					case 6://è·å–E/W
 						if(gps_usart.isUsefully)
 						{
 							memcpy(gps_usart.E_W, subString, subStringNext - subString);

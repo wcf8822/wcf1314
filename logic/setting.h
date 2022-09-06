@@ -9,105 +9,113 @@
 ppm = mg/L
 */
 
+enum customize_enum
+{
+	LUHENG,
+	HENGLAN,
+	ZHONGXING
+};
 
 
 
 
 typedef float value_type;
 
-/////////////////////////////////////////////////////////////////////////////////ĞèÒª¼ÓÉè±¸±àºÅ
+/////////////////////////////////////////////////////////////////////////////////éœ€è¦åŠ è®¾å¤‡ç¼–å·
 typedef struct struct_setting{
-	uint8_t IsChn;            //ÊÇ·ñÏÔÊ¾ÖĞÎÄ
+	uint8_t IsChn;            //æ˜¯å¦æ˜¾ç¤ºä¸­æ–‡
 	
-	uint8_t KeyPadTone;       //ÊÇ·ñÓĞ°´¼üÒô
+	uint8_t customize;       //å®šåˆ¶å¼€æœºæ ‡å¿—
+	
+	uint8_t KeyPadTone;       //æ˜¯å¦æœ‰æŒ‰é”®éŸ³
 	uint8_t AlarmTone;
 	
-	uint8_t AutoLock;         //ÊÇ·ñ×Ô¶¯Ëø¶¨
+	uint8_t AutoLock;         //æ˜¯å¦è‡ªåŠ¨é”å®š
 	
 	
-	uint8_t IsAlarm_pH;       //ÊÇ·ñ±¨¾¯
-	uint8_t IsAlarm_DO;       //ÊÇ·ñ±¨¾¯
-	uint8_t IsAlarm_FCL;      //ÊÇ·ñ±¨¾¯
-	uint8_t IsAlarm_EC;       //ÊÇ·ñ±¨¾¯
-	uint8_t IsAlarm_Tur;      //ÊÇ·ñ±¨¾¯
-	uint8_t IsAlarm_ORP;      //ÊÇ·ñ±¨¾¯
-	uint8_t IsAlarm_NH4;      //ÊÇ·ñ±¨¾¯
-	uint8_t IsAlarm_F;        //ÊÇ·ñ±¨¾¯
-	uint8_t IsAlarm_CL;       //ÊÇ·ñ±¨¾¯
-	uint8_t IsAlarm_Chl;      //ÊÇ·ñ±¨¾¯
-	uint8_t IsAlarm_Bga;      //ÊÇ·ñ±¨¾¯
-	uint8_t IsAlarm_CODuv;    //ÊÇ·ñ±¨¾¯
+	uint8_t IsAlarm_pH;       //æ˜¯å¦æŠ¥è­¦
+	uint8_t IsAlarm_DO;       //æ˜¯å¦æŠ¥è­¦
+	uint8_t IsAlarm_FCL;      //æ˜¯å¦æŠ¥è­¦
+	uint8_t IsAlarm_EC;       //æ˜¯å¦æŠ¥è­¦
+	uint8_t IsAlarm_Tur;      //æ˜¯å¦æŠ¥è­¦
+	uint8_t IsAlarm_ORP;      //æ˜¯å¦æŠ¥è­¦
+	uint8_t IsAlarm_NH4;      //æ˜¯å¦æŠ¥è­¦
+	uint8_t IsAlarm_F;        //æ˜¯å¦æŠ¥è­¦
+	uint8_t IsAlarm_CL;       //æ˜¯å¦æŠ¥è­¦
+	uint8_t IsAlarm_Chl;      //æ˜¯å¦æŠ¥è­¦
+	uint8_t IsAlarm_Bga;      //æ˜¯å¦æŠ¥è­¦
+	uint8_t IsAlarm_CODuv;    //æ˜¯å¦æŠ¥è­¦
 	
 	
 	uint8_t AutoShut;         //0 5 10 20
 	
-	value_type LowThreshold_pH;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	value_type HighThreshold_pH; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	value_type LowThreshold_pH;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	value_type HighThreshold_pH; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 	
-	value_type LowThreshold_DO;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	value_type HighThreshold_DO; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	value_type LowThreshold_DO;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	value_type HighThreshold_DO; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 	
-	value_type LowThreshold_FCL;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	value_type HighThreshold_FCL; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	value_type LowThreshold_FCL;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	value_type HighThreshold_FCL; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 	
-	value_type LowThreshold_EC;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	value_type HighThreshold_EC; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	value_type LowThreshold_EC;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	value_type HighThreshold_EC; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 	
-	value_type LowThreshold_Tur;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	value_type HighThreshold_Tur; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	value_type LowThreshold_Tur;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	value_type HighThreshold_Tur; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 	
-	value_type LowThreshold_ORP;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	value_type HighThreshold_ORP; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	value_type LowThreshold_ORP;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	value_type HighThreshold_ORP; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 	
-	value_type LowThreshold_NH4;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	value_type HighThreshold_NH4; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	value_type LowThreshold_NH4;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	value_type HighThreshold_NH4; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 	
-	value_type LowThreshold_F;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	value_type HighThreshold_F; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	value_type LowThreshold_F;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	value_type HighThreshold_F; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 	
-	value_type LowThreshold_CL;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	value_type HighThreshold_CL; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	value_type LowThreshold_CL;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	value_type HighThreshold_CL; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 	
-	value_type LowThreshold_Chl;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	value_type HighThreshold_Chl; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	value_type LowThreshold_Chl;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	value_type HighThreshold_Chl; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 	
-	value_type LowThreshold_Bga;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	value_type HighThreshold_Bga; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	value_type LowThreshold_Bga;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	value_type HighThreshold_Bga; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 	
-	value_type LowThreshold_CODuv;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	value_type HighThreshold_CODuv; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	value_type LowThreshold_CODuv;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	value_type HighThreshold_CODuv; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 	
-	value_type AirPressure;   //ÆøÑ¹²¹³¥
-	value_type Salinity;      //ÑÎ¶ÈÖµ
+	value_type AirPressure;   //æ°”å‹è¡¥å¿
+	value_type Salinity;      //ç›åº¦å€¼
 	
 }setting_t;
 
 enum AUTOLOCK_ENUM{
-	AUTOLOCK_OFF,
-	AUTOLOCK_AUTO,
-	AUTOLOCK_MANUAL
+	AUTOLOCK_OFF,     //å…³é—­è‡ªåŠ¨é”å®š
+	AUTOLOCK_AUTO,    //è‡ªåŠ¨é”å®š
+	AUTOLOCK_MANUAL   //æ‰‹åŠ¨é”å®š
 };
 
-//#define SETTING_START_ADDR    (LOG_COUNT_ADDR-(sizeof(setting_t))) //³õÊ¼»¯ÉèÖÃÆğÊ¼µØÖ·
+//#define SETTING_START_ADDR    (LOG_COUNT_ADDR-(sizeof(setting_t))) //åˆå§‹åŒ–è®¾ç½®èµ·å§‹åœ°å€
 
 typedef union {
 	setting_t setting_struct;
 	uint8_t setting_arr[sizeof(setting_t)];
 }setting_union;
 
-/*»ñÈ¡ºÍÉèÖÃ°´¼üÒô*/
+/*è·å–å’Œè®¾ç½®æŒ‰é”®éŸ³*/
 void setting_SetKeyPadTone(uint8_t KeyPadTone);
 uint8_t setting_GetKeyPadTone(void);
 
-/*»ñÈ¡ºÍÉèÖÃ±¨¾¯Òô*/
+/*è·å–å’Œè®¾ç½®æŠ¥è­¦éŸ³*/
 void setting_SetAlarmTone(uint8_t AlarmTone);
 uint8_t setting_GetAlarmTone(void);
 
-/*ÉèÖÃºÍ»ñÈ¡×Ô¶¯Ëø¶¨*/
+/*è®¾ç½®å’Œè·å–è‡ªåŠ¨é”å®š*/
 uint8_t setting_GetAutoLock(void);
 void setting_SetAutoLock(uint8_t AutoLock);
 
-/*ÉèÖÃ±¨¾¯*/
+/*è®¾ç½®æŠ¥è­¦*/
 void setting_SetIsAlarm_pH(uint8_t IsAlarm);
 void setting_SetIsAlarm_DO(uint8_t IsAlarm);
 void setting_SetIsAlarm_FCL(uint8_t IsAlarm);
@@ -121,7 +129,7 @@ void setting_SetIsAlarm_Chl(uint8_t IsAlarm);
 void setting_SetIsAlarm_Bga(uint8_t IsAlarm);
 void setting_SetIsAlarm_CODuv(uint8_t IsAlarm);
 
-/*»ñÈ¡±¨¾¯ÉèÖÃ*/
+/*è·å–æŠ¥è­¦è®¾ç½®*/
 uint8_t setting_GetIsAlarm_pH(void);
 uint8_t setting_GetIsAlarm_DO(void);
 uint8_t setting_GetIsAlarm_FCL(void);
@@ -135,33 +143,36 @@ uint8_t setting_GetIsAlarm_Chl(void);
 uint8_t setting_GetIsAlarm_Bga(void);
 uint8_t setting_GetIsAlarm_CODuv(void);
 
-/*»ñÈ¡ºÍÉèÖÃÓïÑÔÉèÖÃ*/
+/*è·å–å’Œè®¾ç½®è¯­è¨€è®¾ç½®*/
 void setting_SetIsChn(uint8_t IsChn);
 uint8_t setting_GetIsChn(void);
 
-/*´Óflash»ñÈ¡ÉèÖÃ*/
+/*è·å–å®šåˆ¶è®¾ç½®*/
+uint8_t setting_GetLogo(void);
+
+/*ä»flashè·å–è®¾ç½®*/
 void FlashToSetting(void);
-/*½«ÉèÖÃĞ´Èëflash*/
+/*å°†è®¾ç½®å†™å…¥flash*/
 void SettingToFlash(void);
 
-/*»ñÈ¡ºÍÉèÖÃ´óÆøÑ¹²¹³¥*/
+/*è·å–å’Œè®¾ç½®å¤§æ°”å‹è¡¥å¿*/
 value_type setting_GetAirCompensate(void);
 void setting_SetAirCompensate(value_type value);
 
-/*»ñÈ¡ºÍÉèÖÃÑÎ¶ÈÖµ*/
+/*è·å–å’Œè®¾ç½®ç›åº¦å€¼*/
 value_type setting_GetSalinity(void);
 void setting_SetSalinity(value_type value);
 
-/*³õÊ¼»¯flashÖĞµÄÉèÖÃ²¢Ë¢ĞÂÏÖÓĞÉèÖÃ*/
+/*åˆå§‹åŒ–flashä¸­çš„è®¾ç½®å¹¶åˆ·æ–°ç°æœ‰è®¾ç½®*/
 void setting_reset(void);
 
-/*µÚÒ»´ÎÆô¶¯Ğ´ÈëµÚÒ»Î»ºÍ³õÊ¼»¯ÉèÖÃ*/
+/*ç¬¬ä¸€æ¬¡å¯åŠ¨å†™å…¥ç¬¬ä¸€ä½å’Œåˆå§‹åŒ–è®¾ç½®*/
 void first_write(void);
 
-/*³õÊ¼»¯ÉèÖÃ*/
+/*åˆå§‹åŒ–è®¾ç½®*/
 void init_setting(void);
 
-/*»ñÈ¡ºÍÉèÖÃ¸ßµÍÃÅÏŞ±¨¾¯ãĞÖµ*/
+/*è·å–å’Œè®¾ç½®é«˜ä½é—¨é™æŠ¥è­¦é˜ˆå€¼*/
 value_type setting_GetHighThreshold_pH(void);
 void setting_SetHighThreshold_pH(value_type value);
 value_type setting_GetLowThreshold_pH(void);
@@ -223,11 +234,9 @@ value_type setting_GetLowThreshold_CODuv(void);
 void setting_SetLowThreshold_CODuv(value_type value);
 
 
-/*»ñÈ¡ºÍÉèÖÃ×Ô¶¯¹Ø»úÊ±¼ä*/
+/*è·å–å’Œè®¾ç½®è‡ªåŠ¨å…³æœºæ—¶é—´*/
 uint8_t setting_GetAutoShut(void);
 void setting_SetAutoShut(uint8_t value);
 
-/*ÉèÖÃ»Ö¸´³ö³§ÉèÖÃÖĞÓ¢ÎÄ*/
-void settting_SetInitIsChn(uint8_t IsChn);
 
 #endif

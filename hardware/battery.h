@@ -3,14 +3,14 @@
 
 #include "main.h"
 
-#define BATTERY_TIMES 10 //µç³Øad²ÉÑù´ÎÊı
+#define BATTERY_TIMES 10 //ç”µæ± adé‡‡æ ·æ¬¡æ•°
 
-/*²»Í¬µµÎ»adãĞÖµ*/
+/*ä¸åŒæ¡£ä½adé˜ˆå€¼*/
 #define BATTERY_LAVEL_1 3.6
 #define BATTERY_LAVEL_2 4.1
 #define BATTERY_LAVEL_3 4.6
 #define BATTERY_LAVEL_USB 0.6 
-/*²»Í¬µµÎ»µç³ØÏÔÊ¾µÄÍ¼±ê*/
+/*ä¸åŒæ¡£ä½ç”µæ± æ˜¾ç¤ºçš„å›¾æ ‡*/
 #define BATTERY_LAVEL_ARRNONE battery_image[0]
 #define BATTERY_LAVEL_ARR0    battery_image[1]
 #define BATTERY_LAVEL_ARR1    battery_image[2]

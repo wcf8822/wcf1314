@@ -150,13 +150,23 @@ void Error_Handler(void);
 
 
 
-#define SETTING_FIRSTRUN_JUDGE 0x58     //�ж��Ƿ��һ���ϵ����ֵ
-#define SETTING_FIRSTRUN_ADDR  0x000000 //��һ���ϵ��ַ
-#define SETTING_CNORENG_ADDR   0x000100 //Ĭ����������Ӣ��
-#define LOG_COUNT_ADDR         0x000200 //��¼������ʼ��ַ
-#define SETTING_START_ADDR     0x000300 //���ñ���ĵ�ַ
-#define LOG_FIRST_ADDR         0x3CB000 //��һ�����ݼ�¼��ַ
+#define SETTING_FIRSTRUN_JUDGE 0x58     //第一次开机判断的数值
 
+#define SETTING_FIRSTRUN_ADDR  0x000000 //第一次开机的存放位置
+#define SETTING_CNORENG_ADDR   0x000100 //恢复出厂的存放位置
+#define LOG_COUNT_ADDR         0x000200 //记录条数的存放位置
+#define SETTING_START_ADDR     0x000300 //设置起始的存放位置
+#define SETTING_LOG_ADDR    	 0x000400 //设置开机界面的存放位置
+#define LOG_FIRST_ADDR         0x3CB000 //第一条记录的存放位置
+
+
+//#define MIN_K 0.5
+//#define MAX_K 1.5
+//#define MAX_B 0.15
+#define MAX_EPS_K 0.5
+#define MAX_EPS_B 0.15
+
+#define CAL_ZERO_VALUE 0.001
 
 #define SHUTDOWN() HAL_GPIO_WritePin(BAT_OFF_GPIO_Port, BAT_OFF_Pin, GPIO_PIN_SET)
 /* USER CODE END Private defines */

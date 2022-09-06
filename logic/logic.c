@@ -19,13 +19,13 @@
 #include "data_processing.h"
 #include "dissolved_oxygen.h"
 #include "log.h"
-#include "bee.h"  //ÓÃÀ´¿ª»úÏìÏÂ·äÃùÆ÷
+#include "bee.h"  //ç”¨æ¥å¼€æœºå“ä¸‹èœ‚é¸£å™¨
 
-#define START_BEEON 1//¿ªÊ¼ÊÇ·ñÈÃ·äÃùÆ÷ÏìÒ»ÏÂ
+#define START_BEEON 1//å¼€å§‹æ˜¯å¦è®©èœ‚é¸£å™¨å“ä¸€ä¸‹
 
-#define BLINKLED() HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin)//·´×ªledÈÃled¿ªÉÁ
+#define BLINKLED() HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin)//åè½¬ledè®©ledå¼€é—ª
 
-const float pressure_error = 1.0;                            //´óÆøÑ¹µÄÎó²î¾ÍÊÇ¸úÉÏÒ»´Î¶ÁÊıµÄÊ±ºò²îÁË¶àÉÙÈ»ºóĞ´µ½Ì½Í·ÀïÃæÈ¥
+const float pressure_error = 1.0;                            //å¤§æ°”å‹çš„è¯¯å·®å°±æ˜¯è·Ÿä¸Šä¸€æ¬¡è¯»æ•°çš„æ—¶å€™å·®äº†å¤šå°‘ç„¶åå†™åˆ°æ¢å¤´é‡Œé¢å»
 
 double ad_data = 0.0, ad_temp = 0.0;
 
@@ -34,7 +34,7 @@ uint8_t press_buf[6];
 uint8_t flag_Bmp280On = 0;
 
 
-
+void logic_BatteryAD(void);
 
 void update_HWVersion(void)
 {
@@ -50,76 +50,98 @@ void update_HWVersion(void)
 	switch(hdv)
 	{
 		case 0:
-			interfacial_SetHWVersion(VER_A);//ÉèÖÃÓ²¼ş°æ±¾
+			interfacial_SetHWVersion(VER_A);//è®¾ç½®ç¡¬ä»¶ç‰ˆæœ¬
 			break;
 		case 1:
-			interfacial_SetHWVersion(VER_B);//ÉèÖÃÓ²¼ş°æ±¾
+			interfacial_SetHWVersion(VER_B);//è®¾ç½®ç¡¬ä»¶ç‰ˆæœ¬
 			break;
 		case 2:
-			interfacial_SetHWVersion(VER_C);//ÉèÖÃÓ²¼ş°æ±¾
+			interfacial_SetHWVersion(VER_C);//è®¾ç½®ç¡¬ä»¶ç‰ˆæœ¬
 			break;
 		case 3:
-			interfacial_SetHWVersion(VER_D);//ÉèÖÃÓ²¼ş°æ±¾
+			interfacial_SetHWVersion(VER_D);//è®¾ç½®ç¡¬ä»¶ç‰ˆæœ¬
 			break;
 	}
 	
 }
-
-
-/*µÚÒ»´ÎÉÏµçÕûÄÚ´æ*/
+/*ç¬¬ä¸€æ¬¡ä¸Šç”µæ•´å†…å­˜*/
 void software_init(void)
 {
 	uint8_t IsFirst;
 	
 	
-	GUI_SetColor(1, 0);	//ÉèÖÃ×ÖÌåÑÕÉ«ºÍ±³¾°ÑÕÉ«
+	GUI_SetColor(1, 0);	//è®¾ç½®å­—ä½“é¢œè‰²å’ŒèƒŒæ™¯é¢œè‰²
 	
 	W25QXX_Read(&IsFirst, SETTING_FIRSTRUN_ADDR, 1);
 	
-	if(IsFirst != SETTING_FIRSTRUN_JUDGE)//Èç¹ûÊÇµÚÒ»´ÎÔËĞĞµÄ»°
+	if(IsFirst != SETTING_FIRSTRUN_JUDGE)//å¦‚æœæ˜¯ç¬¬ä¸€æ¬¡è¿è¡Œçš„è¯
 	{
 		first_write();
 	}
 	else
 	{
-		FlashToSetting(); //´ÓflashÖĞ¶ÁÈ¡ÉèÖÃÑ¡Ïî
-		log_ReadLogCount(); //¶ÁÈ¡¼ÇÂ¼ÌõÊı
+		FlashToSetting(); //ä»flashä¸­è¯»å–è®¾ç½®é€‰é¡¹
+		log_ReadLogCount(); //è¯»å–è®°å½•æ¡æ•°
 	}
 	
 	interfacial_InitMsg();
 	
 	interfacial_SetPage(PAGE_0_START, PAGE_NOT_BACK);
 	
-	DO_rs485_GetModbusId();        //»ñÈ¡doÉè±¸modbusid
-	rs485_SetCircularSentStatus(); //Ñ­»··¢ËÍ
+	DO_rs485_GetModbusId();        //è·å–doè®¾å¤‡modbusid
+	rs485_SetCircularSentStatus(); //å¾ªç¯å‘é€
 	
 	
 	
-	RTC_UpdateShutDownTime(setting_GetAutoShut());//¿ª»úË¢ĞÂÏÂ×Ô¶¯¹Ø»úÊ±¼ä
+	RTC_UpdateShutDownTime(setting_GetAutoShut());//å¼€æœºåˆ·æ–°ä¸‹è‡ªåŠ¨å…³æœºæ—¶é—´
 	
 	update_HWVersion();
 	
-	HAL_GPIO_WritePin(LCD_BLC_GPIO_Port, LCD_BLC_Pin, GPIO_PIN_SET);
-	gui_ShowLogo((uint8_t *)logo_arr);
-	while(!gui_GetRefreshStatus());//·ÀÖ¹¼üÅÌÎó´¥Ê²Ã´µÄ»¹ÄÜ²Ù×÷
-	HAL_GPIO_WritePin(LCD_BLC_GPIO_Port, LCD_BLC_Pin, GPIO_PIN_RESET);
 	
-	set_StartPoint(0);//ÉèÖÃ³É´ÓÆÁÄ»×î¿ªÊ¼Ò»ĞĞË¢
 	
-	ad_data = get_bat_avg(25);     //×î³õ¸ø¸öÖµ²»ÖÁÓÚÖ±½Ó0ÁË
+	switch(setting_GetLogo())
+	{
+		case HENGLAN:
+			HAL_GPIO_WritePin(LCD_BLC_GPIO_Port, LCD_BLC_Pin, GPIO_PIN_SET);//æ‰“å¼€èƒŒå…‰
+			gui_DrawLogo(62, 36, (uint8_t *)logo_arr_hl);
+			gui_SetRefreshOFF();
+			while(!gui_GetRefreshStatus());//é˜²æ­¢é”®ç›˜è¯¯è§¦ä»€ä¹ˆçš„è¿˜èƒ½æ“ä½œ
+			HAL_GPIO_WritePin(LCD_BLC_GPIO_Port, LCD_BLC_Pin, GPIO_PIN_RESET);//å…³é—­èƒŒå…‰
+			break;
+		
+		case LUHENG:
+			HAL_GPIO_WritePin(LCD_BLC_GPIO_Port, LCD_BLC_Pin, GPIO_PIN_SET);//æ‰“å¼€èƒŒå…‰
+			gui_DrawLogo(37, 86, (uint8_t *)logo_arr_lh);
+			gui_SetRefreshOFF();
+			while(!gui_GetRefreshStatus());//é˜²æ­¢é”®ç›˜è¯¯è§¦ä»€ä¹ˆçš„è¿˜èƒ½æ“ä½œ
+			HAL_GPIO_WritePin(LCD_BLC_GPIO_Port, LCD_BLC_Pin, GPIO_PIN_RESET);//å…³é—­èƒŒå…‰
+			break;
+		
+		default:
+			
+			break;
+	}
 	
-
+	
+	/*å…ˆç”»ä¸‹çŠ¶æ€æ é˜²æ­¢å¼€æœºé‚£ä¸ªæ˜¯æ²¡ä¸œè¥¿çš„*/
+	ad_data = get_bat_avg(25);     //æœ€åˆç»™ä¸ªå€¼ä¸è‡³äºç›´æ¥0äº†
+	HYM8563_UpdateTime();
+	logic_BatteryAD();
+	StatusBar_Update();
+	
+	
+	set_StartPoint(0);//è®¾ç½®æˆä»å±å¹•æœ€å¼€å§‹ä¸€è¡Œåˆ·
 //	gui_DrawLock((uint8_t *)icon_lock);
 	
 }
 void hardware_init(void)
 {
-	__HAL_TIM_CLEAR_IT(&htim2,TIM_IT_UPDATE);      //Ê¹ÄÜÏµÍ³Ö÷Ê±ÖÓTIM2
+	__HAL_TIM_CLEAR_IT(&htim2,TIM_IT_UPDATE);      //ä½¿èƒ½ç³»ç»Ÿä¸»æ—¶é’ŸTIM2
 	HAL_TIM_Base_Start_IT(&htim2);
 	
-	__HAL_SPI_ENABLE(&hspi1);                      //Ê¹ÄÜspi1£¨flash bmp280£©
+	__HAL_SPI_ENABLE(&hspi1);                      //ä½¿èƒ½spi1ï¼ˆflash bmp280ï¼‰
 	
-	//Õâ¸ö²»ÄÜ¸ù¾İcubeÄ¬ÈÏÉú³ÉµÄË³Ğò,dmaÓ¦³õÊ¼»¯ÔÚ´®¿ÚÇ°²»È»½ÓÊÕÊı¾İÖ»ÄÜ½ÓÊÕµ½×îºóÒ»Î»
+	//è¿™ä¸ªä¸èƒ½æ ¹æ®cubeé»˜è®¤ç”Ÿæˆçš„é¡ºåº,dmaåº”åˆå§‹åŒ–åœ¨ä¸²å£å‰ä¸ç„¶æ¥æ”¶æ•°æ®åªèƒ½æ¥æ”¶åˆ°æœ€åä¸€ä½
 	MX_DMA_Init();
 	MX_USART3_UART_Init();  
 	MX_USART2_UART_Init();
@@ -127,25 +149,25 @@ void hardware_init(void)
 	
 //	MX_ADC_Init();
 	
-	rs485_usart.init(&huart3);                     //rs485´®¿Ú¿ÕÏĞÖĞ¶Ï³õÊ¼»¯
+	rs485_usart.init(&huart3);                     //rs485ä¸²å£ç©ºé—²ä¸­æ–­åˆå§‹åŒ–
 	gps_usart.init(&huart2);
 	ch340e_usart.init(&huart1);
 
 #if START_BEEON	
-	setting_SetKeyPadTone(1);//ÔÚ´ÓflashÖĞ¶ÁÈ¡ÉèÖÃÇ°ÏÈÉèÖÃÄÜÏìÒ»ÏÂµÄ
-	set_BeeOn();             //¿ª»úÏìÏÂ·äÃùÆ÷
+	setting_SetKeyPadTone(1);//åœ¨ä»flashä¸­è¯»å–è®¾ç½®å‰å…ˆè®¾ç½®èƒ½å“ä¸€ä¸‹çš„
+	set_BeeOn();             //å¼€æœºå“ä¸‹èœ‚é¸£å™¨
 #endif
 	
-	bmp280.init(&hspi1);                           //bmp280³õÊ¼»¯ÔÚspi1¿ÚÉÏ
+	bmp280.init(&hspi1);                           //bmp280åˆå§‹åŒ–åœ¨spi1å£ä¸Š
 	
-	if(bmp280_readId() == 0x58)                    //²âÊÔ¶ÁÈ¡bmp280µÄidÀ´·´À¡ÊÇ·ñºÍbmp280Í¨Ñ¶Õı³£ 
+	if(bmp280_readId() == 0x58)                    //æµ‹è¯•è¯»å–bmp280çš„idæ¥åé¦ˆæ˜¯å¦å’Œbmp280é€šè®¯æ­£å¸¸ 
 	{
-		flag_Bmp280On =1;                            //²»Õı³£¾Í²»²É¼¯²»È»²É¼¯µÄ»°»á¿¨ÔÚwhileÀï
+		flag_Bmp280On =1;                            //ä¸æ­£å¸¸å°±ä¸é‡‡é›†ä¸ç„¶é‡‡é›†çš„è¯ä¼šå¡åœ¨whileé‡Œ
 	}	
 	
-	GUI_Initialize();                              //ÆÁÄ»³õÊ¼»¯
+	GUI_Initialize();                              //å±å¹•åˆå§‹åŒ–
 	
-	HYM8563_init();                                //RTC³õÊ¼»¯
+	HYM8563_init();                                //RTCåˆå§‹åŒ–
 	
 	
 	software_init();
@@ -155,7 +177,7 @@ void logic_bmp280(void)
 {
 	if(flag_Bmp280On)
 	{
-		bmp280_UpdateValue();//»ñÈ¡ÆøÑ¹Öµ
+		bmp280_UpdateValue();//è·å–æ°”å‹å€¼
 		set_PressArr(bmp280_GetPress());
 	}
 }
@@ -170,14 +192,14 @@ void logic_BatteryAD(void)
 	battery_draw(ad_data);
 }
 
-void logic_DeviceDestory(void)/////////////////////////////////////////////////////////////////////////////////////////////////ÕâÀï¿ÉÄÜÒª¸Ä³É×Ô¶¯Ñ¡ÔñµÚ¶ş¸öÉè±¸
+void logic_DeviceDestory(void)/////////////////////////////////////////////////////////////////////////////////////////////////è¿™é‡Œå¯èƒ½è¦æ”¹æˆè‡ªåŠ¨é€‰æ‹©ç¬¬äºŒä¸ªè®¾å¤‡
 {
 	if(rs485_GetDeviceCount())
 	{
-		rs485_DeviceReduce();                                        //Á¬½ÓÉè±¸-1
+		rs485_DeviceReduce();                                        //è¿æ¥è®¾å¤‡-1
 	}
 	
-	if(interfacial_GetNeedWarning())                             //Çå±¨¾¯±êÖ¾
+	if(interfacial_GetNeedWarning())                             //æ¸…æŠ¥è­¦æ ‡å¿—
 	{
 		interfacial_ClearNeedWarning();
 	}
@@ -185,9 +207,9 @@ void logic_DeviceDestory(void)//////////////////////////////////////////////////
 	switch(interfacial_GetCurPage())
 	{
 		case PAGE_0_START:
-			interfacial_ClearLabel();                                  //ÇåËùÓĞµÄÊı¾İ±êÇ©
-			gui_ClearLines(32, 160, 0);                                //ÇåÏÂ½çÃæ
-			rs485_SetIsChangeSenesor();                                //Õâ¸ö±êÖ¾ÖÃÒ»·½±ãÉè±¸ÖØÁ¬ÉÏÀ´ÄÜ¹»Ö±½ÓÉú³É½çÃæ
+			interfacial_ClearLabel();                                  //æ¸…æ‰€æœ‰çš„æ•°æ®æ ‡ç­¾
+			gui_ClearLines(32, 160, 0);                                //æ¸…ä¸‹ç•Œé¢
+			rs485_SetIsChangeSenesor();                                //è¿™ä¸ªæ ‡å¿—ç½®ä¸€æ–¹ä¾¿è®¾å¤‡é‡è¿ä¸Šæ¥èƒ½å¤Ÿç›´æ¥ç”Ÿæˆç•Œé¢
 			break;
 		case PAGE_1_RESETCAL:
 		case PAGE_4_SENSORINFO:
@@ -195,14 +217,14 @@ void logic_DeviceDestory(void)//////////////////////////////////////////////////
 			break;
 		case PAGE_5_ONE:
 		case PAGE_5_TWOSECOND:
-			if(rs485_GetSentType() == DO_SendType_SetKB)//Èç¹ûÕıÔÚĞ£×¼µÄ»°
+			if(rs485_GetSentType() == DO_SendType_SetKB)//å¦‚æœæ­£åœ¨æ ¡å‡†çš„è¯
 			{
-				interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunshibai_cn;//Ğ£×¼Ê§°Ü
+				interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunshibai_cn;//æ ¡å‡†å¤±è´¥
 				interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)shibai_en;
 				interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunshibai_cn);
 				
 				generate_MessageBox(MESSAGE_SUCCESSFUL, 0);
-				interfacial_GetCurrentInterfacial()->page_father = interfacial_GetTempFatherPage() == PAGE_0_START ? PAGE_0_START : PAGE_2_SENSORMANAGE;
+				interfacial_GetCurrentInterfacial()->page_father = ((interfacial_GetTempFatherPage() == PAGE_0_START) ? PAGE_0_START : PAGE_2_SENSORMANAGE);
 			}
 			break;
 		
@@ -216,19 +238,19 @@ void logic_DeviceDestory(void)//////////////////////////////////////////////////
 	
 	switch(rs485_GetSensorType())
 	{
-		case TYPE_DO://É¾³ıµ±Ç°µÄÈÜ½âÑõÉè±¸
-			DO_DelProbe(get_CurDo()->modbus_id, rs485_GetDoList());  //É¾³ıdoÉè±¸
+		case TYPE_DO://åˆ é™¤å½“å‰çš„æº¶è§£æ°§è®¾å¤‡
+			DO_DelProbe(get_CurDo()->modbus_id, rs485_GetDoList());  //åˆ é™¤doè®¾å¤‡
 			DO_ClearCueDO();
 			DO_SetTempZero();
 			
-			DO_rs485_GetModbusId();                                  //ÖØĞÂ²éÕÒÉè±¸
+			DO_rs485_GetModbusId();                                  //é‡æ–°æŸ¥æ‰¾è®¾å¤‡
 			rs485_SetCircularSentStatus();
 			break;
 		
 		default:
 			break;
 	}
-	rs485_SetSensorType(TYPE_NONE); //ÉèÖÃµ±Ç°Á¬½ÓÉè±¸ÀàĞÍÎªÎŞ
+	rs485_SetSensorType(TYPE_NONE); //è®¾ç½®å½“å‰è¿æ¥è®¾å¤‡ç±»å‹ä¸ºæ— 
 }
 
 static uint8_t warning_show = 1;
@@ -236,7 +258,7 @@ void warning(void)
 {
 	if(interfacial_GetNeedWarning())
 	{
-		if(interfacial_GetCurPage() == PAGE_0_START && !interfacial_GetMessageBoxFlag())//Èç¹ûÊÇÖ÷½çÃæµÄ»°²¢ÇÒÃ»ÓĞÏÔÊ¾µ¯´°µÄ»°¾Í¿ªÊ¼·´×ª±¨¾¯Í¼±ê
+		if(interfacial_GetCurPage() == PAGE_0_START && !interfacial_GetMessageBoxFlag())//å¦‚æœæ˜¯ä¸»ç•Œé¢çš„è¯å¹¶ä¸”æ²¡æœ‰æ˜¾ç¤ºå¼¹çª—çš„è¯å°±å¼€å§‹åè½¬æŠ¥è­¦å›¾æ ‡
 		{
 			if(warning_show)
 			{
@@ -252,7 +274,7 @@ void warning(void)
 	}
 }
 
-void main_loop(void) //mainº¯Êıµ÷ÓÃµÄÑ­»·º¯Êı
+void main_loop(void) //mainå‡½æ•°è°ƒç”¨çš„å¾ªç¯å‡½æ•°
 {
 	
 	if(get_RtcFlag())
@@ -265,23 +287,23 @@ void main_loop(void) //mainº¯Êıµ÷ÓÃµÄÑ­»·º¯Êı
 	if(get_BmpFlag())//1s
 	{
 		clear_BmpFlag();
-		logic_bmp280();//¸üĞÂÆøÑ¹Öµ
+		logic_bmp280();//æ›´æ–°æ°”å‹å€¼
 	}
 	
 	if(get_GPSFlag())
 	{
 		clear_GPSFlag();
-		get_GpsData(); //´Ó´®¿ÚbuffÖĞ½âÎögpsÊı¾İ
+		get_GpsData(); //ä»ä¸²å£buffä¸­è§£ægpsæ•°æ®
 	}
 	
 	if(get_BatFlag())
 	{
 		clear_BatFlag();
-		logic_BatteryAD(); //»ñÈ¡adÖµ
+		logic_BatteryAD(); //è·å–adå€¼
 	}
 	
 	
-	key_scan();        //ÏÈÉ¨Ãè°´¼üÔÙË¢ÆÁÄ»¾ÍÓĞ¸ü¿ìµÄÏìÓ¦
+	key_scan();        //å…ˆæ‰«ææŒ‰é”®å†åˆ·å±å¹•å°±æœ‰æ›´å¿«çš„å“åº”
 	
 	if(get_TestFlag())
 	{
@@ -296,7 +318,7 @@ void main_loop(void) //mainº¯Êıµ÷ÓÃµÄÑ­»·º¯Êı
 			{
 				if(interfacial_GetCurrentInterfacial()->label_head->content_chn == wuxinghao_cn)
 				{
-					interfacial_ClearLabel();//Çå  ÎŞĞÅºÅ
+					interfacial_ClearLabel();//æ¸…  æ— ä¿¡å·
 					clear_NoSignal();
 				}
 			}
@@ -306,12 +328,12 @@ void main_loop(void) //mainº¯Êıµ÷ÓÃµÄÑ­»·º¯Êı
 	if(get_InterfacialFlag())
 	{
 		clear_InterfacialFlag();
-		interfacial_refresh();//Ë¢ĞÂ½çÃæ //ÏÈË¢ĞÂºÃÔÙ¸üĞÂÊı¾İ ·ÀÖ¹destoryÖ®ºóÖ±½Ó¿Õ°×½çÃæ
+		interfacial_refresh();//åˆ·æ–°ç•Œé¢ //å…ˆåˆ·æ–°å¥½å†æ›´æ–°æ•°æ® é˜²æ­¢destoryä¹‹åç›´æ¥ç©ºç™½ç•Œé¢
 	}
 	
-	btn_func(); //°´¼üÂÖÑ¯´¥·¢ÊÂ¼ş
+	btn_func(); //æŒ‰é”®è½®è¯¢è§¦å‘äº‹ä»¶
 	
-	if(interfacial_GetNeedDestroyMSG())//Ïú»Ùµ¯´°
+	if(interfacial_GetNeedDestroyMSG())//é”€æ¯å¼¹çª—
 	{
 		interfacial_ClearNeedDestroyMSG();
 		if(interfacial_GetCurMsgType() != MESSAGE_SETTING )
@@ -332,24 +354,24 @@ void main_loop(void) //mainº¯Êıµ÷ÓÃµÄÑ­»·º¯Êı
 		warning();
 	}
 	
-	if(get_LcdFlag()) //½«ÏÔ´æÖĞµÄÄÚÈİË¢µ½ÆÁÄ»ÉÏÈ¥
+	if(get_LcdFlag()) //å°†æ˜¾å­˜ä¸­çš„å†…å®¹åˆ·åˆ°å±å¹•ä¸Šå»
 	{
 		clear_LcdFlag();
 		GUI_UpdateDisplay();
 	}
 	ch340_DataHandle();
-	rs485_DataHandle();//ÏÈ´¦ÀíÔÙ·¢ËÍ µÃÊµÏÖÒ»¸öÏûÏ¢¶ÓÁĞ£¨Èç¹ûÒªÉèÖÃÁ½¸ö¶«Î÷ÔõÃ´°ì²»ÄÜµ¥´¿µÄÍ¨¹ıËüÊÇ·ñÖ»ÊÇÔÚÑ­»··¢ËÍÀ´ÅĞ¶ÏÈ»ºó·¢ËÍ,·ñµÄ»°Õâ¸öÏûÏ¢¾Í·¢ËÍ²»³öÈ¥£©
+	rs485_DataHandle();//å…ˆå¤„ç†å†å‘é€ å¾—å®ç°ä¸€ä¸ªæ¶ˆæ¯é˜Ÿåˆ—ï¼ˆå¦‚æœè¦è®¾ç½®ä¸¤ä¸ªä¸œè¥¿æ€ä¹ˆåŠä¸èƒ½å•çº¯çš„é€šè¿‡å®ƒæ˜¯å¦åªæ˜¯åœ¨å¾ªç¯å‘é€æ¥åˆ¤æ–­ç„¶åå‘é€,å¦çš„è¯è¿™ä¸ªæ¶ˆæ¯å°±å‘é€ä¸å‡ºå»ï¼‰
 	
-	if(rs485_GetIsDisconnect())//Èç¹ûÉè±¸¶Ï¿ªÁ¬½ÓµÄ»°
+	if(rs485_GetIsDisconnect())//å¦‚æœè®¾å¤‡æ–­å¼€è¿æ¥çš„è¯
 	{
 		rs485_ClearIsDisconnect();
 		
 		logic_DeviceDestory();
 	}
 	
-	DO_UpdatePressSal(rs485_GetDoList()); //µ±ÒÇ±íµÄÆøÑ¹ºÍÑÎ¶È·¢Éú±ä»¯µÄÊ±ºòË¢ĞÂÊıÖµµ½Ì½Í·ÉÏÈ¥
+	DO_UpdatePressSal(rs485_GetDoList()); //å½“ä»ªè¡¨çš„æ°”å‹å’Œç›åº¦å‘ç”Ÿå˜åŒ–çš„æ—¶å€™åˆ·æ–°æ•°å€¼åˆ°æ¢å¤´ä¸Šå»
 	
-	if(rs485_GetNeedSendStatus()) //485·¢ËÍÊı¾İ
+	if(rs485_GetNeedSendStatus()) //485å‘é€æ•°æ®
 	{
 		rs485_ClearNeedSendStatus();
 		

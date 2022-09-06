@@ -85,15 +85,15 @@ void log_init(log_t *dat)
 	
 	char E_W[E_W_Length];		                  //2   E/W
 	char N_S[N_S_Length];		                  //2   N/S
-	char latitude[latitude_Length];		        //12  Î³¶È
-	char longitude[longitude_Length];		      //12  ¾­¶È
+	char latitude[latitude_Length];		        //12  çº¬åº¦
+	char longitude[longitude_Length];		      //12  ç»åº¦
 */
 
 
 
 uint8_t log_SaveData(SENSOR_TYPE sensor_type)
 {
-	if(log_count >= LogCount_max)//Èç¹ûÐ´ÂúÁËÖ±½ÓÌø¹ý
+	if(log_count >= LogCount_max)//å¦‚æžœå†™æ»¡äº†ç›´æŽ¥è·³è¿‡
 	{
 		return 0;
 	}

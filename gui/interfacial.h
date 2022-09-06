@@ -13,35 +13,35 @@
 //#define MSGISRESRT  1
 //#define MSGNOTRESET 0
 
-#define PAGE_NOT_BACK 0 //²»ÊÇ´Ó×Ó½çÃæÀ´µÄ
-#define PAGE_IS_BACK  1 //ÊÇ´Ó×Ó½çÃæÀ´µÄ
+#define PAGE_NOT_BACK 0 //ä¸æ˜¯ä»å­ç•Œé¢æ¥çš„
+#define PAGE_IS_BACK  1 //æ˜¯ä»å­ç•Œé¢æ¥çš„
 
-//±êÇ©ÊÇÖ¸ÄÇĞ©Ö»ÊÇÓÃÀ´ÏÔÊ¾µÄ
-//Ñ¡ÏîÊÇÖ¸ÄÇĞ©ÄÜÓÃÑ¡ÖĞµÄ
+//æ ‡ç­¾æ˜¯æŒ‡é‚£äº›åªæ˜¯ç”¨æ¥æ˜¾ç¤ºçš„
+//é€‰é¡¹æ˜¯æŒ‡é‚£äº›èƒ½ç”¨é€‰ä¸­çš„
 
-//½çÃæ½á¹¹Ìå
+//ç•Œé¢ç»“æ„ä½“
 typedef struct struct_interfacial{
-	uint8_t ChnContent_size;        //ÖĞÎÄ³¤¶È
+	uint8_t ChnContent_size;        //ä¸­æ–‡é•¿åº¦
 	
-	PAGE_NUM page_father;           //Õâ¸ö½çÃæµÄ¸¸½çÃæÊÇÄÄ¸ö½çÃæ
+	PAGE_NUM page_father;           //è¿™ä¸ªç•Œé¢çš„çˆ¶ç•Œé¢æ˜¯å“ªä¸ªç•Œé¢
 	
-	list_NanoOption NanoOption_msg; //µ¯´°ÊÇ·ñÁ½¸öÑ¡Ïî
-	list_label label_head;          //Õâ¸ö½çÃæÉÏµÄ±êÇ©µÄÍ·Ö¸Õë
-	list_option option_head;        //Õâ¸ö½çÃæÉÏµÄÒ»¼¶Ñ¡ÏîµÄÍ·Ö¸Õë       
-	uint8_t* content_chn;           //ÖĞÎÄ±êÇ©
-	uint8_t* content_eng;           //Ó¢ÎÄ±êÇ©
+	list_NanoOption NanoOption_msg; //å¼¹çª—æ˜¯å¦ä¸¤ä¸ªé€‰é¡¹
+	list_label label_head;          //è¿™ä¸ªç•Œé¢ä¸Šçš„æ ‡ç­¾çš„å¤´æŒ‡é’ˆ
+	list_option option_head;        //è¿™ä¸ªç•Œé¢ä¸Šçš„ä¸€çº§é€‰é¡¹çš„å¤´æŒ‡é’ˆ       
+	uint8_t* content_chn;           //ä¸­æ–‡æ ‡ç­¾
+	uint8_t* content_eng;           //è‹±æ–‡æ ‡ç­¾
 	
 }Interfacial_t;
 
 typedef enum {
-	MESSAGE_SETTING,                //ÉèÖÃµ¯´°
-	MESSAGE_SAVELOG,                //±£´æÊı¾İµ¯´°
-	MESSAGE_SUCCESSFUL,             //³É¹¦µ¯´°
-	MESSAGE_DELETE                  //É¾³ıÊı¾İµ¯´°
+	MESSAGE_SETTING,                //è®¾ç½®å¼¹çª—
+	MESSAGE_SAVELOG,                //ä¿å­˜æ•°æ®å¼¹çª—
+	MESSAGE_SUCCESSFUL,             //æˆåŠŸå¼¹çª—
+	MESSAGE_DELETE                  //åˆ é™¤æ•°æ®å¼¹çª—
 }MESSAGE_TYPE;
 
 typedef enum{
-	VER_A = 0,                      //µÍµÍÓ²¼ş°æ±¾a
+	VER_A = 0,                      //ä½ä½ç¡¬ä»¶ç‰ˆæœ¬a
 	VER_B,
 	VER_C,
 	VER_D
@@ -50,9 +50,9 @@ typedef enum{
 
 typedef Interfacial_t* PtrToInterfacial;
 
-void interfacial_refresh(void);//Ë¢ĞÂ½çÃæ
+void interfacial_refresh(void);//åˆ·æ–°ç•Œé¢
 
-void btn_func(void);          //µÃÔÚmainÖĞµ÷ÓÃµÄ°´¼üº¯Êı
+void btn_func(void);          //å¾—åœ¨mainä¸­è°ƒç”¨çš„æŒ‰é”®å‡½æ•°
 
 
 void interfacial_Destory(PtrToInterfacial interfacial);
@@ -103,6 +103,8 @@ void no_signal(void);
 void clear_NoSignal(void);
 
 void generate_MessageBox(MESSAGE_TYPE msg_type, uint8_t is_successful);
+
+void StatusBar_Update(void);
 
 MESSAGE_TYPE interfacial_GetCurMsgType(void);
 #endif

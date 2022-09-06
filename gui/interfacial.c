@@ -1,5 +1,6 @@
 #include "interfacial.h"
-#include "stdio.h"
+#include <stdio.h>
+#include <math.h>
 
 #include "lcd_drive.h"
 #include "loadbit.h"
@@ -23,8 +24,7 @@
 #include "log.h"
 
 #include "spi_flash.h"
-
-/***************************************************************ÈÎºÎÖ¸Õë²Ù×÷¼ÇµÃ¼Ó°²È«ĞÔÅĞ¶ÏÊÇ·ñÎª¿ÕÖ¸Õë£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡*/
+/***************************************************************ä»»ä½•æŒ‡é’ˆæ“ä½œè®°å¾—åŠ å®‰å…¨æ€§åˆ¤æ–­æ˜¯å¦ä¸ºç©ºæŒ‡é’ˆï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼*/
 
 typedef struct{
 	uint8_t* content_cn;
@@ -39,43 +39,43 @@ MsgContent_t msg_content = {
 };
 
 
-STATIC PtrToOptionNode cur_option = NULL;         //µ±Ç°Ö¸ÏòµÄÑ¡Ïî
-STATIC PtrToNanoOptionNode cur_NanoOption = NULL; //µ±Ç°Ö¸ÏòµÄĞ¡Ñ¡Ïî
+STATIC PtrToOptionNode cur_option = NULL;         //å½“å‰æŒ‡å‘çš„é€‰é¡¹
+STATIC PtrToNanoOptionNode cur_NanoOption = NULL; //å½“å‰æŒ‡å‘çš„å°é€‰é¡¹
 
-STATIC PAGE_NUM cur_PageNum = PAGE_0_START;//µ±Ç°Ë¢ĞÂµÄ½çÃæ
+STATIC PAGE_NUM cur_PageNum = PAGE_0_START;//å½“å‰åˆ·æ–°çš„ç•Œé¢
 
-STATIC char time_arr[6]  = {0};  //×óÉÏ½ÇÊ±¼äµÄÊı×é
-STATIC char press_arr[7] = {0};  //´óÆøÑ¹Í¨ÓÃÊı×é
-STATIC char sal_arr[6]   = {0};  //ÑÎ¶ÈÍ¨ÓÃÊı×é
-STATIC char cal_arr[8]   = {0};  //Ğ£×¼Íê³ÉºóÏÔÊ¾ÓÃµÄĞ£×¼Í¨ÓÃÊı×é
+STATIC char time_arr[6]  = {0};  //å·¦ä¸Šè§’æ—¶é—´çš„æ•°ç»„
+STATIC char press_arr[7] = {0};  //å¤§æ°”å‹é€šç”¨æ•°ç»„
+STATIC char sal_arr[6]   = {0};  //ç›åº¦é€šç”¨æ•°ç»„
+STATIC char cal_arr[8]   = {0};  //æ ¡å‡†å®Œæˆåæ˜¾ç¤ºç”¨çš„æ ¡å‡†é€šç”¨æ•°ç»„
 
-STATIC uint8_t flag_show_MSG = 0;           //ÊÇ·ñÏÔÊ¾µ¯´°
-STATIC uint8_t flag_is_successful = 1;      //ÊÇ·ñ²Ù×÷³É¹¦±êÖ¾
-STATIC uint8_t flag_NeedDestroyMSG = 0;     //ÊÇ·ñĞèÒªÏú»Ùmsgbox
-STATIC uint8_t flage_FirstOKLong = 0;       //ÊÇ²»ÊÇµÚÒ»´Î³¤°´ok¼ü
+STATIC uint8_t flag_show_MSG = 0;           //æ˜¯å¦æ˜¾ç¤ºå¼¹çª—
+STATIC uint8_t flag_is_successful = 1;      //æ˜¯å¦æ“ä½œæˆåŠŸæ ‡å¿—
+STATIC uint8_t flag_NeedDestroyMSG = 0;     //æ˜¯å¦éœ€è¦é”€æ¯msgbox
+STATIC uint8_t flage_FirstOKLong = 0;       //æ˜¯ä¸æ˜¯ç¬¬ä¸€æ¬¡é•¿æŒ‰oké”®
 
-STATIC uint8_t* option_sensor_name;         //´«¸ĞÆ÷¹ÜÀíÀïÃæÉè±¸ÏÔÊ¾Ãû³ÆµÄÖ¸Õë
-STATIC PAGE_NUM temp_FatherPage;            //ÁÙÊ±µÄ¸¸½çÃæ
-STATIC float STD_value = 0.0;               //Ğ£×¼Ê±ºòÒªÓÃµ½µÄ±ê×¼Öµ
+STATIC uint8_t* option_sensor_name;         //ä¼ æ„Ÿå™¨ç®¡ç†é‡Œé¢è®¾å¤‡æ˜¾ç¤ºåç§°çš„æŒ‡é’ˆ
+STATIC PAGE_NUM temp_FatherPage;            //ä¸´æ—¶çš„çˆ¶ç•Œé¢
+STATIC float STD_value = 0.0;               //æ ¡å‡†æ—¶å€™è¦ç”¨åˆ°çš„æ ‡å‡†å€¼
 
-STATIC SENSOR_TYPE temp_SensorType;         //µ±Ç°ĞèÒªĞŞ¸ÄµÄÉè±¸ÀàĞÍ
-STATIC SENSOR_TYPE alarm_SensorType;        //±¨¾¯ÉèÖÃÑ¡ÔñµÄÉè±¸ÀàĞÍ
+STATIC SENSOR_TYPE temp_SensorType;         //å½“å‰éœ€è¦ä¿®æ”¹çš„è®¾å¤‡ç±»å‹
+STATIC SENSOR_TYPE alarm_SensorType;        //æŠ¥è­¦è®¾ç½®é€‰æ‹©çš„è®¾å¤‡ç±»å‹
 
-MESSAGE_TYPE cur_MsgType = MESSAGE_SETTING; //µ¯´°µÄÀàĞÍ
+MESSAGE_TYPE cur_MsgType = MESSAGE_SETTING; //å¼¹çª—çš„ç±»å‹
 
-STATIC uint16_t cur_LogIndex = 0;           //µ±Ç°Ñ¡ÔñµÄÊı¾İÈÕÖ¾µÄÏÂ±ê
-STATIC uint8_t cur_LogIndex_arr[6] = {0};   //                    Êı×é 65535
+STATIC uint16_t cur_LogIndex = 0;           //å½“å‰é€‰æ‹©çš„æ•°æ®æ—¥å¿—çš„ä¸‹æ ‡
+STATIC uint8_t cur_LogIndex_arr[6] = {0};   //æ•°ç»„ 65535
 
-STATIC uint8_t FatherPage_OptionIndex = 0;  //¸¸½çÃæËùÑ¡µÄ±êÇ©ÏÂ±ê
-STATIC uint8_t GrandpaPage_OptionIndex = 0; //Ò¯Ò¯½çÃæËùÑ¡µÄ±êÇ©ÏÂ±ê
-STATIC uint8_t AncestorPage_OptionIndex = 0;//°¢Ì«½çÃæËùÑ¡µÄ±êÇ©ÏÂ±ê
+STATIC uint8_t FatherPage_OptionIndex = 0;  //çˆ¶ç•Œé¢æ‰€é€‰çš„æ ‡ç­¾ä¸‹æ ‡
+STATIC uint8_t GrandpaPage_OptionIndex = 0; //çˆ·çˆ·ç•Œé¢æ‰€é€‰çš„æ ‡ç­¾ä¸‹æ ‡
+STATIC uint8_t AncestorPage_OptionIndex = 0;//é˜¿å¤ªç•Œé¢æ‰€é€‰çš„æ ‡ç­¾ä¸‹æ ‡
 
 STATIC uint8_t flag_NeedWarning = 0;
 
-HARDWARE_VERSION hardware_version; //Ó²¼ş°æ±¾
-const uint8_t software_version[] = "v0.95";  //Èí¼ş°æ±¾
+HARDWARE_VERSION hardware_version; //ç¡¬ä»¶ç‰ˆæœ¬
+const uint8_t software_version[] = "v1.0";  //è½¯ä»¶ç‰ˆæœ¬
 
-void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack);//Í¨¹ıÃ¶¾Ù±äÁ¿ÉèÖÃÏÔÊ¾µÄ½çÃæ
+void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack);//é€šè¿‡æšä¸¾å˜é‡è®¾ç½®æ˜¾ç¤ºçš„ç•Œé¢
 
 uint8_t days[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
@@ -88,14 +88,14 @@ STATIC Interfacial_t cur_interfacial ={
 }; 
 
 
-static void (*btnUpDownFunc)(void) = NULL;   //ÉÏÏÂ°´Å¥Âß¼­º¯ÊıÖ¸Õë
-static void (*btnOkEscFunc)(void) = NULL;    //ok esc°´Å¥Âß¼­º¯ÊıÖ¸Õë
+static void (*btnUpDownFunc)(void) = NULL;   //ä¸Šä¸‹æŒ‰é’®é€»è¾‘å‡½æ•°æŒ‡é’ˆ
+static void (*btnOkEscFunc)(void) = NULL;    //ok escæŒ‰é’®é€»è¾‘å‡½æ•°æŒ‡é’ˆ
 
-//ÕâÀï¶¨ÒåÒ»¸öÆøÑ¹ÏÔÊ¾µÄbuf
+//è¿™é‡Œå®šä¹‰ä¸€ä¸ªæ°”å‹æ˜¾ç¤ºçš„buf
 
 
 
-//ÉùÃ÷ÔÚÇ°·½±ãºóÃæÖ±½Ó×¢²áµ÷ÓÃ
+//å£°æ˜åœ¨å‰æ–¹ä¾¿åé¢ç›´æ¥æ³¨å†Œè°ƒç”¨
 void btn_OkEscMode_NULL(void);
 void btn_UpDownMode_NULL(void);
 void btn_OkEscMode_ChangeOption(void);
@@ -107,7 +107,7 @@ void btn_UpDownMode_MsgBox(void);
 
 void save_setting(void);
 
-//×¢²á°´¼ü´¦ÀíÂß¼­
+//æ³¨å†ŒæŒ‰é”®å¤„ç†é€»è¾‘
 void btnUpDownFunc_register(void (*func)(void))
 {
 	btnUpDownFunc = func;
@@ -208,7 +208,7 @@ PAGE_NUM interfacial_GetTempFatherPage(void)
 void generate_MessageBox(MESSAGE_TYPE msg_type, uint8_t is_successful)
 {
 	interfacial_SetCurMsgType(msg_type);
-	interfacial_SetMessageBoxFlag();//ÉèÖÃÏÔÊ¾flag
+	interfacial_SetMessageBoxFlag();//è®¾ç½®æ˜¾ç¤ºflag
 	
 	flag_is_successful = is_successful;
 	
@@ -218,8 +218,8 @@ void generate_MessageBox(MESSAGE_TYPE msg_type, uint8_t is_successful)
 			cur_NanoOption = cur_interfacial.NanoOption_msg->next_option;
 			cur_NanoOption->IsSelected = 1;
 			
-			btnUpDownFunc_register(btn_UpDownMode_MsgBox);//×¢²áĞÂµÄ°´¼üÂß¼­
-			btnOkEscFunc_register(btn_OkEscMode_MsgBox);//×¢²áĞÂµÄ°´¼üÂß¼­
+			btnUpDownFunc_register(btn_UpDownMode_MsgBox);//æ³¨å†Œæ–°çš„æŒ‰é”®é€»è¾‘
+			btnOkEscFunc_register(btn_OkEscMode_MsgBox);//æ³¨å†Œæ–°çš„æŒ‰é”®é€»è¾‘
 			break;
 		case MESSAGE_SAVELOG:
 			set_SuccessfulTimStartFlag();
@@ -229,7 +229,7 @@ void generate_MessageBox(MESSAGE_TYPE msg_type, uint8_t is_successful)
 				btnOkEscFunc_register(btn_OkEscMode_ChangePage);
 			}
 			break;
-		case MESSAGE_SUCCESSFUL://³É¹¦µÄ»°ÒªÏÔÊ¾Ò»¶ÎÊ±¼äµÄ
+		case MESSAGE_SUCCESSFUL://æˆåŠŸçš„è¯è¦æ˜¾ç¤ºä¸€æ®µæ—¶é—´çš„
 			set_SuccessfulTimStartFlag();
 			if(interfacial_GetCurPage() != PAGE_0_START)
 			{
@@ -243,12 +243,12 @@ void generate_MessageBox(MESSAGE_TYPE msg_type, uint8_t is_successful)
 	}
 }
 
-///*ÔÚ³õÊ¼½çÃæ´òÓ¡ÈÜ½âÑõµ¥Î»*/
+///*åœ¨åˆå§‹ç•Œé¢æ‰“å°æº¶è§£æ°§å•ä½*/
 //void StartPage_PrintUint_DO(void)
 //{
 //	GUI_PutCharArr(120,  50, (uint8_t *)BAIFENGHAO, MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);     //%
 //	GUI_PutEngStr (120,  86, (uint8_t *)DO_uint[1], MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);      //mg/L
-//	GUI_PutCharArr(120, 114, (uint8_t *)&(FONT_ENG_MENU[71]), 16, 16, LOADBIT_NORMAL);                            //¡æ
+//	GUI_PutCharArr(120, 114, (uint8_t *)&(FONT_ENG_MENU[71]), 16, 16, LOADBIT_NORMAL);                            //â„ƒ
 //}
 
 void destory_MessageBox(void)
@@ -263,7 +263,7 @@ void show_MessageBox(void)
 	switch(interfacial_GetCurMsgType())
 	{
 		case MESSAGE_SETTING:
-			if(setting_GetIsChn())                                                                  //×´Ì¬À¸ÎÄ×Ö±êÇ©
+			if(setting_GetIsChn())                                                                  //çŠ¶æ€æ æ–‡å­—æ ‡ç­¾
 			{
 				GUI_PutChnStr(24, 64, msg_content.content_cn, msg_content.content_cn_len, MENU_FONT_CHN_LSIZE, MENU_FONT_CHN_RSIZE, LOADBIT_NORMAL);
 			}
@@ -276,7 +276,7 @@ void show_MessageBox(void)
 		case MESSAGE_SUCCESSFUL:
 			if(flag_is_successful)
 			{
-				if(setting_GetIsChn())                                                                  //×´Ì¬À¸ÎÄ×Ö±êÇ©
+				if(setting_GetIsChn())                                                                  //çŠ¶æ€æ æ–‡å­—æ ‡ç­¾
 				{
 					GUI_PutChnStr(24, 80, (uint8_t *)msg_successful_cn, sizeof(msg_successful_cn), MENU_FONT_CHN_LSIZE, MENU_FONT_CHN_RSIZE, LOADBIT_NORMAL);
 				}
@@ -287,9 +287,9 @@ void show_MessageBox(void)
 			}
 			else
 			{
-				if(setting_GetIsChn())                                                                  //×´Ì¬À¸ÎÄ×Ö±êÇ©
+				if(setting_GetIsChn())                                                                  //çŠ¶æ€æ æ–‡å­—æ ‡ç­¾
 				{
-					GUI_PutChnStr(24, 80, (uint8_t *)msg_fail_cn, sizeof(msg_fail_cn), MENU_FONT_CHN_LSIZE, MENU_FONT_CHN_RSIZE, LOADBIT_NORMAL);//ÕâÀïÖ»ÄÜÏÔÊ¾ »Ö¸´³ö³§ ÒòÎªÖ¸Õë´óĞ¡Îª4Ö»ÄÜÏÔÊ¾4¸ö×Ö
+					GUI_PutChnStr(24, 80, (uint8_t *)msg_fail_cn, sizeof(msg_fail_cn), MENU_FONT_CHN_LSIZE, MENU_FONT_CHN_RSIZE, LOADBIT_NORMAL);//è¿™é‡Œåªèƒ½æ˜¾ç¤º æ¢å¤å‡ºå‚ å› ä¸ºæŒ‡é’ˆå¤§å°ä¸º4åªèƒ½æ˜¾ç¤º4ä¸ªå­—
 				}
 				else
 				{
@@ -300,9 +300,9 @@ void show_MessageBox(void)
 		case MESSAGE_SAVELOG:
 			if(flag_is_successful)
 			{
-				if(setting_GetIsChn())                                                                  //×´Ì¬À¸ÎÄ×Ö±êÇ©
+				if(setting_GetIsChn())                                                                  //çŠ¶æ€æ æ–‡å­—æ ‡ç­¾
 				{
-					GUI_PutChnStr(24, 80, (uint8_t *)msg_SaveSuccessful_cn, sizeof(msg_SaveSuccessful_cn), MENU_FONT_CHN_LSIZE, MENU_FONT_CHN_RSIZE, LOADBIT_NORMAL);//ÕâÀïÖ»ÄÜÏÔÊ¾ »Ö¸´³ö³§ ÒòÎªÖ¸Õë´óĞ¡Îª4Ö»ÄÜÏÔÊ¾4¸ö×Ö
+					GUI_PutChnStr(24, 80, (uint8_t *)msg_SaveSuccessful_cn, sizeof(msg_SaveSuccessful_cn), MENU_FONT_CHN_LSIZE, MENU_FONT_CHN_RSIZE, LOADBIT_NORMAL);//è¿™é‡Œåªèƒ½æ˜¾ç¤º æ¢å¤å‡ºå‚ å› ä¸ºæŒ‡é’ˆå¤§å°ä¸º4åªèƒ½æ˜¾ç¤º4ä¸ªå­—
 				}
 				else
 				{
@@ -312,9 +312,9 @@ void show_MessageBox(void)
 			}
 			else
 			{
-				if(setting_GetIsChn())                                                                  //×´Ì¬À¸ÎÄ×Ö±êÇ©
+				if(setting_GetIsChn())                                                                  //çŠ¶æ€æ æ–‡å­—æ ‡ç­¾
 				{
-					GUI_PutChnStr(24, 80, (uint8_t *)msg_SaveFail_cn, sizeof(msg_SaveFail_cn), MENU_FONT_CHN_LSIZE, MENU_FONT_CHN_RSIZE, LOADBIT_NORMAL);//ÕâÀïÖ»ÄÜÏÔÊ¾ »Ö¸´³ö³§ ÒòÎªÖ¸Õë´óĞ¡Îª4Ö»ÄÜÏÔÊ¾4¸ö×Ö
+					GUI_PutChnStr(24, 80, (uint8_t *)msg_SaveFail_cn, sizeof(msg_SaveFail_cn), MENU_FONT_CHN_LSIZE, MENU_FONT_CHN_RSIZE, LOADBIT_NORMAL);//è¿™é‡Œåªèƒ½æ˜¾ç¤º æ¢å¤å‡ºå‚ å› ä¸ºæŒ‡é’ˆå¤§å°ä¸º4åªèƒ½æ˜¾ç¤º4ä¸ªå­—
 				}
 				else
 				{
@@ -323,7 +323,7 @@ void show_MessageBox(void)
 			}
 			break;
 		
-		case MESSAGE_DELETE://Êı¾İÉ¾³ı³É¹¦
+		case MESSAGE_DELETE://æ•°æ®åˆ é™¤æˆåŠŸ
 			break;
 	}
 	
@@ -339,15 +339,15 @@ PAGE_NUM interfacial_GetCurPage(void)
 	return cur_PageNum;
 }
 
-//È«¾Ö°´¼üÂß¼­ ±ÈÈç²Ëµ¥ºÍĞ£×¼°´¼ü´¥·¢ÊÂ¼ş
+//å…¨å±€æŒ‰é”®é€»è¾‘ æ¯”å¦‚èœå•å’Œæ ¡å‡†æŒ‰é”®è§¦å‘äº‹ä»¶
 void global_key(void)
 {
-	if(get_KeyMenuFlag())//²Ëµ¥¼ü
+	if(get_KeyMenuFlag())//èœå•é”®
 	{
 		clear_KeyMenuFlag();
 		interfacial_SetPage(PAGE_1_MENU, PAGE_NOT_BACK);
 	}
-	if(get_KeyBluFlag())//±³¹â¼ü
+	if(get_KeyBluFlag())//èƒŒå…‰é”®
 	{
 		clear_KeyBluFlag();
 		HAL_GPIO_TogglePin(LCD_BLC_GPIO_Port, LCD_BLC_Pin);
@@ -355,9 +355,9 @@ void global_key(void)
 		//log_PrintBytes(0);
 //		log_PrintfLogOffset();
 		
-		//log_SetLogCount(0);/////////////////////////////////////////////////////////////////////////////////////////////ÕâÀï¼ÇµÃ¸Ä
+		//log_SetLogCount(0);/////////////////////////////////////////////////////////////////////////////////////////////è¿™é‡Œè®°å¾—æ”¹
 	}
-	if(get_KeyCalFlag())//Ğ£×¼¼ü
+	if(get_KeyCalFlag())//æ ¡å‡†é”®
 	{
 		clear_KeyCalFlag();
 		if(interfacial_GetCurPage() == PAGE_0_START && rs485_GetDeviceCount())
@@ -366,7 +366,7 @@ void global_key(void)
 		}
 		
 	}
-	if(get_KeyCalLongFlag())//Ì½Í·kb³õÊ¼»¯½çÃæ
+	if(get_KeyCalLongFlag())//æ¢å¤´kbåˆå§‹åŒ–ç•Œé¢
 	{
 		//HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);
 		if(interfacial_GetCurPage() == PAGE_0_START && rs485_GetDeviceCount())
@@ -374,17 +374,17 @@ void global_key(void)
 			interfacial_SetPage(PAGE_1_RESETCAL, PAGE_NOT_BACK);
 		}
 	}
-	if(get_KeyOkLongFlag())//±£´æÊı¾İ³É¹¦µ¯´°
+	if(get_KeyOkLongFlag())//ä¿å­˜æ•°æ®æˆåŠŸå¼¹çª—
 	{
-		if(interfacial_GetCurPage() == PAGE_0_START )//ÓĞÉè±¸µÄ»° ·ÀÖ¹Ö÷½çÃæÊÇËÑË÷Éè±¸
+		if(interfacial_GetCurPage() == PAGE_0_START )//æœ‰è®¾å¤‡çš„è¯ é˜²æ­¢ä¸»ç•Œé¢æ˜¯æœç´¢è®¾å¤‡
 		{
 			if(rs485_GetDeviceCount())
 			{
 				switch(rs485_GetSensorType())
 				{
-					case TYPE_DO://Èç¹ûµ±Ç°²éÑ¯µÄÉè±¸ÊÇdoµÄ»°
-						//²»ÓÃµ¯Ñ¡Ôñµ¯¿ò Ö»Òªµ¯¸ö³É¹¦µ¯¿ò
-						if(get_CurDo() !=NULL && DO_GetIsInit(get_CurDo()))//µ±Ç°Éè±¸²»Îª¿ÕµÄ»°
+					case TYPE_DO://å¦‚æœå½“å‰æŸ¥è¯¢çš„è®¾å¤‡æ˜¯doçš„è¯
+						//ä¸ç”¨å¼¹é€‰æ‹©å¼¹æ¡† åªè¦å¼¹ä¸ªæˆåŠŸå¼¹æ¡†
+						if(get_CurDo() !=NULL && DO_GetIsInit(get_CurDo()))//å½“å‰è®¾å¤‡ä¸ä¸ºç©ºçš„è¯
 						{
 							
 							if(!flage_FirstOKLong)
@@ -409,7 +409,7 @@ void global_key(void)
 		flage_FirstOKLong = 0;
 	}
 	
-	/*Èç¹ûÓĞ°´¼ü±»°´ÏÂµÄ»°*/
+	/*å¦‚æœæœ‰æŒ‰é”®è¢«æŒ‰ä¸‹çš„è¯*/
 	if(get_KeyClickedFlag())
 	{
 		clear_KeyClickedFlag();
@@ -419,16 +419,16 @@ void global_key(void)
 }
 
 
-//Ö÷Ñ­»·µ÷ÓÃ°´¼üÂÖÑ¯
+//ä¸»å¾ªç¯è°ƒç”¨æŒ‰é”®è½®è¯¢
 void btn_func(void)
 {
-	global_key();//ÕâÀïµ÷ÓÃÈ«¾Ö°´¼üÂß¼­
+	global_key();//è¿™é‡Œè°ƒç”¨å…¨å±€æŒ‰é”®é€»è¾‘
 	
-	if(btnUpDownFunc != NULL)  //ÉÏÏÂ°´¼üÂß¼­
+	if(btnUpDownFunc != NULL)  //ä¸Šä¸‹æŒ‰é”®é€»è¾‘
 	{
 		btnUpDownFunc();
 	}
-	if(btnOkEscFunc != NULL)   //ok esc°´¼üÂß¼­
+	if(btnOkEscFunc != NULL)   //ok escæŒ‰é”®é€»è¾‘
 	{
 		btnOkEscFunc();
 	}
@@ -436,12 +436,12 @@ void btn_func(void)
 	
 }
 
-/*Ñ¡ÖĞÖ¸¶¨ĞòºÅµÄ±êÇ©*/
+/*é€‰ä¸­æŒ‡å®šåºå·çš„æ ‡ç­¾*/
 void Option_InitByIndex(uint8_t index)
 {
 	cur_option = cur_interfacial.option_head;
 	
-	if(cur_option != NULL)//ÅĞ¶Ï²»ÊÇ¿ÕÁ´±í
+	if(cur_option != NULL)//åˆ¤æ–­ä¸æ˜¯ç©ºé“¾è¡¨
 	{
 		if(cur_option->option_index == index)
 		{
@@ -466,13 +466,13 @@ void Option_InitByIndex(uint8_t index)
 	}
 }
 
-/*±éÀúÁ´±íÈÃµÚÒ»¸ö¿ÉÑ¡±êÇ©ÎªÑ¡ÖĞ×´Ì¬*/
+/*éå†é“¾è¡¨è®©ç¬¬ä¸€ä¸ªå¯é€‰æ ‡ç­¾ä¸ºé€‰ä¸­çŠ¶æ€*/
 void CurOption_init(void)
 {
 	cur_option = cur_interfacial.option_head;
 	
 	
-	if(cur_option != NULL)//ÅĞ¶Ï²»ÊÇ¿ÕÁ´±í
+	if(cur_option != NULL)//åˆ¤æ–­ä¸æ˜¯ç©ºé“¾è¡¨
 	{
 		if(cur_option->IsCanBeSelected)
 		{
@@ -493,7 +493,7 @@ void CurOption_init(void)
 		}
 	}
 }
-/*Ö»ÓĞÁ½¸öÑ¡ÏîµÄ³õÊ¼»¯*/
+/*åªæœ‰ä¸¤ä¸ªé€‰é¡¹çš„åˆå§‹åŒ–*/
 void BinaryOption_init(uint8_t selected)
 {
 	cur_option = cur_interfacial.option_head;
@@ -501,35 +501,35 @@ void BinaryOption_init(uint8_t selected)
 	{
 		if(selected)
 		{
-			cur_option->IsSelected = SELECTED; //ÊÇ±»Ñ¡ÖĞ
+			cur_option->IsSelected = SELECTED; //æ˜¯è¢«é€‰ä¸­
 		}
 		else
 		{
 			cur_option = cur_option->next_option;
-			cur_option->IsSelected = SELECTED; //·ñ±»Ñ¡ÖĞ
+			cur_option->IsSelected = SELECTED; //å¦è¢«é€‰ä¸­
 		}
 	}
 }
 
-/*Ñ¡ÖĞµÚÒ»¸önano±êÇ©*/
+/*é€‰ä¸­ç¬¬ä¸€ä¸ªnanoæ ‡ç­¾*/
 void NanoOption_init(void)
 {
 	cur_option = cur_interfacial.option_head;
-	if(cur_option != NULL)//ÅĞ¶Ï²»ÊÇ¿ÕÁ´±í
+	if(cur_option != NULL)//åˆ¤æ–­ä¸æ˜¯ç©ºé“¾è¡¨
 	{
-		if(cur_option->son_option != NULL)//µÚÒ»¸ö±êÇ©ÊÇ¿ÉÑ¡µÄ
+		if(cur_option->son_option != NULL)//ç¬¬ä¸€ä¸ªæ ‡ç­¾æ˜¯å¯é€‰çš„
 		{			
-			cur_NanoOption = cur_option->son_option; //µ±Ç°Ğ¡±êÇ©Ö¸ÕëÖ¸ÏòµÚÒ»¸öĞ¡±êÇ©
+			cur_NanoOption = cur_option->son_option; //å½“å‰å°æ ‡ç­¾æŒ‡é’ˆæŒ‡å‘ç¬¬ä¸€ä¸ªå°æ ‡ç­¾
 			cur_NanoOption->IsSelected = SELECTED;
 		}
-		else//²»È»µÄ»°±éÀúÕû¸öÁ´±íÕÒµ½µÚÒ»¸ö¿ÉÑ¡µÄ
+		else//ä¸ç„¶çš„è¯éå†æ•´ä¸ªé“¾è¡¨æ‰¾åˆ°ç¬¬ä¸€ä¸ªå¯é€‰çš„
 		{
 			do
 			{
 				cur_option = cur_option->next_option;
 				if(cur_option->son_option != NULL)
 				{
-					cur_NanoOption = cur_option->son_option; //µ±Ç°Ğ¡±êÇ©Ö¸ÕëÖ¸ÏòµÚÒ»¸öĞ¡±êÇ©
+					cur_NanoOption = cur_option->son_option; //å½“å‰å°æ ‡ç­¾æŒ‡é’ˆæŒ‡å‘ç¬¬ä¸€ä¸ªå°æ ‡ç­¾
 					cur_NanoOption->IsSelected = SELECTED;
 					return;
 				}
@@ -539,29 +539,29 @@ void NanoOption_init(void)
 	}
 }
 
-/*×Ô¶¯¹Ø»úÑ¡Ïî³õÊ¼»¯*/
+/*è‡ªåŠ¨å…³æœºé€‰é¡¹åˆå§‹åŒ–*/
 void AutoShutOption_init(uint8_t selected)
 {
 	cur_option = cur_interfacial.option_head;
 	switch (selected)
 	{
 		case 0:
-			cur_option->IsSelected = SELECTED; //ÊÇ±»Ñ¡ÖĞ
+			cur_option->IsSelected = SELECTED; //æ˜¯è¢«é€‰ä¸­
 			break;
 		
 		case 5:
 			cur_option = cur_option->next_option;
-			cur_option->IsSelected = SELECTED; //·ñ±»Ñ¡ÖĞ
+			cur_option->IsSelected = SELECTED; //å¦è¢«é€‰ä¸­
 			break;
 		
 		case 10:
 			cur_option = cur_option->next_option->next_option;
-			cur_option->IsSelected = SELECTED; //·ñ±»Ñ¡ÖĞ
+			cur_option->IsSelected = SELECTED; //å¦è¢«é€‰ä¸­
 			break;
 		
 		case 20:
 			cur_option = cur_option->next_option->next_option->next_option;
-			cur_option->IsSelected = SELECTED; //·ñ±»Ñ¡ÖĞ
+			cur_option->IsSelected = SELECTED; //å¦è¢«é€‰ä¸­
 			break;
 	}
 }
@@ -577,10 +577,10 @@ void AutoLockOption_init(uint8_t selected)
 }
 
 
-/*Ïú»ÙÒ»¸ö½çÃæ*/
+/*é”€æ¯ä¸€ä¸ªç•Œé¢*/
 void interfacial_Destory(PtrToInterfacial interfacial)
 {
-	OptionList_Destory(&(interfacial->option_head));  //Ïú»ÙÑ¡ÏîºÍ±êÇ©Á´±í
+	OptionList_Destory(&(interfacial->option_head));  //é”€æ¯é€‰é¡¹å’Œæ ‡ç­¾é“¾è¡¨
 	LabelList_Destory(&(interfacial->label_head));
 	
 	interfacial->content_chn = NULL;
@@ -588,18 +588,18 @@ void interfacial_Destory(PtrToInterfacial interfacial)
 }
 
 
-/*Çå³ıµ±Ç°½çÃæ*/
+/*æ¸…é™¤å½“å‰ç•Œé¢*/
 void CurInterfacial_Destory(void)
 {
 	interfacial_Destory(&cur_interfacial);
 }
-/*ÇåÀíµ±Ç°½çÃæÉÏËùÓĞµÄlabel*/
+/*æ¸…ç†å½“å‰ç•Œé¢ä¸Šæ‰€æœ‰çš„label*/
 void interfacial_ClearLabel(void)
 {
 	LabelList_Destory(&(cur_interfacial.label_head));
 }
 
-/*ÓÃÀ´½«Öµ¸üĞÂµ½ÆøÑ¹bufÀïÃæ*/
+/*ç”¨æ¥å°†å€¼æ›´æ–°åˆ°æ°”å‹bufé‡Œé¢*/
 void set_PressArr(double press)
 {
 	snprintf(press_arr, 7, "%5.2f", press + setting_GetAirCompensate());
@@ -620,8 +620,8 @@ char* get_SalArr(void)
 
 void StatusBar_Update(void)
 {
-	GUI_PutEngStr(0, 0, (uint8_t *)time_arr, MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);     //°ÑÊ±¼äË¢ĞÂµ½ÉÏÃæÈ¥
-	snprintf(time_arr, 6, "%02d:%02d", RTC_GetHour(), RTC_GetMinute());                                     //Ë¢ĞÂÒ»ÏÂÊ±¼äÊı×é
+	GUI_PutEngStr(0, 0, (uint8_t *)time_arr, MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);     //æŠŠæ—¶é—´åˆ·æ–°åˆ°ä¸Šé¢å»
+	snprintf(time_arr, 6, "%02d:%02d", RTC_GetHour(), RTC_GetMinute());                                     //åˆ·æ–°ä¸€ä¸‹æ—¶é—´æ•°ç»„
 	
 	switch(rs485_GetSensorType())
 	{
@@ -637,7 +637,7 @@ void StatusBar_Update(void)
 			break;
 	}
 	
-	gui_DrawStatusBarLine(); //»­×´Ì¬À¸µÄÏß
+	gui_DrawStatusBarLine(); //ç”»çŠ¶æ€æ çš„çº¿
 }
 
 
@@ -679,29 +679,29 @@ void value_ReduceReduce_u16(uint16_t* data, uint16_t min, uint16_t max)
 }
 
 
-//ÕâÀïÓÃÀ´Çå±êÖ¾µÄ  ·ñÔòÄãÔÚ¿Õ°×½çÃæÉÏ°´µÄ²Ù×÷»áÖ±½Ó×÷ÓÃÔÚÏÂ¸ö½çÃæ ±êÖ¾Ã»Çå
+//è¿™é‡Œç”¨æ¥æ¸…æ ‡å¿—çš„  å¦åˆ™ä½ åœ¨ç©ºç™½ç•Œé¢ä¸ŠæŒ‰çš„æ“ä½œä¼šç›´æ¥ä½œç”¨åœ¨ä¸‹ä¸ªç•Œé¢ æ ‡å¿—æ²¡æ¸…
 void btn_OkEscMode_NULL(void)
 {
 	if(get_KeyOkFlag())    
 	{
 		clear_KeyOkFlag();
 		
-		if(interfacial_GetCurPage() == PAGE_0_START)//Èç¹ûÔÚ³õÊ¼½çÃæÓĞ¿ªËø¹¦ÄÜµÄ»°
+		if(interfacial_GetCurPage() == PAGE_0_START)//å¦‚æœåœ¨åˆå§‹ç•Œé¢æœ‰å¼€é”åŠŸèƒ½çš„è¯
 		{
 			switch(rs485_GetSensorType())
 			{
 				case TYPE_DO:
-					if(get_CurDo() != NULL )//ÓĞÈÜ½âÑõµÄ»°
+					if(get_CurDo() != NULL )//æœ‰æº¶è§£æ°§çš„è¯
 					{
-						if(setting_GetAutoLock() == AUTOLOCK_MANUAL && !DO_GetValueLocked(get_CurDo()))
+						if(setting_GetAutoLock() == AUTOLOCK_MANUAL && !DO_GetValueLocked(get_CurDo()))//å¦‚æœæ˜¯æ‰‹åŠ¨é”å®šæ¨¡å¼çš„è¯ å€¼æ²¡è¢«é”çš„è¯
 						{
-							DO_SetValueLocked(get_CurDo());
+							DO_SetValueLocked(get_CurDo());    //é”ä½
 							break;
 						}
-						if(setting_GetAutoLock() != AUTOLOCK_OFF && DO_GetValueLocked(get_CurDo()))
+						if(setting_GetAutoLock() != AUTOLOCK_OFF && DO_GetValueLocked(get_CurDo())) //å¦‚æœæ˜¯æœ‰é”å®šåŠŸèƒ½æ— è®ºè‡ªåŠ¨è¿˜æ˜¯æ‰‹åŠ¨å°±ç»™å®ƒå¼€é”
 						{
-							clear_DOShakeCount();
-							DO_SetValueUnlocked(get_CurDo());
+							clear_DOShakeCount();              //æ¸…é™¤æŠ–åŠ¨è®¡æ•°
+							DO_SetValueUnlocked(get_CurDo());  //è§£é”
 						}
 						
 					}
@@ -721,7 +721,7 @@ void btn_UpDownMode_NULL(void)
 }
 
 
-//ÉÏÏÂ¼üÇĞ»»Ñ¡ÏîµÄÂß¼­
+//ä¸Šä¸‹é”®åˆ‡æ¢é€‰é¡¹çš„é€»è¾‘
 void btn_UpDownMode_ChangeOption(void)
 {
 	PtrToOptionNode p = cur_option;
@@ -735,7 +735,7 @@ void btn_UpDownMode_ChangeOption(void)
 	if(get_KeyUpFlag())
 	{
 		clear_KeyUpFlag();
-		//±éÀúÕÒµ½ÉÏÒ»¸ö¿ÉÒÔ±»Ñ¡ÖĞµÄ±êÇ©Èç¹ûÕÒ²»µ½µÄ»°¾Í±£³Ö²»±ä
+		//éå†æ‰¾åˆ°ä¸Šä¸€ä¸ªå¯ä»¥è¢«é€‰ä¸­çš„æ ‡ç­¾å¦‚æœæ‰¾ä¸åˆ°çš„è¯å°±ä¿æŒä¸å˜
 		do
 		{
 			p = p->prev_option;
@@ -763,45 +763,46 @@ void btn_UpDownMode_ChangeOption(void)
 			cur_option = p;
 		}
 	}
-	window_change(cur_option, cur_interfacial.option_head);  //»¬¶¯Ò»ÏÂ´°¿Ú
+	window_change(cur_option, cur_interfacial.option_head);  //æ»‘åŠ¨ä¸€ä¸‹çª—å£
 }
 
-//ok escÇĞ»»½çÃæµÄÂß¼­
+//ok escåˆ‡æ¢ç•Œé¢çš„é€»è¾‘
 void btn_OkEscMode_ChangePage(void)
 {
-	if(get_KeyEscFlag())    //È¡Ïû¾ÍÒª»Øµ½¸¸½çÃæ
+	uint32_t STD_temp = 0;
+	if(get_KeyEscFlag())    //å–æ¶ˆå°±è¦å›åˆ°çˆ¶ç•Œé¢
 	{
 		clear_KeyEscFlag();
 		if(cur_interfacial.page_father != NULL)
 		{
-			//ÌØÊâµÄ½çÃæÌí¼ÓµÄ²Ù×÷
+			//ç‰¹æ®Šçš„ç•Œé¢æ·»åŠ çš„æ“ä½œ
 			if(cur_PageNum == PAGE_3_SENSORSSEARCH)
 			{
 				rs485_ClearCircularSentStatus();
 			}
 			
-			/*Ìø×ªµ½¸¸½çÃæ*/
+			/*è·³è½¬åˆ°çˆ¶ç•Œé¢*/
 			interfacial_SetPage(cur_interfacial.page_father, PAGE_IS_BACK);
 			
 		}
 	}
 	
-	/*°²È«¼ì²â£¬Èç¹ûµ±Ç°Ñ¡ÖĞµÄ±êÇ©ÊÇ¿ÕµÄ»°¾ÍÖ±½ÓÍË³ö*/
+	/*å®‰å…¨æ£€æµ‹ï¼Œå¦‚æœå½“å‰é€‰ä¸­çš„æ ‡ç­¾æ˜¯ç©ºçš„è¯å°±ç›´æ¥é€€å‡º*/
 	if(cur_interfacial.option_head == NULL || cur_option == NULL || cur_option->IsSelected == 0)
 	{
 		clear_KeyOkFlag();
 		return;
 	}
 	
-	if(get_KeyOkFlag())    //È·¶¨Ö®ºó¾ÍÒªÌø×ªµ½pµÄnextpage
+	if(get_KeyOkFlag())    //ç¡®å®šä¹‹åå°±è¦è·³è½¬åˆ°pçš„nextpage
 	{
 		clear_KeyOkFlag();
 		
 		if(cur_option->next_page != NULL)
 		{
 			
-			/*ÌØÊâ½çÃæÌí¼ÓÌØÊâÂß¼­*/
-			if(interfacial_GetCurPage() == PAGE_2_SENSORMANAGE)//´«¸ĞÆ÷¹ÜÀí½çÃæ±£´æÉè±¸Ãû×ÖÖ¸Õë
+			/*ç‰¹æ®Šç•Œé¢æ·»åŠ ç‰¹æ®Šé€»è¾‘*/
+			if(interfacial_GetCurPage() == PAGE_2_SENSORMANAGE)//ä¼ æ„Ÿå™¨ç®¡ç†ç•Œé¢ä¿å­˜è®¾å¤‡åå­—æŒ‡é’ˆ
 			{
 				if(cur_option->content_eng != NULL)
 				{
@@ -872,10 +873,10 @@ void btn_OkEscMode_ChangePage(void)
 				}
 			}
 			
-			/*±£´æ±êÇ©ÏÂ±ê·½±ã·µ»Ø½çÃæÊ±ºòÄÜ¹»Ìøµ½ÄÄ¸öÑ¡Ïî*/
+			/*ä¿å­˜æ ‡ç­¾ä¸‹æ ‡æ–¹ä¾¿è¿”å›ç•Œé¢æ—¶å€™èƒ½å¤Ÿè·³åˆ°å“ªä¸ªé€‰é¡¹*/
 			if(interfacial_GetCurPage() == PAGE_1_MENU)
 			{
-				AncestorPage_OptionIndex = interfacial_GetCurrentOption()->option_index;//Ò¯Ò¯½çÃæµÄ
+				AncestorPage_OptionIndex = interfacial_GetCurrentOption()->option_index;//çˆ·çˆ·ç•Œé¢çš„
 			}
 			if(interfacial_GetCurPage() >= PAGE_2_SENSORMANAGE && interfacial_GetCurPage() <= PAGE_2_HISTORY)
 			{
@@ -886,30 +887,32 @@ void btn_OkEscMode_ChangePage(void)
 				FatherPage_OptionIndex = interfacial_GetCurrentOption()->option_index;
 			}
 			
-			/*ÇĞ»»½çÃæ*/
+			/*åˆ‡æ¢ç•Œé¢*/
 			interfacial_SetPage(cur_option->next_page, PAGE_NOT_BACK);
 		}
-		else//Èç¹ûÃ»ÓĞĞèÒª×ªÌøµÄ½çÃæµÄ»°
+		else//å¦‚æœæ²¡æœ‰éœ€è¦è½¬è·³çš„ç•Œé¢çš„è¯
 		{
-			if(cur_option->son_option != NULL)//Èç¹ûÓĞ×ÓÑ¡ÏîµÄ»°
+			if(cur_option->son_option != NULL)//å¦‚æœæœ‰å­é€‰é¡¹çš„è¯
 			{
-				if(interfacial_GetCurPage() == PAGE_5_ONE || interfacial_GetCurPage() == PAGE_5_TWOFIRST || interfacial_GetCurPage() == PAGE_5_TWOSECOND)//µ¥µãĞ£×¼ÖĞÈ·¶¨¼üÊÇ½øÈëĞ£×¼Ä£Ê½
-				{//Ğ£×¼Ä£Ê½Âß¼­
+				if(interfacial_GetCurPage() == PAGE_5_ONE || interfacial_GetCurPage() == PAGE_5_TWOFIRST || interfacial_GetCurPage() == PAGE_5_TWOSECOND)//å•ç‚¹æ ¡å‡†ä¸­ç¡®å®šé”®æ˜¯è¿›å…¥æ ¡å‡†æ¨¡å¼
+				{//æ ¡å‡†æ¨¡å¼é€»è¾‘
 					switch(temp_SensorType)
 					{
 						case TYPE_DO:
 							
-							STD_value = NanoOptionList_GetValue(cur_interfacial.option_head->son_option, 10)/10.0;//¼ÆËãĞ£×¼µÄÖµ
+							STD_temp = NanoOptionList_GetValue(cur_interfacial.option_head->son_option, 10);
 						
-							snprintf(cal_arr, 8, "%05.01f %%", STD_value);//½«Ğ£×¼ÖµĞ´ÈëĞ£×¼ÎÄ×Öbuff
+							snprintf(cal_arr, 8, "%05.01f %%", STD_temp / 10.0);//å°†æ ¡å‡†å€¼å†™å…¥æ ¡å‡†æ–‡å­—buff
 						
-							OptionList_Destory(&(interfacial_GetCurrentInterfacial()->option_head));  //Ïú»ÙÑ¡ÏîÁ´±í
+							STD_value = (STD_temp == 0 ? CAL_ZERO_VALUE : STD_temp / 10.0);//è®¡ç®—æ ¡å‡†çš„å€¼
+						
+							OptionList_Destory(&(interfacial_GetCurrentInterfacial()->option_head));  //é”€æ¯é€‰é¡¹é“¾è¡¨
 
-							gui_ClearLines(75, 93, 0);//Çå¿ªÊ¼Ğ£×¼µÄÑ¡Ïî
+							gui_ClearLines(75, 93, 0);//æ¸…å¼€å§‹æ ¡å‡†çš„é€‰é¡¹
 						
-							LabelList_Add(52, 56, NULL, 0, (uint8_t *)cal_arr, LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &(interfacial_GetCurrentInterfacial()->label_head));//½«Ğ£×¼Öµ±ä³ÉlabelÏÔÊ¾
-							LabelList_Add( 0, 76, (uint8_t *)charubiaozhunrongye_cn, sizeof(charubiaozhunrongye_cn), (uint8_t *)charubiaozhunrongye_en, LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &(interfacial_GetCurrentInterfacial()->label_head));//²åÈë±ê×¼ÈÜÒº
-							LabelList_Add( 0, 96, (uint8_t *)dengdaizhong_cn, sizeof(dengdaizhong_cn), (uint8_t *)dengdaizhong_en, LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &(interfacial_GetCurrentInterfacial()->label_head));//µÈ´ıÖĞ¡£¡£¡£
+							LabelList_Add(52, 56, NULL, 0, (uint8_t *)cal_arr, LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &(interfacial_GetCurrentInterfacial()->label_head));//å°†æ ¡å‡†å€¼å˜æˆlabelæ˜¾ç¤º
+							LabelList_Add( 0, 76, (uint8_t *)charubiaozhunrongye_cn, sizeof(charubiaozhunrongye_cn), (uint8_t *)charubiaozhunrongye_en, LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &(interfacial_GetCurrentInterfacial()->label_head));//æ’å…¥æ ‡å‡†æº¶æ¶²
+							LabelList_Add( 0, 96, (uint8_t *)dengdaizhong_cn, sizeof(dengdaizhong_cn), (uint8_t *)dengdaizhong_en, LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &(interfacial_GetCurrentInterfacial()->label_head));//ç­‰å¾…ä¸­ã€‚ã€‚ã€‚
 							LabelList_Add( 56,  136, NULL, 0, (uint8_t *)get_CurDo()->DOpercent_arr,   LABEL_NORMAL,  LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &(interfacial_GetCurrentInterfacial()->label_head));  //do %
 							
 							set_RowSpacing(84);
@@ -927,26 +930,26 @@ void btn_OkEscMode_ChangePage(void)
 				}
 				else
 				{
-					cur_option->IsSelected = DESELECTED;//´ó±êÇ©Ñ¡ÖĞÈ¡Ïû				
-					cur_NanoOption = cur_option->son_option; //µ±Ç°Ğ¡±êÇ©Ö¸ÕëÖ¸ÏòµÚÒ»¸öĞ¡±êÇ©
+					cur_option->IsSelected = DESELECTED;//å¤§æ ‡ç­¾é€‰ä¸­å–æ¶ˆ				
+					cur_NanoOption = cur_option->son_option; //å½“å‰å°æ ‡ç­¾æŒ‡é’ˆæŒ‡å‘ç¬¬ä¸€ä¸ªå°æ ‡ç­¾
 					cur_NanoOption->IsSelected = SELECTED;
 					
-					btnUpDownFunc_register(btn_UpDownMode_ChangeValue);//×¢²áĞÂµÄ°´¼üÂß¼­
-					btnOkEscFunc_register(btn_OkEscMode_ChangeOption);//×¢²áĞÂµÄ°´¼üÂß¼­
+					btnUpDownFunc_register(btn_UpDownMode_ChangeValue);//æ³¨å†Œæ–°çš„æŒ‰é”®é€»è¾‘
+					btnOkEscFunc_register(btn_OkEscMode_ChangeOption);//æ³¨å†Œæ–°çš„æŒ‰é”®é€»è¾‘
 				}
 			}
-			else//¾ÍÊÇsaveµÄÇé¿öµÃµ¯´°
+			else//å°±æ˜¯saveçš„æƒ…å†µå¾—å¼¹çª—
 			{
 				switch (interfacial_GetCurPage())
 				{
 					case PAGE_3_DATASAVE:
-						if(rs485_GetDeviceCount())//ÓĞÉè±¸µÄ»° ·ÀÖ¹Ö÷½çÃæÊÇËÑË÷Éè±¸
+						if(rs485_GetDeviceCount())//æœ‰è®¾å¤‡çš„è¯ é˜²æ­¢ä¸»ç•Œé¢æ˜¯æœç´¢è®¾å¤‡
 						{
 							switch(rs485_GetSensorType())
 							{
-								case TYPE_DO://Èç¹ûµ±Ç°²éÑ¯µÄÉè±¸ÊÇdoµÄ»°
-									//²»ÓÃµ¯Ñ¡Ôñµ¯¿ò Ö»Òªµ¯¸ö³É¹¦µ¯¿ò
-									if(get_CurDo() !=NULL && DO_GetIsInit(get_CurDo()))//µ±Ç°Éè±¸²»Îª¿ÕµÄ»°
+								case TYPE_DO://å¦‚æœå½“å‰æŸ¥è¯¢çš„è®¾å¤‡æ˜¯doçš„è¯
+									//ä¸ç”¨å¼¹é€‰æ‹©å¼¹æ¡† åªè¦å¼¹ä¸ªæˆåŠŸå¼¹æ¡†
+									if(get_CurDo() !=NULL && DO_GetIsInit(get_CurDo()))//å½“å‰è®¾å¤‡ä¸ä¸ºç©ºçš„è¯
 									{
 										generate_MessageBox(MESSAGE_SAVELOG, log_SaveData(TYPE_DO));
 									}
@@ -964,14 +967,14 @@ void btn_OkEscMode_ChangePage(void)
 						msg_content.content_cn = (uint8_t *)msg_DelData_cn;
 						msg_content.content_en = (uint8_t *)msg_DelData_en;
 						msg_content.content_cn_len = sizeof(msg_DelData_cn);
-						generate_MessageBox(MESSAGE_SETTING, 1);//ÏÔÊ¾µ¯´°
+						generate_MessageBox(MESSAGE_SETTING, 1);//æ˜¾ç¤ºå¼¹çª—
 						break;
 					
 					case PAGE_3_RESERT:
 						msg_content.content_cn = (uint8_t *)msg_reset_cn;
 						msg_content.content_en = (uint8_t *)msg_reset_en;
 						msg_content.content_cn_len = sizeof(msg_reset_cn);
-						generate_MessageBox(MESSAGE_SETTING, 1);//ÏÔÊ¾µ¯´°
+						generate_MessageBox(MESSAGE_SETTING, 1);//æ˜¾ç¤ºå¼¹çª—
 						break;
 					
 					case PAGE_5_ZERO:
@@ -981,14 +984,14 @@ void btn_OkEscMode_ChangePage(void)
 						msg_content.content_cn = (uint8_t *)msg_ConfirmCal_cn;
 						msg_content.content_en = (uint8_t *)msg_ConfirmCal_en;
 						msg_content.content_cn_len = sizeof(msg_ConfirmCal_cn);
-						generate_MessageBox(MESSAGE_SETTING, 1);//ÏÔÊ¾µ¯´°
+						generate_MessageBox(MESSAGE_SETTING, 1);//æ˜¾ç¤ºå¼¹çª—
 						break;
 					
 					default:
 						msg_content.content_cn = (uint8_t *)msg_save_cn;
 						msg_content.content_en = (uint8_t *)msg_save_en;
 						msg_content.content_cn_len = sizeof(msg_save_cn);
-						generate_MessageBox(MESSAGE_SETTING, 1);//ÏÔÊ¾µ¯´°
+						generate_MessageBox(MESSAGE_SETTING, 1);//æ˜¾ç¤ºå¼¹çª—
 						break;
 				}
 				
@@ -997,7 +1000,7 @@ void btn_OkEscMode_ChangePage(void)
 	}
 }
 
-void btn_UpDownMode_ChangePage(void)//Ö÷ÒªÓÃÓÚÃ±Ä¤ºÍÊı¾İ¼ÇÂ¼·­Ò³
+void btn_UpDownMode_ChangePage(void)//ä¸»è¦ç”¨äºå¸½è†œå’Œæ•°æ®è®°å½•ç¿»é¡µ
 {
 	if(get_KeyUpFlag())
 	{
@@ -1059,7 +1062,7 @@ void update_LogData(void)
 
 void check_TimeValue(void)
 {
-	if(cur_option == cur_interfacial.option_head && cur_NanoOption != cur_interfacial.option_head->son_option->next_option->next_option)//²»ÎªÈÕ±êÇ©Ê±
+	if(cur_option == cur_interfacial.option_head && cur_NanoOption != cur_interfacial.option_head->son_option->next_option->next_option)//ä¸ä¸ºæ—¥æ ‡ç­¾æ—¶
 	{
 		if(cur_interfacial.option_head->son_option->next_option->next_option->value > cur_interfacial.option_head->son_option->next_option->next_option->max_value)
 		{
@@ -1071,20 +1074,20 @@ void update_TimeValue(void)
 {
 	if(interfacial_GetCurPage() == PAGE_3_TIME)
 	{
-		if(cur_NanoOption == cur_interfacial.option_head->son_option)//Äê
+		if(cur_NanoOption == cur_interfacial.option_head->son_option)//å¹´
 		{
 			uint16_t year = 2000 + cur_NanoOption->value;
-			if(year % 4)//Æ½Äê
+			if(year % 4)//å¹³å¹´
 			{
 				days[1] = 28;
 			}
-			else//ÈòÄê
+			else//é—°å¹´
 			{
 				days[1] = 29;
 			}
 			cur_interfacial.option_head->son_option->next_option->next_option->max_value = days[cur_interfacial.option_head->son_option->next_option->value - 1];
 		}
-		if(cur_NanoOption == cur_interfacial.option_head->son_option->next_option)//ÔÂ
+		if(cur_NanoOption == cur_interfacial.option_head->son_option->next_option)//æœˆ
 		{
 			cur_NanoOption->next_option->max_value = days[cur_NanoOption->value - 1];
 		}
@@ -1092,7 +1095,7 @@ void update_TimeValue(void)
 	}
 }
 
-//ÉÏÏÂ¼üÇĞ»»ÊıÖµµÄÂß¼­
+//ä¸Šä¸‹é”®åˆ‡æ¢æ•°å€¼çš„é€»è¾‘
 void btn_UpDownMode_ChangeValue(void)
 {
 	if(get_KeyUpFlag())
@@ -1146,22 +1149,22 @@ void btn_UpDownMode_ChangeValue(void)
 	}
 }
 
-//ok escÑ¡ÔñĞŞ¸ÄÏîµÄÂß¼­
+//ok escé€‰æ‹©ä¿®æ”¹é¡¹çš„é€»è¾‘
 void btn_OkEscMode_ChangeOption(void)
 {
-	//µ±Ç°×Ó±êÇ©×ªÌøµ½ÏÂÒ»¼¶ Èç¹ûµ½¶ÓÎ²ÁËÖ±½Ó×ªÌøµ½¸¸ÁĞ±í
+	//å½“å‰å­æ ‡ç­¾è½¬è·³åˆ°ä¸‹ä¸€çº§ å¦‚æœåˆ°é˜Ÿå°¾äº†ç›´æ¥è½¬è·³åˆ°çˆ¶åˆ—è¡¨
 	if(get_KeyOkFlag())
 	{
 		clear_KeyOkFlag();
 		
-		if(interfacial_GetCurPage() == PAGE_3_TIME && cur_NanoOption == cur_interfacial.option_head->son_option)//Äê
+		if(interfacial_GetCurPage() == PAGE_3_TIME && cur_NanoOption == cur_interfacial.option_head->son_option)//å¹´
 		{
 			uint16_t year = 2000 + cur_NanoOption->value;
-			if(year % 4)//Æ½Äê
+			if(year % 4)//å¹³å¹´
 			{
 				days[1] = 28;
 			}
-			else//ÈòÄê
+			else//é—°å¹´
 			{
 				days[1] = 29;
 			}
@@ -1172,7 +1175,7 @@ void btn_OkEscMode_ChangeOption(void)
 		cur_NanoOption = cur_NanoOption->next_option;
 		cur_NanoOption->IsSelected = SELECTED;
 		
-		if(cur_NanoOption == cur_option->son_option)//µ½Í·ÁËµÄ»°
+		if(cur_NanoOption == cur_option->son_option)//åˆ°å¤´äº†çš„è¯
 		{
 			cur_NanoOption->IsSelected = DESELECTED;
 			cur_option->IsSelected = SELECTED;
@@ -1181,7 +1184,7 @@ void btn_OkEscMode_ChangeOption(void)
 		}
 		
 	}
-	//µ±Ç°×Ó±êÇ©Ö¸Õë×ªÌøµ½ÉÏÒ»¼¶ Èç¹ûµ½¶ÔÍ·ÁË×ªÌøµ½¸¸ÁĞ±í
+	//å½“å‰å­æ ‡ç­¾æŒ‡é’ˆè½¬è·³åˆ°ä¸Šä¸€çº§ å¦‚æœåˆ°å¯¹å¤´äº†è½¬è·³åˆ°çˆ¶åˆ—è¡¨
 	if(get_KeyEscFlag())
 	{
 		clear_KeyEscFlag();
@@ -1190,7 +1193,7 @@ void btn_OkEscMode_ChangeOption(void)
 		cur_NanoOption = cur_NanoOption->prev_option;
 		cur_NanoOption->IsSelected = SELECTED;
 		
-		if(cur_NanoOption == cur_option->son_option->prev_option)//¾ÍÊÇµ½nano optionµÄÍ·µÄ»°·µ»ØÒª·µ»Ø´óÁ´±í
+		if(cur_NanoOption == cur_option->son_option->prev_option)//å°±æ˜¯åˆ°nano optionçš„å¤´çš„è¯è¿”å›è¦è¿”å›å¤§é“¾è¡¨
 		{
 			cur_NanoOption->IsSelected = DESELECTED;
 			cur_option->IsSelected = SELECTED;
@@ -1222,28 +1225,28 @@ uint8_t checked_AlarmValueLegal(void)
 
 
 
-/*ÔÚmsgboxÖĞok ºÍ esc°´¼üµÄÂß¼­*/
+/*åœ¨msgboxä¸­ok å’Œ escæŒ‰é”®çš„é€»è¾‘*/
 void btn_OkEscMode_MsgBox(void)
 {
-	if(get_KeyOkFlag())/******************************************************************************±£´æÉèÖÃ*/
+	if(get_KeyOkFlag())/******************************************************************************ä¿å­˜è®¾ç½®*/
 	{
 		clear_KeyOkFlag();
 		
-		cur_NanoOption->IsSelected = DESELECTED;//È¡ÏûÑ¡ÖĞ
+		cur_NanoOption->IsSelected = DESELECTED;//å–æ¶ˆé€‰ä¸­
 		//destory_MessageBox();
-		if(cur_NanoOption == cur_interfacial.NanoOption_msg)//Èç¹ûÊÇÊÇµÄ»°
+		if(cur_NanoOption == cur_interfacial.NanoOption_msg)//å¦‚æœæ˜¯æ˜¯çš„è¯
 		{
 			save_setting();
 			
 			switch(interfacial_GetCurPage())
 			{
-				case PAGE_5_ALARMVALUE://ÕâÀïµÄ»°ÒªÅĞ¶ÏÊÇ·ñºÏ·¨
+				case PAGE_5_ALARMVALUE://è¿™é‡Œçš„è¯è¦åˆ¤æ–­æ˜¯å¦åˆæ³•
 					generate_MessageBox(MESSAGE_SUCCESSFUL, checked_AlarmValueLegal());
 					break;
 				
 				case PAGE_1_RESETCAL:
-				case PAGE_4_SENSORINFO: //´«¸ĞÆ÷ĞÅÏ¢ÓÃÀ´ĞŞ¸Ä´«¸ĞÆ÷modbus id
-				case PAGE_5_ONE:        //ÏÈ²»ÓÃµ¯´°Í¨¹ı´®¿ÚÊı¾İÈ¥µ¯´°
+				case PAGE_4_SENSORINFO: //ä¼ æ„Ÿå™¨ä¿¡æ¯ç”¨æ¥ä¿®æ”¹ä¼ æ„Ÿå™¨modbus id
+				case PAGE_5_ONE:        //å…ˆä¸ç”¨å¼¹çª—é€šè¿‡ä¸²å£æ•°æ®å»å¼¹çª—
 				case PAGE_5_SENSORCAP:
 				case PAGE_5_THREE:
 				case PAGE_5_TWOFIRST:
@@ -1252,7 +1255,7 @@ void btn_OkEscMode_MsgBox(void)
 					break;
 				
 				default:
-					generate_MessageBox(MESSAGE_SUCCESSFUL, 1);//ÏÔÊ¾³É¹¦½çÃæ
+					generate_MessageBox(MESSAGE_SUCCESSFUL, 1);//æ˜¾ç¤ºæˆåŠŸç•Œé¢
 					break;
 			}
 			
@@ -1268,7 +1271,7 @@ void btn_OkEscMode_MsgBox(void)
 	if(get_KeyEscFlag())
 	{
 		clear_KeyEscFlag();
-		cur_NanoOption->IsSelected = DESELECTED;//È¡ÏûÑ¡ÖĞ
+		cur_NanoOption->IsSelected = DESELECTED;//å–æ¶ˆé€‰ä¸­
 		btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
 		btnOkEscFunc_register(btn_OkEscMode_ChangePage);
 		destory_MessageBox();
@@ -1294,8 +1297,8 @@ void btn_UpDownMode_MsgBox(void)
 
 
 
-/*µã»÷±£´æºóµÄ²Ù×÷*/
-/*¸ù¾İ½çÃæÀ´½øĞĞÏàÓ¦²Ù×÷*/
+/*ç‚¹å‡»ä¿å­˜åçš„æ“ä½œ*/
+/*æ ¹æ®ç•Œé¢æ¥è¿›è¡Œç›¸åº”æ“ä½œ*/
 void save_setting(void)
 {
 	PtrToDOProbe p;
@@ -1305,10 +1308,10 @@ void save_setting(void)
   static	float compensate_k_temp = 1.0;
   static	float compensate_b_temp = 0.0;
 	
-	static	float value0 = 0.0;//Ğ£×¼Öµ
+	static	float value0 = 0.0;//æ ¡å‡†å€¼
 	static	float value1 = 0.0;
 	
-	static	float real0 = 0.0;//Êµ¼ÊÖµ
+	static	float real0 = 0.0;//å®é™…å€¼
 	static	float real1 = 0.0;
 	
 	
@@ -1321,7 +1324,7 @@ void save_setting(void)
 			switch(rs485_GetSensorType())
 			{
 				case TYPE_DO:
-					DO_rs485_SetKB(get_CurDo(), 1.0, 0.0); //´®¿ÚÉèÖÃkb 1 0 
+					DO_rs485_SetKB(get_CurDo(), 1.0, 0.0); //ä¸²å£è®¾ç½®kb 1 0 
 					break;
 				
 				default:
@@ -1329,7 +1332,7 @@ void save_setting(void)
 			}
 			break;
 		
-		case PAGE_3_TIME://ÉèÖÃÊ±¼ä½çÃæ
+		case PAGE_3_TIME://è®¾ç½®æ—¶é—´ç•Œé¢
 		
 			temp_time.week = 1;
 		
@@ -1347,9 +1350,9 @@ void save_setting(void)
 			
 			break;
 		
-		case PAGE_3_LANGUAGE://ÓïÑÔÉèÖÃ½çÃæ
-			setting_SetIsChn(cur_option == cur_interfacial.option_head ? 1 : 0);
-			SettingToFlash();//±£´æÒ»²¨ÉèÖÃ
+		case PAGE_3_LANGUAGE://è¯­è¨€è®¾ç½®ç•Œé¢
+			setting_SetIsChn(((cur_option == cur_interfacial.option_head) ? 1 : 0));
+			SettingToFlash();//ä¿å­˜ä¸€æ³¢è®¾ç½®
 			break;
 		
 		case PAGE_3_AUTOSHUT:
@@ -1371,31 +1374,31 @@ void save_setting(void)
 				setting_SetAutoShut(20);
 			}
 			
-			SettingToFlash();//±£´æÒ»²¨ÉèÖÃ
+			SettingToFlash();//ä¿å­˜ä¸€æ³¢è®¾ç½®
 			break;
 		
 		
 		
-		case PAGE_3_PRESSURE://ÉèÖÃµ±Ç°ÆøÑ¹Öµ
+		case PAGE_3_PRESSURE://è®¾ç½®å½“å‰æ°”å‹å€¼
 			temp_value = NanoOptionList_GetValue(cur_interfacial.option_head->next_option->next_option->son_option, 10);
 			double_value = ((double)temp_value/100.0);
 		
 			setting_SetAirCompensate(double_value - bmp280_GetPress());
 			SettingToFlash();
 		
-			DO_rs485_SetPressure(get_CurDo(), double_value);//¸üĞÂdoÉè±¸µÄÆøÑ¹Öµ
+			DO_rs485_SetPressure(get_CurDo(), double_value);//æ›´æ–°doè®¾å¤‡çš„æ°”å‹å€¼
 
 			
 			break;
 		
-		case PAGE_3_SALT://ÉèÖÃÑÎ¶ÈÖµ
+		case PAGE_3_SALT://è®¾ç½®ç›åº¦å€¼
 			temp_value = NanoOptionList_GetValue(cur_interfacial.option_head->next_option->next_option->son_option, 10);
 			double_value = ((double)temp_value/10.0);
 		
-			setting_SetSalinity(double_value);  //¸üĞÂÉèÖÃÖĞµÄÑÎ¶È
-			SettingToFlash();                   //½«ÉèÖÃĞ´Èëflash
+			setting_SetSalinity(double_value);  //æ›´æ–°è®¾ç½®ä¸­çš„ç›åº¦
+			SettingToFlash();                   //å°†è®¾ç½®å†™å…¥flash
 		
-			set_SalArr(setting_GetSalinity()); //Ë¢ĞÂÑÎ¶ÈÏÔÊ¾µÄbuf
+			set_SalArr(setting_GetSalinity()); //åˆ·æ–°ç›åº¦æ˜¾ç¤ºçš„buf
 		  
 			DO_rs485_SetSalinity(get_CurDo(), double_value);
 		  
@@ -1415,21 +1418,37 @@ void save_setting(void)
 				setting_SetAutoLock(AUTOLOCK_MANUAL);
 			}
 			
-			SettingToFlash();//±£´æÒ»²¨ÉèÖÃ
+			SettingToFlash();//ä¿å­˜ä¸€æ³¢è®¾ç½®
 			
-			clear_DOShakeCount();
-			DO_SetValueUnlocked(get_CurDo());
+			if(get_CurDo() != NULL )//æ¢å¤å‡ºå‚è®¾ç½®çš„æ—¶å€™å¦‚æœæœ‰è®¾å¤‡è¢«é”çš„è¯è§£é”
+			{
+				if(DO_GetValueLocked(get_CurDo())) //å¦‚æœæ˜¯æœ‰é”å®šåŠŸèƒ½æ— è®ºè‡ªåŠ¨è¿˜æ˜¯æ‰‹åŠ¨å°±ç»™å®ƒå¼€é”
+				{
+					clear_DOShakeCount();
+					DO_SetValueUnlocked(get_CurDo());
+				}
+			}
 			break;
 		
 		case PAGE_3_RESERT:
 			if(cur_option == cur_interfacial.option_head)
 			{
 				clear_KeyAllFlag();
-				if(setting_GetIsChn())//Èç¹ûÊÇÖĞÎÄµÄ»°µÃÇåÒ»ÏÂÉÏÃæµÄ±êÇ©ÏÔÊ¾µÄÎÄ×Ö
+				if(setting_GetIsChn())//å¦‚æœæ˜¯ä¸­æ–‡çš„è¯å¾—æ¸…ä¸€ä¸‹ä¸Šé¢çš„æ ‡ç­¾æ˜¾ç¤ºçš„æ–‡å­—
 				{
 					gui_ClearChuchangshezhi();
 				}
 				setting_reset();
+				
+				if(get_CurDo() != NULL )//æ¢å¤å‡ºå‚è®¾ç½®çš„æ—¶å€™å¦‚æœæœ‰è®¾å¤‡è¢«é”çš„è¯è§£é”
+				{
+					if(DO_GetValueLocked(get_CurDo())) //å¦‚æœæ˜¯æœ‰é”å®šåŠŸèƒ½æ— è®ºè‡ªåŠ¨è¿˜æ˜¯æ‰‹åŠ¨å°±ç»™å®ƒå¼€é”
+					{
+						clear_DOShakeCount();              //æ¸…é™¤æŠ–åŠ¨è®¡æ•°
+						DO_SetValueUnlocked(get_CurDo());  //è§£é”
+					}
+					
+				}
 			}
 			break;
 			
@@ -1437,14 +1456,14 @@ void save_setting(void)
 			log_SetLogCount(0);
 			break;
 		
-		case PAGE_4_KEYPADTONE://ÉèÖÃ°´¼üÒô
-			setting_SetKeyPadTone(cur_option == cur_interfacial.option_head ? 1 : 0);
-			SettingToFlash();//±£´æÒ»²¨ÉèÖÃ
+		case PAGE_4_KEYPADTONE://è®¾ç½®æŒ‰é”®éŸ³
+			setting_SetKeyPadTone(((cur_option == cur_interfacial.option_head) ? 1 : 0));
+			SettingToFlash();//ä¿å­˜ä¸€æ³¢è®¾ç½®
 			break;
 		
-		case PAGE_4_ALARMTONE://ÉèÖÃ±¨¾¯Òô
-			setting_SetAlarmTone(cur_option == cur_interfacial.option_head ? 1 : 0);
-			SettingToFlash();//±£´æÒ»²¨ÉèÖÃ
+		case PAGE_4_ALARMTONE://è®¾ç½®æŠ¥è­¦éŸ³
+			setting_SetAlarmTone(((cur_option == cur_interfacial.option_head) ? 1 : 0));
+			SettingToFlash();//ä¿å­˜ä¸€æ³¢è®¾ç½®
 			break;
 		
 		case PAGE_4_ALARM:
@@ -1452,7 +1471,7 @@ void save_setting(void)
 			{
 				case TYPE_DO:
 					setting_SetIsAlarm_DO(0);
-					SettingToFlash();//±£´æÒ»²¨ÉèÖÃ
+					SettingToFlash();//ä¿å­˜ä¸€æ³¢è®¾ç½®
 					break;
 				
 				case TYPE_Bga:
@@ -1496,30 +1515,30 @@ void save_setting(void)
 		
 
 		
-		case PAGE_4_SENSORINFO://Éè±¸ĞÅÏ¢  ÉèÖÃmodbus id
+		case PAGE_4_SENSORINFO://è®¾å¤‡ä¿¡æ¯  è®¾ç½®modbus id
 			destory_MessageBox();
-			p = DO_FindByName(interfacial_GetOptionSensorName(), rs485_GetDoList());//»ñÈ¡µ±Ç°Éè±¸Ö¸Õë
+			p = DO_FindByName(interfacial_GetOptionSensorName(), rs485_GetDoList());//è·å–å½“å‰è®¾å¤‡æŒ‡é’ˆ
 		
 			temp_value = NanoOptionList_GetValue(cur_interfacial.option_head->next_option->next_option->next_option->son_option, 100);
-			temp_value = ((temp_value/100)<<4)|(temp_value % 100); // »ñÈ¡ÒªÉèÖÃµÄµØÖ·
+			temp_value = ((temp_value/100)<<4)|(temp_value % 100); // è·å–è¦è®¾ç½®çš„åœ°å€
 				
 			DO_rs485_SetAddr(p, temp_value);
 			
 			break;
 		
-		case PAGE_5_ALARMVALUE://ÉèÖÃÊÇ·ñ±¨¾¯ ¸ßµÍÃÅÏŞãĞÖµ ÕâÀïÒªÅĞ¶ÏÒ»²¨
+		case PAGE_5_ALARMVALUE://è®¾ç½®æ˜¯å¦æŠ¥è­¦ é«˜ä½é—¨é™é˜ˆå€¼ è¿™é‡Œè¦åˆ¤æ–­ä¸€æ³¢
 			switch(alarm_SensorType)
 			{
 				case TYPE_DO:
 					setting_SetIsAlarm_DO(1);
 					if(checked_AlarmValueLegal())
 					{
-						temp_value = NanoOptionList_GetValue(cur_interfacial.option_head->son_option, 10);//µÍÃÅÏŞ
+						temp_value = NanoOptionList_GetValue(cur_interfacial.option_head->son_option, 10);//ä½é—¨é™
 						setting_SetLowThreshold_DO((value_type)temp_value/100.0);
 
-						temp_value = NanoOptionList_GetValue(cur_interfacial.option_head->next_option->son_option, 10);//¸ßÃÅÏŞÖÆ
+						temp_value = NanoOptionList_GetValue(cur_interfacial.option_head->next_option->son_option, 10);//é«˜é—¨é™åˆ¶
 						setting_SetHighThreshold_DO((value_type)temp_value/100.0);
-						SettingToFlash();//±£´æÒ»²¨ÉèÖÃ
+						SettingToFlash();//ä¿å­˜ä¸€æ³¢è®¾ç½®
 					}
 					break;
 				
@@ -1564,15 +1583,15 @@ void save_setting(void)
 			break;
 		
 		case PAGE_5_ONE:
-			//²»Í¬½çÃæ½øÀ´µÄ¿ÉÄÜÉè±¸Ò²²»Ò»ÑùÇø±ğÒ»ÏÂ
+			//ä¸åŒç•Œé¢è¿›æ¥çš„å¯èƒ½è®¾å¤‡ä¹Ÿä¸ä¸€æ ·åŒºåˆ«ä¸€ä¸‹
 			switch(temp_SensorType)
 			{
 				case TYPE_DO:
-					OptionList_Destory(&(interfacial_GetCurrentInterfacial()->option_head));  //Ïú»ÙÑ¡ÏîÁ´±í
+					OptionList_Destory(&(interfacial_GetCurrentInterfacial()->option_head));  //é”€æ¯é€‰é¡¹é“¾è¡¨
 				
-					gui_ClearLines(115, 133, 0);//Çå³ıÑ¡Ïî
+					gui_ClearLines(115, 133, 0);//æ¸…é™¤é€‰é¡¹
 					
-					//ÕâÀïµÄ»°ÊÇÅĞ¶ÏÄÄ¸ödoÉè±¸£¬¿ÉÄÜ¶à¸ödoÈ»ºó¾ÍÔÚÁĞ±íÖĞĞ£×¼µÄ¾Í²»ÊÇµ±Ç°Ö÷½çÃæÉÏµÄdoÉè±¸
+					//è¿™é‡Œçš„è¯æ˜¯åˆ¤æ–­å“ªä¸ªdoè®¾å¤‡ï¼Œå¯èƒ½å¤šä¸ªdoç„¶åå°±åœ¨åˆ—è¡¨ä¸­æ ¡å‡†çš„å°±ä¸æ˜¯å½“å‰ä¸»ç•Œé¢ä¸Šçš„doè®¾å¤‡
 					if(temp_FatherPage == PAGE_0_START)
 					{
 						p = get_CurDo();
@@ -1584,23 +1603,23 @@ void save_setting(void)
 					
 					destory_MessageBox();
 					
-					if(DO_ValueCheckFirst(p, STD_value)) //Èç¹ûÊı¾İ·ûºÏÒªÇóµÄ»°
+					if(DO_ValueCheckFirst(p, STD_value)) //å¦‚æœæ•°æ®ç¬¦åˆè¦æ±‚çš„è¯
 					{
-						compensate_k_temp = DO_GetKFloat(p) * (STD_value / 100.0 / DO_GetDOPercent(p));//¼ÆËãÖµĞ´Öµ
+						compensate_k_temp = DO_GetKFloat(p) * (STD_value / 100.0 / DO_GetDOPercent(p));//è®¡ç®—å€¼å†™å€¼
 						
-						if(get_CurDo() != NULL)
+						if(get_CurDo() != NULL && fabs(compensate_k_temp - 1.0) <= MAX_EPS_K)
 						{
 							DO_rs485_SetK(get_CurDo(), compensate_k_temp);
 						}
 						else
 						{
-							interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunshibai_cn;//Ğ£×¼Ê§°Ü
+							interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunshibai_cn;//æ ¡å‡†å¤±è´¥
 							interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)shibai_en;
 							interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunshibai_cn);
 							
 							generate_MessageBox(MESSAGE_SUCCESSFUL, 0);
 							
-							cur_interfacial.page_father = temp_FatherPage == PAGE_0_START ? PAGE_0_START : PAGE_2_SENSORMANAGE;
+							cur_interfacial.page_father = ((temp_FatherPage == PAGE_0_START) ? PAGE_0_START : PAGE_2_SENSORMANAGE);
 						}
 					}
 					break;
@@ -1616,7 +1635,7 @@ void save_setting(void)
 			switch(temp_SensorType)
 			{
 				case TYPE_DO:
-					//ÕâÀïµÄ»°ÊÇÅĞ¶ÏÄÄ¸ödoÉè±¸£¬¿ÉÄÜ¶à¸ödoÈ»ºó¾ÍÔÚÁĞ±íÖĞĞ£×¼µÄ¾Í²»ÊÇµ±Ç°Ö÷½çÃæÉÏµÄdoÉè±¸
+					//è¿™é‡Œçš„è¯æ˜¯åˆ¤æ–­å“ªä¸ªdoè®¾å¤‡ï¼Œå¯èƒ½å¤šä¸ªdoç„¶åå°±åœ¨åˆ—è¡¨ä¸­æ ¡å‡†çš„å°±ä¸æ˜¯å½“å‰ä¸»ç•Œé¢ä¸Šçš„doè®¾å¤‡
 					if(temp_FatherPage == PAGE_0_START)
 					{
 						p = get_CurDo();
@@ -1628,12 +1647,12 @@ void save_setting(void)
 					
 					destory_MessageBox();
 					
-					if(DO_ValueCheckFirst(p, STD_value)) //Èç¹ûÊı¾İ·ûºÏÒªÇóµÄ»°
+					if(DO_ValueCheckFirst(p, STD_value)) //å¦‚æœæ•°æ®ç¬¦åˆè¦æ±‚çš„è¯
 					{
 						value0 = STD_value / 100.0;
 						real0 = (DO_GetDOPercent(p) - DO_GetBFloat(p)) / DO_GetKFloat(p);
 						
-						interfacial_GetCurrentOption()->content_chn = (uint8_t *)xiayidian_cn;//ÏÔÊ¾ÏÂÒ»Ò³
+						interfacial_GetCurrentOption()->content_chn = (uint8_t *)xiayidian_cn;//æ˜¾ç¤ºä¸‹ä¸€é¡µ
 						interfacial_GetCurrentOption()->ChnContent_size = sizeof(xiayidian_cn);
 						interfacial_GetCurrentOption()->content_eng = (uint8_t *)xiayidian_en;
 						
@@ -1655,10 +1674,10 @@ void save_setting(void)
 			switch(temp_SensorType)
 			{
 				case TYPE_DO:
-					OptionList_Destory(&(interfacial_GetCurrentInterfacial()->option_head));  //Ïú»ÙÑ¡ÏîÁ´±í
-					gui_ClearLines(115, 133, 0);//Çå³ıÑ¡Ïî
+					OptionList_Destory(&(interfacial_GetCurrentInterfacial()->option_head));  //é”€æ¯é€‰é¡¹é“¾è¡¨
+					gui_ClearLines(115, 133, 0);//æ¸…é™¤é€‰é¡¹
 				
-					//ÕâÀïµÄ»°ÊÇÅĞ¶ÏÄÄ¸ödoÉè±¸£¬¿ÉÄÜ¶à¸ödoÈ»ºó¾ÍÔÚÁĞ±íÖĞĞ£×¼µÄ¾Í²»ÊÇµ±Ç°Ö÷½çÃæÉÏµÄdoÉè±¸
+					//è¿™é‡Œçš„è¯æ˜¯åˆ¤æ–­å“ªä¸ªdoè®¾å¤‡ï¼Œå¯èƒ½å¤šä¸ªdoç„¶åå°±åœ¨åˆ—è¡¨ä¸­æ ¡å‡†çš„å°±ä¸æ˜¯å½“å‰ä¸»ç•Œé¢ä¸Šçš„doè®¾å¤‡
 					if(temp_FatherPage == PAGE_0_START)
 					{
 						p = get_CurDo();
@@ -1681,18 +1700,18 @@ void save_setting(void)
 						
 						
 						
-						if(get_CurDo() != NULL)
+						if(get_CurDo() != NULL && fabs(compensate_k_temp - 1.0) <= MAX_EPS_K && fabs(compensate_b_temp) <= MAX_EPS_B)
 						{
-							DO_rs485_SetKB(get_CurDo(), compensate_k_temp, compensate_b_temp);
+							DO_rs485_SetKB(get_CurDo(), compensate_k_temp, compensate_b_temp); //è®¾ç½®kbå€¼
 						}
-						else
+						else//å¦‚æœè¿™ä¸ªæ—¶å€™æ–­å¼€è®¾å¤‡çš„è¯
 						{
-							interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunshibai_cn;//Ğ£×¼Ê§°Ü
-							interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)shibai_en;
+							interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunshibai_cn; //æç¤ºæ ¡å‡†å¤±è´¥
+							interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)shibai_en;         //è‹±æ–‡
 							interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunshibai_cn);
 				
 							generate_MessageBox(MESSAGE_SUCCESSFUL, 0);
-							cur_interfacial.page_father = temp_FatherPage == PAGE_0_START ? PAGE_0_START : PAGE_2_SENSORMANAGE;
+							cur_interfacial.page_father = ((temp_FatherPage == PAGE_0_START) ? PAGE_0_START : PAGE_2_SENSORMANAGE);//
 						}
 					}
 					break;
@@ -1720,30 +1739,30 @@ void save_setting(void)
 }
 
 
-//ÕâÀïÕâÊÇ³õÊ¼»¯½çÃæ °´¼üÂß¼­Ö»ÊÇÒ»¿ªÊ¼µÄÂß¼­
+//è¿™é‡Œè¿™æ˜¯åˆå§‹åŒ–ç•Œé¢ æŒ‰é”®é€»è¾‘åªæ˜¯ä¸€å¼€å§‹çš„é€»è¾‘
 void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 {
 	
 	
-	set_OptionTop(NULL);   //Çå¿Õ´°¿Ú
+	set_OptionTop(NULL);   //æ¸…ç©ºçª—å£
 	set_OptionTail(NULL);
 	
-//	btnUpDownFunc_register(NULL);//Çå¿Õ°ó¶¨·ÀÖ¹Ã»°ó¶¨µ÷ÓÃº¯ÊıÒç³ö    Õâ¸öµÃ×îºóÔÙ¼Ó²»È»ÓĞ½çÃæÃ»Ğ´°´»Ø³µÖ±½ÓÀ­Õ¢¾ÍÎŞ·¨²Ù×÷
+//	btnUpDownFunc_register(NULL);//æ¸…ç©ºç»‘å®šé˜²æ­¢æ²¡ç»‘å®šè°ƒç”¨å‡½æ•°æº¢å‡º    è¿™ä¸ªå¾—æœ€åå†åŠ ä¸ç„¶æœ‰ç•Œé¢æ²¡å†™æŒ‰å›è½¦ç›´æ¥æ‹‰é—¸å°±æ— æ³•æ“ä½œ
 //	btnOkEscFunc_register(NULL);
 	
 	
 	
-	switch(page_num)                     //ÅĞ¶Ï´«ÈëÒ³ÃæÀ´³õÊ¼»¯Ò»Ğ©¶«Î÷
+	switch(page_num)                     //åˆ¤æ–­ä¼ å…¥é¡µé¢æ¥åˆå§‹åŒ–ä¸€äº›ä¸œè¥¿
 	{
-		case PAGE_0_START://³õÊ¼½çÃæ
+		case PAGE_0_START://åˆå§‹ç•Œé¢
 		  generate_StartPage(&cur_interfacial);
-			btnUpDownFunc_register(btn_UpDownMode_NULL);//ÕâÀïÒª¸Ä³ÉÇĞ»»´«¸ĞÆ÷
-			btnOkEscFunc_register(btn_OkEscMode_NULL);//Çå±êÖ¾
-			rs485_SetIsChangeSenesor(); //ÈÃËüÖØĞÂÉú³ÉÒ»ÏÂ½Úµã
+			btnUpDownFunc_register(btn_UpDownMode_NULL);//è¿™é‡Œè¦æ”¹æˆåˆ‡æ¢ä¼ æ„Ÿå™¨
+			btnOkEscFunc_register(btn_OkEscMode_NULL);//æ¸…æ ‡å¿—
+			rs485_SetIsChangeSenesor(); //è®©å®ƒé‡æ–°ç”Ÿæˆä¸€ä¸‹èŠ‚ç‚¹
 			DO_SetTempZero();
 			break;
 		
-		case PAGE_1_MENU://²Ëµ¥½çÃæ
+		case PAGE_1_MENU://èœå•ç•Œé¢
 			generate_MenuPage(&cur_interfacial);
 			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
 			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
@@ -1758,14 +1777,14 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 			}
 			break;
 		
-		case PAGE_1_RESETCAL: //³õÊ¼»¯Ğ£×¼½çÃæ
+		case PAGE_1_RESETCAL: //åˆå§‹åŒ–æ ¡å‡†ç•Œé¢
 			generate_ResetCal(&cur_interfacial);
 			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
 			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
 			CurOption_init();
 			break;
 		
-		case PAGE_2_SYSTEM://ÏµÍ³ÉèÖÃ½çÃæ
+		case PAGE_2_SYSTEM://ç³»ç»Ÿè®¾ç½®ç•Œé¢
 			generate_SystemPage(&cur_interfacial);
 			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
 			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
@@ -1780,7 +1799,7 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 			}
 			break;
 		
-		case PAGE_2_SENSORMANAGE://´«¸ĞÆ÷¹ÜÀí½çÃæ    ÁĞ¾ÙÒÑÁ¬½ÓµÄ´«¸ĞÆ÷
+		case PAGE_2_SENSORMANAGE://ä¼ æ„Ÿå™¨ç®¡ç†ç•Œé¢    åˆ—ä¸¾å·²è¿æ¥çš„ä¼ æ„Ÿå™¨
 			generate_SensorManage(&cur_interfacial);
 			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
 			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
@@ -1809,7 +1828,7 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 			}
 			break;
 		
-		case PAGE_3_SENSORS://¾ßÌå´«¸ĞÆ÷½çÃæ 
+		case PAGE_3_SENSORS://å…·ä½“ä¼ æ„Ÿå™¨ç•Œé¢ 
 			generate_Sensors(&cur_interfacial);
 			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
 			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
@@ -1823,37 +1842,37 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 			}
 			break;
 		
-		case PAGE_3_SENSORSSEARCH://ËÑË÷´«¸ĞÆ÷½çÃæ
+		case PAGE_3_SENSORSSEARCH://æœç´¢ä¼ æ„Ÿå™¨ç•Œé¢
 			generate_SensorSearch(&cur_interfacial);
 			btnUpDownFunc_register(btn_UpDownMode_NULL);
 			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
-			//ÕâÀïÓ¦¸ÃÒªÉı¼¶Ò»ÏÂ¾ÍÊÇÒªËÑË÷²»Í¬ÖÖÉè±¸£¬Ã»ÖÖ²émodbus ·¢5ÃëÕâÑù
-			DO_rs485_GetModbusId();              //½«»ñÈ¡modbus idµÄÖ¸ÁîĞ´Èëµ½Ğ´buf
-			rs485_SetCircularSentStatus(); //Ñ­»··¢ËÍ
+			//è¿™é‡Œåº”è¯¥è¦å‡çº§ä¸€ä¸‹å°±æ˜¯è¦æœç´¢ä¸åŒç§è®¾å¤‡ï¼Œæ²¡ç§æŸ¥modbus å‘5ç§’è¿™æ ·
+			DO_rs485_GetModbusId();              //å°†è·å–modbus idçš„æŒ‡ä»¤å†™å…¥åˆ°å†™buf
+			rs485_SetCircularSentStatus(); //å¾ªç¯å‘é€
 			break;
 		
-		case PAGE_3_TIME://Ê±¼äÉèÖÃ½çÃæ
+		case PAGE_3_TIME://æ—¶é—´è®¾ç½®ç•Œé¢
 			generate_SetTimePage(&cur_interfacial);
 			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
 			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
 			CurOption_init();
 			break;
 		
-		case PAGE_3_BEEP://ÌáÊ¾Òô
+		case PAGE_3_BEEP://æç¤ºéŸ³
 			generate_BeepSeting(&cur_interfacial);
 			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
 			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
 			CurOption_init();
 			break;
 		
-		case PAGE_3_LANGUAGE://ÓïÑÔÉèÖÃ½çÃæ
+		case PAGE_3_LANGUAGE://è¯­è¨€è®¾ç½®ç•Œé¢
 			generate_Language(&cur_interfacial);
 			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
 			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
 			BinaryOption_init(setting_GetIsChn());
 			break;
 		
-		case PAGE_3_AUTOSHUT://×Ô¶¯¹Ø»ú
+		case PAGE_3_AUTOSHUT://è‡ªåŠ¨å…³æœº
 			generate_AutoShut(&cur_interfacial);
 			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
 			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
@@ -1867,20 +1886,20 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 			CurOption_init();
 			break;
 		
-		case PAGE_3_PRESSURE://ÆøÑ¹ÉèÖÃ
+		case PAGE_3_PRESSURE://æ°”å‹è®¾ç½®
 			generate_SetPressure(&cur_interfacial);
 			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
 			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
 			CurOption_init();
 			break;
-		case PAGE_3_SALT://ÑÎ¶ÈÉèÖÃ
+		case PAGE_3_SALT://ç›åº¦è®¾ç½®
 			generate_SetSalinity(&cur_interfacial);
 			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
 			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
 			CurOption_init();
 			break;
 		
-		case PAGE_3_GPS://gps²éÑ¯
+		case PAGE_3_GPS://gpsæŸ¥è¯¢
 			generate_GpsInfo(&cur_interfacial);
 			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
 			btnUpDownFunc_register(btn_UpDownMode_NULL);
@@ -1894,14 +1913,14 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 			CurOption_init();
 			break;
 		
-		case PAGE_3_RESERT://»Ö¸´³ö³§ÉèÖÃ
+		case PAGE_3_RESERT://æ¢å¤å‡ºå‚è®¾ç½®
 			generate_reset(&cur_interfacial);
 			btnUpDownFunc_register(btn_UpDownMode_NULL);
 			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
 			CurOption_init();
 			break;
 		
-		case PAGE_3_AUTOLOCK://×Ô¶¯Ëø¶¨
+		case PAGE_3_AUTOLOCK://è‡ªåŠ¨é”å®š
 			generate_AutoLock(&cur_interfacial);
 			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
 			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
@@ -1915,8 +1934,8 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 			CurOption_init();
 			break;
 		
-		case PAGE_3_DATASHOW://Êı¾İ¼ÇÂ¼ÏÔÊ¾
-			if(interfacial_GetCurPage() == PAGE_2_HISTORY)//´ÓÀúÊ·Êı¾İ½çÃæ½øÈ¥Ä¬ÈÏÖ¸Ïò×îºóÒ»Ìõ
+		case PAGE_3_DATASHOW://æ•°æ®è®°å½•æ˜¾ç¤º
+			if(interfacial_GetCurPage() == PAGE_2_HISTORY)//ä»å†å²æ•°æ®ç•Œé¢è¿›å»é»˜è®¤æŒ‡å‘æœ€åä¸€æ¡
 			{
 				cur_LogIndex = log_GetLogCount();
 			}
@@ -1934,21 +1953,21 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 			CurOption_init();
 			break;
 		
-		case PAGE_4_ALARMTONE://±¨¾¯ÌáÊ¾Òô
+		case PAGE_4_ALARMTONE://æŠ¥è­¦æç¤ºéŸ³
 			generate_AlarmTone(&cur_interfacial);
 			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
 			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
 			BinaryOption_init(setting_GetAlarmTone());
 			break;
 		
-		case PAGE_4_KEYPADTONE://°´¼üÒô
+		case PAGE_4_KEYPADTONE://æŒ‰é”®éŸ³
 			generate_KeypadTone(&cur_interfacial);
 			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
 			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
 			BinaryOption_init(setting_GetKeyPadTone());
 			break;
 		
-		case PAGE_4_ALARM://±¨¾¯ÉèÖÃ
+		case PAGE_4_ALARM://æŠ¥è­¦è®¾ç½®
 			generate_AlarmSetting(&cur_interfacial);
 			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
 			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
@@ -1988,7 +2007,7 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 			//
 			break;
 		
-		case PAGE_4_CAL://Ğ£×¼½çÃæ
+		case PAGE_4_CAL://æ ¡å‡†ç•Œé¢
 			if(interfacial_GetCurPage() == PAGE_0_START || interfacial_GetCurPage() == PAGE_3_SENSORS)
 			{
 				temp_FatherPage = interfacial_GetCurPage();
@@ -2006,7 +2025,7 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 			CurOption_init();
 			break;
 		
-		case PAGE_4_SENSORINFO://´«¸ĞÆ÷ĞÅÏ¢
+		case PAGE_4_SENSORINFO://ä¼ æ„Ÿå™¨ä¿¡æ¯
 			generate_SensorInfo(&cur_interfacial);
 			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
 			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
@@ -2027,14 +2046,14 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 			break;
 		
 		
-		case PAGE_5_ALARMVALUE://¸ßµÍÃÅÏŞ±¨¾¯Öµ
+		case PAGE_5_ALARMVALUE://é«˜ä½é—¨é™æŠ¥è­¦å€¼
 			generate_AlarmValueSetting(&cur_interfacial);
 			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
 			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
 			CurOption_init();
 			break;
 		
-		case PAGE_5_ONE://µ¥µãĞ£×¼
+		case PAGE_5_ONE://å•ç‚¹æ ¡å‡†
 			if(temp_FatherPage == PAGE_3_SENSORS)
 			{
 				if(interfacial_GetOptionSensorName()[0] == 'D')
@@ -2052,7 +2071,7 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 			NanoOption_init();	
 			break;
 		
-		case PAGE_5_TWOFIRST://Á½µãĞ£×¼µÄµÚÒ»¸öµã
+		case PAGE_5_TWOFIRST://ä¸¤ç‚¹æ ¡å‡†çš„ç¬¬ä¸€ä¸ªç‚¹
 			if(temp_FatherPage == PAGE_3_SENSORS)
 			{
 				if(interfacial_GetOptionSensorName()[0] == 'D')
@@ -2070,7 +2089,7 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 			NanoOption_init();	
 			break;
 			
-		case PAGE_5_TWOSECOND://Á½µãĞ£×¼µÄµÚ¶ş¸öµã
+		case PAGE_5_TWOSECOND://ä¸¤ç‚¹æ ¡å‡†çš„ç¬¬äºŒä¸ªç‚¹
 			if(temp_FatherPage == PAGE_3_SENSORS)
 			{
 				if(interfacial_GetOptionSensorName()[0] == 'D')
@@ -2106,20 +2125,20 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 		default:
 			break;
 	}
-	gui_ClearLines(16, 160, 0);//³ı×´Ì¬À¸Íâ¶¼ÇåÒ»±é
+	gui_ClearLines(16, 160, 0);//é™¤çŠ¶æ€æ å¤–éƒ½æ¸…ä¸€é
 	gui_DrawStatusBarLine();
-	set_StartPoint(16);//ÉèÖÃ´Ó×´Ì¬À¸ÄÇ±ß¿ªÊ¼Ë¢È¡µÃ×î¿ìµÄmenuÏÔÊ¾
+	set_StartPoint(16);//è®¾ç½®ä»çŠ¶æ€æ é‚£è¾¹å¼€å§‹åˆ·å–å¾—æœ€å¿«çš„menuæ˜¾ç¤º
 	
 	interfacial_SetCurPage(page_num);
 }
 
 
-void interfacial_InitMsg(void)//Éú³ÉÊÇ·ñÁ½¸ö°´¼ü,Õâ¸öÊÇ½çÃæÀïÒ»Ö±ÓĞµÄ
+void interfacial_InitMsg(void)//ç”Ÿæˆæ˜¯å¦ä¸¤ä¸ªæŒ‰é”®,è¿™ä¸ªæ˜¯ç•Œé¢é‡Œä¸€ç›´æœ‰çš„
 {
-	list_NanoOption IsOrNo = NULL;   //ÊÇ·ñ±êÇ©
+	list_NanoOption IsOrNo = NULL;   //æ˜¯å¦æ ‡ç­¾
 	
-	NanoOptionList_Add(32, 96, (uint8_t *)&shi_cn, 1, (uint8_t *)shi_en, NANOOPTION_BUTTON,  0, 0, 9, IS_SINGLE,  &IsOrNo);     //ÊÇ
-	NanoOptionList_Add(104, 96, (uint8_t *)&fou_cn, 1, (uint8_t *)fou_en, NANOOPTION_BUTTON,  0, 0, 9, IS_SINGLE,  &IsOrNo);    //·ñ
+	NanoOptionList_Add(32, 96, (uint8_t *)&shi_cn, 1, (uint8_t *)shi_en, NANOOPTION_BUTTON,  0, 0, 9, IS_SINGLE,  &IsOrNo);     //æ˜¯
+	NanoOptionList_Add(104, 96, (uint8_t *)&fou_cn, 1, (uint8_t *)fou_en, NANOOPTION_BUTTON,  0, 0, 9, IS_SINGLE,  &IsOrNo);    //å¦
 	
 	cur_interfacial.NanoOption_msg = IsOrNo;
 }
@@ -2143,7 +2162,7 @@ uint8_t* interfacial_GetOptionSensorName(void)
 
 void DO_SearchValue(void)
 {
-	if(!rs485_GetCircularSentStatus())//È·±£Ã»ÓĞ±ğµÄ¶«Î÷ÏÂ·¢»òÕßÔÚ²éÑ¯·¢ËÍ²éÑ¯ÎÂ¶ÈºÍÈÜ½âÑõµÄÖµ
+	if(!rs485_GetCircularSentStatus())//ç¡®ä¿æ²¡æœ‰åˆ«çš„ä¸œè¥¿ä¸‹å‘æˆ–è€…åœ¨æŸ¥è¯¢å‘é€æŸ¥è¯¢æ¸©åº¦å’Œæº¶è§£æ°§çš„å€¼
 	{
 //		if(temp_FatherPage == PAGE_0_START)
 //		{
@@ -2176,7 +2195,7 @@ void no_signal(void)
 	if(cur_interfacial.label_head == NULL)
 	{
 		location = 0;
-		LabelList_Add(setting_GetIsChn() ? 48 : 44, 32, (uint8_t *)wuxinghao_cn, sizeof(wuxinghao_cn), (uint8_t *)wuxinghao_en, LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &(cur_interfacial.label_head));
+		LabelList_Add((setting_GetIsChn() ? 48 : 44), 32, (uint8_t *)wuxinghao_cn, sizeof(wuxinghao_cn), (uint8_t *)wuxinghao_en, LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &(cur_interfacial.label_head));
 	}
 	else
 	{
@@ -2188,15 +2207,15 @@ void no_signal(void)
 }
 
 
-/*Í¨¹ıÒ»¸öÈ«¾ÖµÄ½çÃæÖ¸Õë±äÁ¿À´ÉèÖÃË¢ĞÂ½çÃæ*/
-void interfacial_refresh(void)                                                            //Ë¢ĞÂ½çÃæ °üÀ¨Éú³É×´Ì¬À¸ºÍÉèÖÃ½çÃæ
+/*é€šè¿‡ä¸€ä¸ªå…¨å±€çš„ç•Œé¢æŒ‡é’ˆå˜é‡æ¥è®¾ç½®åˆ·æ–°ç•Œé¢*/
+void interfacial_refresh(void)                                                            //åˆ·æ–°ç•Œé¢ åŒ…æ‹¬ç”ŸæˆçŠ¶æ€æ å’Œè®¾ç½®ç•Œé¢
 {
 	uint8_t temp_warning = 0;
 	StatusBar_Update();
 	
-	if(cur_PageNum != PAGE_3_SENSORS) //´«¸ĞÆ÷½çÃæÎÄ×ÖÖ»ÓĞÓ¢ÎÄ
+	if(cur_PageNum != PAGE_3_SENSORS) //ä¼ æ„Ÿå™¨ç•Œé¢æ–‡å­—åªæœ‰è‹±æ–‡
 	{
-		if(setting_GetIsChn())                                                                  //×´Ì¬À¸ÎÄ×Ö±êÇ©
+		if(setting_GetIsChn())                                                                  //çŠ¶æ€æ æ–‡å­—æ ‡ç­¾
 		{
 			GUI_PutChnStr(8, 16, cur_interfacial.content_chn, cur_interfacial.ChnContent_size, MENU_FONT_CHN_LSIZE, MENU_FONT_CHN_RSIZE, LOADBIT_NORMAL);
 		}
@@ -2222,32 +2241,32 @@ void interfacial_refresh(void)                                                  
 					case PAGE_0_START:
 					if(get_CurDo() != NULL && DO_GetIsInit(get_CurDo()))
 					{
-//						if(!rs485_GetCircularSentStatus())//È·±£Ã»ÓĞ±ğµÄ¶«Î÷ÏÂ·¢»òÕßÔÚ²éÑ¯·¢ËÍ²éÑ¯ÎÂ¶ÈºÍÈÜ½âÑõµÄÖµ
+//						if(!rs485_GetCircularSentStatus())//ç¡®ä¿æ²¡æœ‰åˆ«çš„ä¸œè¥¿ä¸‹å‘æˆ–è€…åœ¨æŸ¥è¯¢å‘é€æŸ¥è¯¢æ¸©åº¦å’Œæº¶è§£æ°§çš„å€¼
 //						{
 //							DO_rs485_GetTempTwoDO(get_CurDo());
 //						}
 						
-						if(rs485_GetIsChangeSenesor())//µÚÒ»´ÎÊÇÈÜ½âÑõµÄ»°Ìí¼ÓÒ»ÏÂÈı¸ö²ÎÊı±êÇ©
+						if(rs485_GetIsChangeSenesor())//ç¬¬ä¸€æ¬¡æ˜¯æº¶è§£æ°§çš„è¯æ·»åŠ ä¸€ä¸‹ä¸‰ä¸ªå‚æ•°æ ‡ç­¾
 						{
 							rs485_ClearIsChangeSenesor();
 							
-							list_label label_head = NULL; //ÈÜ½âÑõÊı¾İlabelÁĞ±í
+							list_label label_head = NULL; //æº¶è§£æ°§æ•°æ®labelåˆ—è¡¨
 							LabelList_Add( 16,  36, NULL, 0, (uint8_t *)get_CurDo()->DOpercent_arr,   LABEL_LARGE,  LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //do %
 							LabelList_Add( 32,  72, NULL, 0, (uint8_t *)get_CurDo()->DOmgl_arr,       LABEL_LARGE, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //do mg/L
 							LabelList_Add( 62, 112, NULL, 0, (uint8_t *)get_CurDo()->temperature_arr, LABEL_MEDIUM, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //temperature
 							
 							LabelList_Add( 120, 50, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_PERCENT, DONT_HAVE_PARENTHESIS, &label_head);//%
 							LabelList_Add( 120, 86, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_MGL, DONT_HAVE_PARENTHESIS, &label_head);//mg/L
-							LabelList_Add( 120, 114, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_CELSIUS, DONT_HAVE_PARENTHESIS, &label_head);//¡æ
+							LabelList_Add( 120, 114, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_CELSIUS, DONT_HAVE_PARENTHESIS, &label_head);//â„ƒ
 							
 							
 							cur_interfacial.label_head = label_head;
 							
 						}
 						
-						if(setting_GetIsAlarm_DO())//Èç¹ûÓĞÉèÖÃ±¨¾¯µÄ»°
+						if(setting_GetIsAlarm_DO())//å¦‚æœæœ‰è®¾ç½®æŠ¥è­¦çš„è¯
 						{
-							if(DO_GetIsGetedValue(get_CurDo()))//Èç¹ûÓĞ»ñÈ¡µ½ÊıÖµµÄ»°
+							if(DO_GetIsGetedValue(get_CurDo()))//å¦‚æœæœ‰è·å–åˆ°æ•°å€¼çš„è¯
 							{
 								float high,low;
 								high = float_format(setting_GetHighThreshold_DO());
@@ -2256,20 +2275,20 @@ void interfacial_refresh(void)                                                  
 								temp_warning = flag_NeedWarning;
 								
 								
-								flag_NeedWarning = 0;//ÏÈ³õÊ¼»¯Îª0
+								flag_NeedWarning = 0;//å…ˆåˆå§‹åŒ–ä¸º0
 								if(high!=0 && DO_GetDOmgL(get_CurDo())>=high)
 								{
-									flag_NeedWarning = 1;//±È¸ßãĞÖµ¸ßµÄ»°
+									flag_NeedWarning = 1;//æ¯”é«˜é˜ˆå€¼é«˜çš„è¯
 								}
 								if(low!=0 && DO_GetDOmgL(get_CurDo())<=low)
 								{
-									flag_NeedWarning = 1;//±ÈµÍãĞÖµµÍµÄ»°
+									flag_NeedWarning = 1;//æ¯”ä½é˜ˆå€¼ä½çš„è¯
 								}
-								if(temp_warning == 0 && flag_NeedWarning)//µÚÒ»´Î±¨¾¯Ïì·äÃùÆ÷
+								if(temp_warning == 0 && flag_NeedWarning)//ç¬¬ä¸€æ¬¡æŠ¥è­¦å“èœ‚é¸£å™¨
 								{
 									set_BeeAlarm();
 								}
-								if(temp_warning == 1 && !flag_NeedWarning)//µÚÒ»´ÎÃ»ÓĞ±¨¾¯ÇåÒ»ÏÂÍ¼±ê
+								if(temp_warning == 1 && !flag_NeedWarning)//ç¬¬ä¸€æ¬¡æ²¡æœ‰æŠ¥è­¦æ¸…ä¸€ä¸‹å›¾æ ‡
 								{
 									gui_ClearWarining();
 								}
@@ -2283,11 +2302,11 @@ void interfacial_refresh(void)                                                  
 						
 						if(setting_GetAutoShut() != AUTOLOCK_OFF && DO_GetValueLocked(get_CurDo()))
 						{
-							gui_DrawLock((uint8_t *)icon_lock);//»­Ëø
+							gui_DrawLock((uint8_t *)icon_lock);//ç”»é”
 						}
 						else
 						{
-							gui_ClearLock();//É¾Ëø
+							gui_ClearLock();//åˆ é”
 						}
 						
 						
@@ -2314,13 +2333,13 @@ void interfacial_refresh(void)                                                  
 	}
 	
 	
-	if(interfacial_GetCurPage() == PAGE_3_GPS )//Ìí¼ÓÕıÔÚËÑË÷
+	if(interfacial_GetCurPage() == PAGE_3_GPS )//æ·»åŠ æ­£åœ¨æœç´¢
 	{
 		static uint8_t gps_searching = 0;
 		if(get_LatitudeArr()[0] == 0)
 		{
 			gps_searching = 1;
-			if(setting_GetIsChn())                                                                  //×´Ì¬À¸ÎÄ×Ö±êÇ©
+			if(setting_GetIsChn())                                                                  //çŠ¶æ€æ æ–‡å­—æ ‡ç­¾
 			{
 				GUI_PutChnStr(16, 84, (uint8_t *)zhengzaisousuo_cn, sizeof(zhengzaisousuo_cn), MENU_FONT_CHN_LSIZE, MENU_FONT_CHN_RSIZE, LOADBIT_NORMAL);
 			}
@@ -2335,15 +2354,15 @@ void interfacial_refresh(void)                                                  
 			{
 				gps_searching=0;
 				gui_ClearLines(84, 100, 0);
-				LabelList_Add( 0,  96, (uint8_t *)jingdu_cn, sizeof(jingdu_cn), (uint8_t *)jingdu_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &(interfacial_GetCurrentInterfacial()->label_head));//¾­¶È
-				LabelList_Add( 0,  48, (uint8_t *)weidu_cn, sizeof(weidu_cn), (uint8_t *)weidu_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &(interfacial_GetCurrentInterfacial()->label_head));//Î³¶È
+				LabelList_Add( 0,  96, (uint8_t *)jingdu_cn, sizeof(jingdu_cn), (uint8_t *)jingdu_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &(interfacial_GetCurrentInterfacial()->label_head));//ç»åº¦
+				LabelList_Add( 0,  48, (uint8_t *)weidu_cn, sizeof(weidu_cn), (uint8_t *)weidu_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &(interfacial_GetCurrentInterfacial()->label_head));//çº¬åº¦
 			}
 		}
 	}
 	
 	
-	LabelList_Print(cur_interfacial.label_head, setting_GetIsChn());                        //±éÀúlabelÁ´±íË¢ĞÂ½çÃæ
-	OptionList_Print(cur_interfacial.option_head, setting_GetIsChn(), get_RowSpacing());    //±éÀúÑ¡ÏîÁ´±íË¢ĞÂ½çÃæ
+	LabelList_Print(cur_interfacial.label_head, setting_GetIsChn());                        //éå†labelé“¾è¡¨åˆ·æ–°ç•Œé¢
+	OptionList_Print(cur_interfacial.option_head, setting_GetIsChn(), get_RowSpacing());    //éå†é€‰é¡¹é“¾è¡¨åˆ·æ–°ç•Œé¢
 
 	if(interfacial_GetMessageBoxFlag())
 	{

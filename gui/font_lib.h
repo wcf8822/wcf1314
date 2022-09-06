@@ -1,29 +1,29 @@
 #ifndef __FONT_LIB_H
 #define __FONT_LIB_H
 
-/*×Ö¿â´óĞ¡*/
+/*å­—åº“å¤§å°*/
 #define CHN_FONT_NUM 169
 #define ENG_FONT_NUM 73
 
-/*×Ö¿â¶¨Òå*/
+/*å­—åº“å®šä¹‰*/
 #define FONT_ENG_MENU  eng_8x16
 #define FONT_CHN_MENU  chn_16x16
 #define FONT_LARGE     num_16x32
 #define FONT_MEDIUM    num_10x20
 
-/*ÖĞÎÄ±êÇ©ºáÏòÏñËØµã¸öÊı*/
+/*ä¸­æ–‡æ ‡ç­¾æ¨ªå‘åƒç´ ç‚¹ä¸ªæ•°*/
 #define MENU_FONT_CHN_LSIZE 16
 #define MENU_FONT_CHN_RSIZE 16
 
-/*Ó¢ÎÄ±êÇ©×İÏòÏñËØµã¸öÊı*/
+/*è‹±æ–‡æ ‡ç­¾çºµå‘åƒç´ ç‚¹ä¸ªæ•°*/
 #define MENU_FONT_ENG_LSIZE 8
 #define MENU_FONT_ENG_RSIZE 16
 
-/*´óĞÍÓ¢ÎÄ±êÇ©×İÏòÏñËØµã¸öÊı*/
+/*å¤§å‹è‹±æ–‡æ ‡ç­¾çºµå‘åƒç´ ç‚¹ä¸ªæ•°*/
 #define MENU_FONT_ENG_LARGE_LSIZE 16
 #define MENU_FONT_ENG_LARGE_RSIZE 32
 
-/*ÖĞĞÍÓ¢ÎÄ±êÇ©×İÏòÏñËØµã¸öÊı*/
+/*ä¸­å‹è‹±æ–‡æ ‡ç­¾çºµå‘åƒç´ ç‚¹ä¸ªæ•°*/
 #define MENU_FONT_ENG_MEDIUM_LSIZE 11
 #define MENU_FONT_ENG_MEDIUM_RSIZE 20
 
@@ -36,18 +36,18 @@ extern const unsigned char num_10x20[13][40];
 
 
 
-/*Ó¢ÎÄ×Ö¿âÖĞÆğÊ¼×ÖÄ¸¶ÔÓ¦µÄÏÂ±ê*/
+/*è‹±æ–‡å­—åº“ä¸­èµ·å§‹å­—æ¯å¯¹åº”çš„ä¸‹æ ‡*/
 #define INDEX_a 41
 #define INDEX_A 15
 #define INDEX_0 5
 
-/*ÖĞÎÄ×Ö¿âÖĞÌØÊâ×Ö·û¶ÔÓ¦µÄÏÂ±ê*/
+/*ä¸­æ–‡å­—åº“ä¸­ç‰¹æ®Šå­—ç¬¦å¯¹åº”çš„ä¸‹æ ‡*/
 #define CHN_SPACE_INDEX  111
 #define CHN_5_INDEX      112
 #define CHN_EN_INDEX     115
 #define CHN_CH_INDEX     119
 
-/*Ó¢ÎÄ·ûºÅ¶ÔÓ¦µÄ×Ö¿âÎ»ÖÃ·½±ãÖ±½Ó´òÓ¡*/
+/*è‹±æ–‡ç¬¦å·å¯¹åº”çš„å­—åº“ä½ç½®æ–¹ä¾¿ç›´æ¥æ‰“å°*/
 #define MAOHAO      FONT_ENG_MENU[2]
 #define XIEGANG     FONT_ENG_MENU[3]
 #define BAIFENGHAO  FONT_ENG_MENU[4]
@@ -56,7 +56,10 @@ extern const unsigned char num_10x20[13][40];
 #define YOUKUOHAO   FONT_ENG_MENU[72]
 #define SHESHIDU    chn_16x16[165]
 
-extern const unsigned char logo_arr[200][16];
+//extern const unsigned char logo_arr_lh[200][16];
+//extern const unsigned char logo_arr_hl[200][16];
+extern const unsigned char logo_arr_hl[];
+extern const unsigned char logo_arr_lh[];
 
 extern const unsigned char icon_lock[];
 
@@ -359,10 +362,10 @@ extern const unsigned char minute20_en[];
 
 //extern const unsigned char zhongwen[8];
 //extern const unsigned char yingwen[6];
-//ÖĞÎÄ
+//ä¸­æ–‡
 extern const unsigned char zhongwen_cn[8];
 extern const unsigned char zhongwen_en[7];
-//Ó¢ÎÄ
+//è‹±æ–‡
 extern const unsigned char yingwen_en[7];
 extern const unsigned char yingwen_cn[8];
 	

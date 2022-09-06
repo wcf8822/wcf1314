@@ -8,16 +8,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-/////////////////////////////////////////////////////////////////////////////////////////////ºÃÏñ¿ÉÒÔÖ±½ÓÔÚ485Ö¸ÁîÀïÖ±½Ó¸Ä¶ÔÓ¦Éè±¸µÄÖµ¾Í²»ÓÃ¸Ä½á¹¹ÌåÀïµÄÖµ
+/////////////////////////////////////////////////////////////////////////////////////////////å¥½åƒå¯ä»¥ç›´æ¥åœ¨485æŒ‡ä»¤é‡Œç›´æ¥æ”¹å¯¹åº”è®¾å¤‡çš„å€¼å°±ä¸ç”¨æ”¹ç»“æ„ä½“é‡Œçš„å€¼
 
-const float press_error = 0.3;    //ÆøÑ¹²îÖµ
+const float press_error = 0.3;    //æ°”å‹å·®å€¼
 const float EPSILON = 1.0E-6;
 
 STATIC PtrToDOProbe cur_DO;
 
-//Òª²»Òª°´ÕÕmodbusid À´¶ÔÉè±¸½øĞĞ²Ù×÷ ¾ÍÊÇÏÈfindÒ»ÏÂÈ»ºóÈç¹ûÃ»ÕÒµ½ÖØĞÂ´´½¨Ò»¸ö
+//è¦ä¸è¦æŒ‰ç…§modbusid æ¥å¯¹è®¾å¤‡è¿›è¡Œæ“ä½œ å°±æ˜¯å…ˆfindä¸€ä¸‹ç„¶åå¦‚æœæ²¡æ‰¾åˆ°é‡æ–°åˆ›å»ºä¸€ä¸ª
 
-/*»ñÈ¡DOÉè±¸µÄÖ¸Õë*/
+/*è·å–DOè®¾å¤‡çš„æŒ‡é’ˆ*/
 PtrToDOProbe get_CurDo(void)
 {
 	return cur_DO;
@@ -37,7 +37,7 @@ void DO_SetValueLocked(PtrToDOProbe ptd)
 }
 
 
-//¸ù¾İmodbusid À´ÉèÖÃµ±Ç°ÈÜ½âÑõÉè±¸
+//æ ¹æ®modbusid æ¥è®¾ç½®å½“å‰æº¶è§£æ°§è®¾å¤‡
 void DO_SetCurDO(uint8_t ModbusId, PtrToDOProbe DO_head)
 {
 	PtrToDOProbe p = DO_head;
@@ -57,23 +57,23 @@ void DO_ClearCueDO(void)
 	cur_DO = NULL;
 }
 
-void DO_AddProbe(uint8_t ModbusId, PtrToDOProbe *DO_head)//ÕâÀïµÃÌí¼ÓÃû×Ö
+void DO_AddProbe(uint8_t ModbusId, PtrToDOProbe *DO_head)//è¿™é‡Œå¾—æ·»åŠ åå­—
 {
 	PtrToDOProbe p = NULL;
-	p = (PtrToDOProbe)malloc(sizeof(DOProbe_t));//·ÖÅä¿Õ¼ä
+	p = (PtrToDOProbe)malloc(sizeof(DOProbe_t));//åˆ†é…ç©ºé—´
 	
-	if(p == NULL)//°²È«ĞÔÅĞ¶Ï
+	if(p == NULL)//å®‰å…¨æ€§åˆ¤æ–­
 	{
 		return;
 	}
 	
-	cur_DO = p;                                //½«ĞÂ½ÚµãÖ¸ÕëÖ¸ÏòĞÂÉú³ÉµÄ½Úµã·½±ãºóÃæĞŞ¸ÄÌí¼ÓÉè±¸
+	cur_DO = p;                                //å°†æ–°èŠ‚ç‚¹æŒ‡é’ˆæŒ‡å‘æ–°ç”Ÿæˆçš„èŠ‚ç‚¹æ–¹ä¾¿åé¢ä¿®æ”¹æ·»åŠ è®¾å¤‡
 	
-	snprintf(p->name, 6, "DO-%02X", ModbusId); //Éú³ÉÃû×Ö
+	snprintf(p->name, 6, "DO-%02X", ModbusId); //ç”Ÿæˆåå­—
 	
 	p->SN[12] = '\0';
-	p->is_init = 0;                            //ÉèÖÃ³ÉÃ»ÓĞ³õÊ¼»¯
-	p->is_GetedValue = 0;                      //ÉèÖÃ³ÉÃ»ÓĞ»ñÈ¡µ½Êı¾İ
+	p->is_init = 0;                            //è®¾ç½®æˆæ²¡æœ‰åˆå§‹åŒ–
+	p->is_GetedValue = 0;                      //è®¾ç½®æˆæ²¡æœ‰è·å–åˆ°æ•°æ®
 	
 	p->is_FirstGetValue = 1;
 	
@@ -81,12 +81,12 @@ void DO_AddProbe(uint8_t ModbusId, PtrToDOProbe *DO_head)//ÕâÀïµÃÌí¼ÓÃû×Ö
 	
 	p->modbus_id = ModbusId;
 	
-	//´«¸ĞÆ÷µÄÖµ³õÊ¼»¯Ò»ÏÂ¶¼³É0
+	//ä¼ æ„Ÿå™¨çš„å€¼åˆå§‹åŒ–ä¸€ä¸‹éƒ½æˆ0
 	p->DOmgl.value_f = 0.0;
 	p->DOpercent.value_f = 0.0;
 	p->temperature.value_f = 0.0;
 	
-	//ÏÔÊ¾buff³õÊ¼»¯Ò»ÏÂÈ«¶¼ÏÔÊ¾³É0
+	//æ˜¾ç¤ºbuffåˆå§‹åŒ–ä¸€ä¸‹å…¨éƒ½æ˜¾ç¤ºæˆ0
 	p->DOmgl_arr[0] = ' ';
 	p->DOmgl_arr[1] = '0';
 	p->DOmgl_arr[2] = '.';
@@ -113,12 +113,12 @@ void DO_AddProbe(uint8_t ModbusId, PtrToDOProbe *DO_head)//ÕâÀïµÃÌí¼ÓÃû×Ö
 	*DO_head = p;
 }
 
-//Çå³ıËùÓĞÉè±¸
+//æ¸…é™¤æ‰€æœ‰è®¾å¤‡
 void DO_Destory(PtrToDOProbe *DO_head)
 {
 	PtrToDOProbe p = NULL, temp = NULL;
-	p = *DO_head;                          //Ö¸ÏòÍ·Ö¸Õë
-	if((*DO_head) == NULL)//°²È«ĞÔ¼ì²é
+	p = *DO_head;                          //æŒ‡å‘å¤´æŒ‡é’ˆ
+	if((*DO_head) == NULL)//å®‰å…¨æ€§æ£€æŸ¥
 	{
 		return;
 	}
@@ -132,30 +132,30 @@ void DO_Destory(PtrToDOProbe *DO_head)
 	}
 }
 
-/*É¾³ıÖ¸¶¨modbusidµÄÉè±¸*/
-void DO_DelProbe(uint8_t ModbusId, PtrToDOProbe *DO_head) //ºÃÏñÒª¶ÔÍ·Ö¸Õë²Ù×÷Ö»ÄÜÓÃÕâÖÖ°ì·¨ÁË
-{                                                         //ÕâÀïÒª¸Ä³É¿ìÂıÖ¸Õë ²»Ó¦¸Ã¾ÖÏŞÓÚÁ½¸öÉè±¸
+/*åˆ é™¤æŒ‡å®šmodbusidçš„è®¾å¤‡*/
+void DO_DelProbe(uint8_t ModbusId, PtrToDOProbe *DO_head) //å¥½åƒè¦å¯¹å¤´æŒ‡é’ˆæ“ä½œåªèƒ½ç”¨è¿™ç§åŠæ³•äº†
+{                                                         //è¿™é‡Œè¦æ”¹æˆå¿«æ…¢æŒ‡é’ˆ ä¸åº”è¯¥å±€é™äºä¸¤ä¸ªè®¾å¤‡
 	PtrToDOProbe cur = (*DO_head);
 	
-	if((*DO_head) == NULL)//°²È«ĞÔ¼ì²é
+	if((*DO_head) == NULL)//å®‰å…¨æ€§æ£€æŸ¥
 	{
 		return;
 	}
 
 	
-	if(cur->modbus_id == ModbusId)//Èç¹ûÍ·Ö¸ÕëÖ¸µÄ¾ÍÊÇ
+	if(cur->modbus_id == ModbusId)//å¦‚æœå¤´æŒ‡é’ˆæŒ‡çš„å°±æ˜¯
 	{
 		*DO_head = (*DO_head)->next_DO;
 		free(cur);
 	}
-	if(cur->next_DO->modbus_id == ModbusId)//Èç¹ûµÚ¶ş¸ö½ÚµãÊÇ
+	if(cur->next_DO->modbus_id == ModbusId)//å¦‚æœç¬¬äºŒä¸ªèŠ‚ç‚¹æ˜¯
 	{
 		(*DO_head)->next_DO = (*DO_head)->next_DO->next_DO;
 		free(cur->next_DO);
 	}
 }
 
-/*Í¨¹ıÃû×Ö²éÕÒÈÜ½âÑõÉè±¸²¢·µ»ØÖ¸Õë*/
+/*é€šè¿‡åå­—æŸ¥æ‰¾æº¶è§£æ°§è®¾å¤‡å¹¶è¿”å›æŒ‡é’ˆ*/
 PtrToDOProbe DO_FindByName(uint8_t* name, PtrToDOProbe *DO_head)
 {
 	PtrToDOProbe p = (*DO_head);
@@ -172,18 +172,18 @@ PtrToDOProbe DO_FindByName(uint8_t* name, PtrToDOProbe *DO_head)
 
 
 
-/*ÉèÖÃµç»úµÄModbusID*/
-void DO_rs485_SetAddr(PtrToDOProbe ptd, uint8_t NewId) //ÕâÀïÒªĞ£ÑéÒ»ÏÂÊÇ²»ÊÇĞ´½øÈ¥ÁË£¬È»ºóÒª½«Õâ¸ö½á¹¹ÌåÀïÃæµÄmodbus id Ò²¸Äµô
+/*è®¾ç½®ç”µæœºçš„ModbusID*/
+void DO_rs485_SetAddr(PtrToDOProbe ptd, uint8_t NewId) //è¿™é‡Œè¦æ ¡éªŒä¸€ä¸‹æ˜¯ä¸æ˜¯å†™è¿›å»äº†ï¼Œç„¶åè¦å°†è¿™ä¸ªç»“æ„ä½“é‡Œé¢çš„modbus id ä¹Ÿæ”¹æ‰
 {
 	if(ptd == NULL) return;
 	uint8_t temp = 0;
 	
 	
 	
-	temp = NewId>>4;        //¸ü¸ÄÉè±¸Ãû×Ö
-	ptd->name[3] = temp>=10 ? (temp - 10) + 'A': temp+'0';
+	temp = NewId>>4;        //æ›´æ”¹è®¾å¤‡åå­—
+	ptd->name[3] = ((temp>=10) ? ((temp - 10) + 'A'): (temp+'0'));
 	temp = NewId & 0x0f;
-	ptd->name[4] = temp>=10 ? (temp - 10) + 'A': temp+'0';
+	ptd->name[4] = ((temp>=10) ? ((temp - 10) + 'A') : (temp+'0'));
 	
 	rs485_usart.tx_buf[0] = ptd->modbus_id;
 	rs485_usart.tx_buf[1] = 0x10;
@@ -201,12 +201,12 @@ void DO_rs485_SetAddr(PtrToDOProbe ptd, uint8_t NewId) //ÕâÀïÒªĞ£ÑéÒ»ÏÂÊÇ²»ÊÇĞ´½
 	
 	rs485_SetSentType(DO_SendType_SetAddr);
 	
-	ptd->new_ModbusID = NewId; //¸ü¸ÄÉè±¸id
+	ptd->new_ModbusID = NewId; //æ›´æ”¹è®¾å¤‡id
 
 }
 
 
-/*»ñÈ¡sn*/
+/*è·å–sn*/
 void DO_rs485_GetSN(PtrToDOProbe ptd)
 {
 	if(ptd == NULL) return;
@@ -226,8 +226,8 @@ void DO_rs485_GetSN(PtrToDOProbe ptd)
 
 }
 
-/*¿ªÊ¼²âÁ¿*/
-void DO_rs485_Start(PtrToDOProbe ptd)//Ä¬ÈÏÉÏµç¾Í¿ªÊ¼²âÁ¿
+/*å¼€å§‹æµ‹é‡*/
+void DO_rs485_Start(PtrToDOProbe ptd)//é»˜è®¤ä¸Šç”µå°±å¼€å§‹æµ‹é‡
 {
 	if(ptd == NULL) return;
 	rs485_usart.tx_buf[0] = ptd->modbus_id;
@@ -246,7 +246,7 @@ void DO_rs485_Start(PtrToDOProbe ptd)//Ä¬ÈÏÉÏµç¾Í¿ªÊ¼²âÁ¿
 
 }
 
-/*»ñÈ¡ÎÂ¶È DO% DOmg/L*/
+/*è·å–æ¸©åº¦ DO% DOmg/L*/
 void DO_rs485_GetTempTwoDO(PtrToDOProbe ptd)
 {
 	if(ptd == NULL) return;
@@ -266,7 +266,7 @@ void DO_rs485_GetTempTwoDO(PtrToDOProbe ptd)
 
 }
 
-/*»ñÈ¡ÎÂ¶È*/
+/*è·å–æ¸©åº¦*/
 void DO_rs485_GetTemperature(PtrToDOProbe ptd)
 {
 	if(ptd == NULL) return;
@@ -286,7 +286,7 @@ void DO_rs485_GetTemperature(PtrToDOProbe ptd)
 
 }
 
-/*»ñÈ¡DO %*/
+/*è·å–DO %*/
 void DO_rs485_GetDOPercent(PtrToDOProbe ptd)
 {
 	if(ptd == NULL) return;
@@ -305,7 +305,7 @@ void DO_rs485_GetDOPercent(PtrToDOProbe ptd)
 	
 
 }
-/*»ñÈ¡DO mg/L*/
+/*è·å–DO mg/L*/
 void DO_rs485_GetDOmgL(PtrToDOProbe ptd)
 {
 	if(ptd == NULL) return;
@@ -325,7 +325,7 @@ void DO_rs485_GetDOmgL(PtrToDOProbe ptd)
 
 }
 
-/*»ñÈ¡ÈíÓ²¼ş°æ±¾ºÅ*/
+/*è·å–è½¯ç¡¬ä»¶ç‰ˆæœ¬å·*/
 void DO_rs485_GetSHWVersion(PtrToDOProbe ptd)
 {
 	if(ptd == NULL) return;
@@ -364,7 +364,7 @@ void DO_rs485_Stop(PtrToDOProbe ptd)
 
 }
 
-/*»ñÈ¡ÓÃ»§Ğ£×¼²ÎÊı*/
+/*è·å–ç”¨æˆ·æ ¡å‡†å‚æ•°*/
 void DO_rs485_GetKB(PtrToDOProbe ptd)
 {
 	if(ptd == NULL) return;
@@ -416,7 +416,7 @@ void DO_rs485_SetKBValue(PtrToDOProbe ptd)
 
 
 //0x01	0x10	0x11   	0x00	0x00	0x04	0x08
-/*ÉèÖÃĞ£×¼²ÎÊı*/
+/*è®¾ç½®æ ¡å‡†å‚æ•°*/
 void DO_rs485_SetKB(PtrToDOProbe ptd, float k, float b)
 {
 	ptd->compensate_k.value_f = k;
@@ -444,7 +444,7 @@ void DO_rs485_SetB(PtrToDOProbe ptd, float b)
 
 
 
-/*»ñÈ¡Ì½Í·ModbusÍ¨Ñ¶ID*/
+/*è·å–æ¢å¤´Modbusé€šè®¯ID*/
 void DO_rs485_GetModbusId(void)
 {
 	rs485_usart.tx_buf[0] = 0xFF;
@@ -522,7 +522,7 @@ void DO_rs485_SetSensorCap(PtrToDOProbe ptd, SensorCap_t *sc)
 	
 	rs485_SetSentType(DO_SendType_SetSensorCap);
 }
-void DO_rs485_GetSensorCap(PtrToDOProbe ptd)//»ñÈ¡Ã±Ä¤ÉèÖÃ
+void DO_rs485_GetSensorCap(PtrToDOProbe ptd)//è·å–å¸½è†œè®¾ç½®
 {
 	
 }
@@ -782,8 +782,8 @@ float last_DOmgl=0.0;
 
 void CheckValueLock(PtrToDOProbe ptd)
 {
-	double difference = 0.0;//²îÖµ
-	static uint8_t last_trend = 1;//1 ÉÏÕÇ 0 ÏÂ½µ
+	double difference = 0.0;//å·®å€¼
+	static uint8_t last_trend = 1;//1 ä¸Šæ¶¨ 0 ä¸‹é™
 	static uint8_t up_count = 0;
 	static uint8_t down_count = 0;
 	
@@ -801,12 +801,12 @@ void CheckValueLock(PtrToDOProbe ptd)
 //			n = 101;
 //		}
 //		
-		if(difference >= 0)//Õâ´ÎÊÇÉÏÕÇ
+		if(difference >= 0)//è¿™æ¬¡æ˜¯ä¸Šæ¶¨
 		{
 			down_count = 0;
-			if(last_trend == 1)//ÉÏ´ÎÊÇÉÏÕÇ
+			if(last_trend == 1)//ä¸Šæ¬¡æ˜¯ä¸Šæ¶¨
 			{
-				if(fabs(difference) >= DO_EPS)//Á¬ĞøÉÏÕÇÒ»¶¨´ÎÊı
+				if(fabs(difference) >= DO_EPS)//è¿ç»­ä¸Šæ¶¨ä¸€å®šæ¬¡æ•°
 				{
 					shake_count = 0;
 					up_count = 0;
@@ -820,7 +820,7 @@ void CheckValueLock(PtrToDOProbe ptd)
 					}
 				}
 			}
-			else//ÉÏ´ÎÊÇµø \/
+			else//ä¸Šæ¬¡æ˜¯è·Œ \/
 			{
 					if(fabs(difference) < DO_EPS)
 					{
@@ -829,12 +829,12 @@ void CheckValueLock(PtrToDOProbe ptd)
 			}
 			last_trend = 1;
 		}
-		else//Õâ´ÎÊÇµø
+		else//è¿™æ¬¡æ˜¯è·Œ
 		{
 			up_count = 0;
-			if(last_trend == 0)//ÉÏ´ÎÊÇµøµÄ»°
+			if(last_trend == 0)//ä¸Šæ¬¡æ˜¯è·Œçš„è¯
 			{
-				if(fabs(difference) >= DO_EPS)//Á¬ĞøµøÒ»¶¨´ÎÊı
+				if(fabs(difference) >= DO_EPS)//è¿ç»­è·Œä¸€å®šæ¬¡æ•°
 				{
 					shake_count = 0;
 					down_count = 0;
@@ -848,7 +848,7 @@ void CheckValueLock(PtrToDOProbe ptd)
 					}
 				}
 			}
-			else//ÉÏ´ÎÊÇÕÇ
+			else//ä¸Šæ¬¡æ˜¯æ¶¨
 			{
 				if(fabs(difference) < DO_EPS)
 				{
@@ -862,14 +862,14 @@ void CheckValueLock(PtrToDOProbe ptd)
 		if(shake_count >= SHAKE_TIMES)
 		{
 			shake_count = 0;
-		  ptd->is_ValueLocked = 1;//ÉÏËø
+		  ptd->is_ValueLocked = 1;//ä¸Šé”
 		}
 
 	}
 	
 }
 
-void DO_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)//ÒªÌí¼ÓÊı×ÖÂË²¨
+void DO_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)//è¦æ·»åŠ æ•°å­—æ»¤æ³¢
 {
 	
 	
@@ -898,7 +898,9 @@ void DO_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)//ÒªÌí¼ÓÊı×ÖÂË²¨
 		ptd->DOmgl.value_arr[i] = *(dat++);
 	}
 	
-	if(ptd->is_FirstGetValue)
+	ptd->DOpercent.value_f = fabs(ptd->DOpercent.value_f);
+	
+	if(ptd->is_FirstGetValue)//å¦‚æœæ˜¯ç¬¬ä¸€æ¬¡è·å–åˆ°æ•°æ®çš„è¯ç»™å®ƒä¸€ä¸ªå€¼
 	{
 		ptd->is_FirstGetValue = 0;
 		
@@ -915,10 +917,10 @@ void DO_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)//ÒªÌí¼ÓÊı×ÖÂË²¨
 		temperature_sum += ptd->temperature.value_f;
 		
 		
-		CheckValueLock(ptd);
+		CheckValueLock(ptd);//è‡ªåŠ¨é”å®šç›´æ¥åšåœ¨è¯»æ•°è¿™é‡Œçš„
 		
 		
-		last_DOmgl = ptd->DOmgl.value_f;//¸üĞÂÒ»ÏÂÉÏ´ÎµÄÖµ
+		last_DOmgl = ptd->DOmgl.value_f;//æ›´æ–°ä¸€ä¸‹ä¸Šæ¬¡çš„å€¼
 		if(++update_count >= 3)
 		{
 			
@@ -943,7 +945,7 @@ void DO_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)//ÒªÌí¼ÓÊı×ÖÂË²¨
 	}
 }
 
-void DO_UpdatePressSal(PtrToDOProbe *DO_head) //¸üĞÂDOÁ´±íÉÏËùÓĞDOÉè±¸µÄÆøÑ¹ÖµºÍÑÎ¶ÈÖµ£¨Èç¹ûÓĞĞèÒªµÄ»°£©
+void DO_UpdatePressSal(PtrToDOProbe *DO_head) //æ›´æ–°DOé“¾è¡¨ä¸Šæ‰€æœ‰DOè®¾å¤‡çš„æ°”å‹å€¼å’Œç›åº¦å€¼ï¼ˆå¦‚æœæœ‰éœ€è¦çš„è¯ï¼‰
 {
 	PtrToDOProbe p = (*DO_head);
 	float press, sal;
@@ -951,19 +953,19 @@ void DO_UpdatePressSal(PtrToDOProbe *DO_head) //¸üĞÂDOÁ´±íÉÏËùÓĞDOÉè±¸µÄÆøÑ¹ÖµºÍ
 	press = bmp280_GetPress()+setting_GetAirCompensate();
 	sal = setting_GetSalinity();
 	
-	if((*DO_head) == NULL) //°²È«ĞÔÅĞ¶Ï
+	if((*DO_head) == NULL) //å®‰å…¨æ€§åˆ¤æ–­
 	{
 		return;
 	}
 	
-	while(p != NULL)//±éÀú¸üĞÂËùÓĞÒÑÁ¬½ÓµÄÈÜ½âÑõ   ¿ÉÒÔÍ¨¹ıÅĞ¶ÏÊÇ·ñÔÚÑ­»·Ğ´ÈëÈ¥Ğ´Èë  Ğ´Ò»¸öÈ»ºóÖ±½Óreturn
+	while(p != NULL)//éå†æ›´æ–°æ‰€æœ‰å·²è¿æ¥çš„æº¶è§£æ°§   å¯ä»¥é€šè¿‡åˆ¤æ–­æ˜¯å¦åœ¨å¾ªç¯å†™å…¥å»å†™å…¥  å†™ä¸€ä¸ªç„¶åç›´æ¥return
 	{
-		if(fabs(press - p->press.value_f) >= press_error && !rs485_GetCircularSentStatus())//ÆøÑ¹Öµ¸úµ±Ç°Öµ²»Ò»Ñù
+		if(fabs(press - p->press.value_f) >= press_error && !rs485_GetCircularSentStatus())//æ°”å‹å€¼è·Ÿå½“å‰å€¼ä¸ä¸€æ ·
 		{
 			DO_rs485_SetPressure(get_CurDo(), press);
 			return;
 		}
-		if(fabs(sal - p->sal.value_f) >= EPSILON && !rs485_GetCircularSentStatus())//Èç¹ûÑÎ¶ÈÖµ¸úµ±Ç°ÉèÖÃµÄÖµ²»Ò»Ñù
+		if(fabs(sal - p->sal.value_f) >= EPSILON && !rs485_GetCircularSentStatus())//å¦‚æœç›åº¦å€¼è·Ÿå½“å‰è®¾ç½®çš„å€¼ä¸ä¸€æ ·
 		{
 			DO_rs485_SetSalinity(get_CurDo(), sal);
 			return;
@@ -975,11 +977,11 @@ void DO_UpdatePressSal(PtrToDOProbe *DO_head) //¸üĞÂDOÁ´±íÉÏËùÓĞDOÉè±¸µÄÆøÑ¹ÖµºÍ
 }
 
 
-/*ÓÃÀ´¼ì²âÊı¾İÊÇ·ñºÏÀíÄÜ·ñ±»Ğ´Èë Êµ¼ÊÖµreal  Ğ´ÈëÇø¼ä £¨real/2£©- (2*real)  */
+/*ç”¨æ¥æ£€æµ‹æ•°æ®æ˜¯å¦åˆç†èƒ½å¦è¢«å†™å…¥ å®é™…å€¼real  å†™å…¥åŒºé—´ ï¼ˆreal/2ï¼‰- (2*real)  */
 uint8_t DO_ValueCheckFirst(PtrToDOProbe ptd, float data)
 {
 //	float real = 0.0;
-//	real = (DO_GetDOPercent(ptd) - DO_GetBFloat(ptd)) / DO_GetKFloat(ptd);//»ñµÃµ±Ç°Êµ¼ÊµÄÖµ bÎª0 kÎª1
+//	real = (DO_GetDOPercent(ptd) - DO_GetBFloat(ptd)) / DO_GetKFloat(ptd);//è·å¾—å½“å‰å®é™…çš„å€¼ bä¸º0 kä¸º1
 //	real *= 100.0;
 //	if(data != 0)
 //	{

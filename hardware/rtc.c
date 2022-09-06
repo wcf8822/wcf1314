@@ -1,8 +1,8 @@
 #include "rtc.h"
 #include "setting.h"
 
-STATIC datetime_t machine_time;//±£»¤ÆðÀ´²»ÈÃ±ðµÄµØ·½¿ÉÒÔ¸ÄÖ»ÄÜµ÷ÓÃ½Ó¿ÚÀ´¸Ä¶¯Ê±¼ä
-STATIC uint8_t minute_ShutDown = 60;//Éè³É61ÏÈ·ÀÖ¹¿ª»úÖ±½ÓÀ­Õ¢
+STATIC datetime_t machine_time;//ä¿æŠ¤èµ·æ¥ä¸è®©åˆ«çš„åœ°æ–¹å¯ä»¥æ”¹åªèƒ½è°ƒç”¨æŽ¥å£æ¥æ”¹åŠ¨æ—¶é—´
+STATIC uint8_t minute_ShutDown = 60;//è®¾æˆ61å…ˆé˜²æ­¢å¼€æœºç›´æŽ¥æ‹‰é—¸
 
 uint8_t dec2bcd(uint8_t DecData)
 {
@@ -16,26 +16,26 @@ uint8_t bcd2dec(uint8_t BcdData)
 
 void HYM8563_Write_OneByte(uint8_t addr,uint8_t data)
 {
-	IIC_Start(); //²úÉúIICÆðÊ¼ÐÅºÅ
-	IIC_Send_Byte(0XA2); //·¢ËÍÐ´ÃüÁî
-	IIC_Wait_Ack(); //µÈ´ýÓ¦´ðÐÅºÅµ½À´
-	IIC_Send_Byte(addr); //·¢ËÍµØÖ·
-	IIC_Wait_Ack(); //µÈ´ýÓ¦´ðÐÅºÅµ½À´
-	IIC_Send_Byte(data); //·¢ËÍ×Ö½Ú
-	IIC_Wait_Ack(); //µÈ´ýÓ¦´ðÐÅºÅµ½À´
-	IIC_Stop();//²úÉúÒ»¸öÍ£Ö¹Ìõ¼þ
+	IIC_Start(); //äº§ç”ŸIICèµ·å§‹ä¿¡å·
+	IIC_Send_Byte(0XA2); //å‘é€å†™å‘½ä»¤
+	IIC_Wait_Ack(); //ç­‰å¾…åº”ç­”ä¿¡å·åˆ°æ¥
+	IIC_Send_Byte(addr); //å‘é€åœ°å€
+	IIC_Wait_Ack(); //ç­‰å¾…åº”ç­”ä¿¡å·åˆ°æ¥
+	IIC_Send_Byte(data); //å‘é€å­—èŠ‚
+	IIC_Wait_Ack(); //ç­‰å¾…åº”ç­”ä¿¡å·åˆ°æ¥
+	IIC_Stop();//äº§ç”Ÿä¸€ä¸ªåœæ­¢æ¡ä»¶
 }
 
-void HYM8563_UpdateTime(void) //²ÉÓÃÐ´µØÖ·¶ÁÊý¾ÝÄ£Ê½
+void HYM8563_UpdateTime(void) //é‡‡ç”¨å†™åœ°å€è¯»æ•°æ®æ¨¡å¼
 {
-	IIC_Start(); //²úÉúIICÆðÊ¼ÐÅºÅ
-	IIC_Send_Byte(0XA2); //·¢ËÍÐ´ÃüÁî
-	IIC_Wait_Ack(); //µÈ´ýÓ¦´ðÐÅºÅµ½À´
-	IIC_Send_Byte(0x02); //·¢ËÍÃëµØÖ·
-	IIC_Wait_Ack(); //µÈ´ýÓ¦´ðÐÅºÅµ½À´
+	IIC_Start(); //äº§ç”ŸIICèµ·å§‹ä¿¡å·
+	IIC_Send_Byte(0XA2); //å‘é€å†™å‘½ä»¤
+	IIC_Wait_Ack(); //ç­‰å¾…åº”ç­”ä¿¡å·åˆ°æ¥
+	IIC_Send_Byte(0x02); //å‘é€ç§’åœ°å€
+	IIC_Wait_Ack(); //ç­‰å¾…åº”ç­”ä¿¡å·åˆ°æ¥
 	IIC_Start();
-	IIC_Send_Byte(0XA3); //½øÈë½ÓÊÕÄ£Ê½ ¶ÁÃüÁî
-	IIC_Wait_Ack(); //µÈ´ýÓ¦´ðÐÅºÅµ½À´
+	IIC_Send_Byte(0XA3); //è¿›å…¥æŽ¥æ”¶æ¨¡å¼ è¯»å‘½ä»¤
+	IIC_Wait_Ack(); //ç­‰å¾…åº”ç­”ä¿¡å·åˆ°æ¥
 	
 	machine_time.seconds = bcd2dec(IIC_Read_Byte(1) & 0x7f);
 	machine_time.minute = bcd2dec(IIC_Read_Byte(1) & 0x7f);
@@ -44,12 +44,12 @@ void HYM8563_UpdateTime(void) //²ÉÓÃÐ´µØÖ·¶ÁÊý¾ÝÄ£Ê½
 	machine_time.week = bcd2dec(IIC_Read_Byte(1) & 0x07);
 	machine_time.month = bcd2dec(IIC_Read_Byte(1) & 0x0f);
 	machine_time.years = bcd2dec(IIC_Read_Byte(0));
-	IIC_Stop();//²úÉúÒ»¸öÍ£Ö¹Ìõ¼þ
+	IIC_Stop();//äº§ç”Ÿä¸€ä¸ªåœæ­¢æ¡ä»¶
 	
 	
 	RTC_AutoShut();
-	/*if(Seconds >= 0x80) //VL±êÖ¾ vl=1 µçÑ¹¹ýµÍ ²»±£Ö¤×¼È·Ê±ÖÓ
-	{//¿ÉÖØÖÃÊ±ÖÓ
+	/*if(Seconds >= 0x80) //VLæ ‡å¿— vl=1 ç”µåŽ‹è¿‡ä½Ž ä¸ä¿è¯å‡†ç¡®æ—¶é’Ÿ
+	{//å¯é‡ç½®æ—¶é’Ÿ
 		Seconds&=0x7f;
 	}*/
 }
@@ -58,27 +58,27 @@ void HYM8563_UpdateTime(void) //²ÉÓÃÐ´µØÖ·¶ÁÊý¾ÝÄ£Ê½
 
 void HYM8563_SetTime(datetime_t *p)
 {
-	//Ê±¼ä×ª»»ÎªBCDÂëºóÔÙ½øÐÐÐ´ÈëÊ±ÖÓ
-	IIC_Start(); //²úÉúIICÆðÊ¼ÐÅºÅ
-	IIC_Send_Byte(0XA2); //·¢ËÍÐ´ÃüÁî
-	IIC_Wait_Ack(); //µÈ´ýÓ¦´ðÐÅºÅµ½À´
-	IIC_Send_Byte(0x02); //·¢ËÍÃëµØÖ·
-	IIC_Wait_Ack(); //µÈ´ýÓ¦´ðÐÅºÅµ½À´
-	IIC_Send_Byte(dec2bcd(p->seconds)); //Ãë
-	IIC_Wait_Ack(); //µÈ´ýÓ¦´ðÐÅºÅµ½À´
-	IIC_Send_Byte(dec2bcd(p->minute)); //·Ö
-	IIC_Wait_Ack(); //µÈ´ýÓ¦´ðÐÅºÅµ½À´
-	IIC_Send_Byte(dec2bcd(p->hour)); //Ê±
-	IIC_Wait_Ack(); //µÈ´ýÓ¦´ðÐÅºÅµ½À´
-	IIC_Send_Byte(dec2bcd(p->day)); //ÈÕ
-	IIC_Wait_Ack(); //µÈ´ýÓ¦´ðÐÅºÅµ½À´
-	IIC_Send_Byte(dec2bcd(p->week)); //ÖÜ
-	IIC_Wait_Ack(); //µÈ´ýÓ¦´ðÐÅºÅµ½À´
-	IIC_Send_Byte(dec2bcd(p->month)); //ÔÂ
-	IIC_Wait_Ack(); //µÈ´ýÓ¦´ðÐÅºÅµ½À´
-	IIC_Send_Byte(dec2bcd(p->years)); //Äê
-	IIC_Wait_Ack(); //µÈ´ýÓ¦´ðÐÅºÅµ½À´
-	IIC_Stop();//²úÉúÒ»¸öÍ£Ö¹Ìõ¼þ
+	//æ—¶é—´è½¬æ¢ä¸ºBCDç åŽå†è¿›è¡Œå†™å…¥æ—¶é’Ÿ
+	IIC_Start(); //äº§ç”ŸIICèµ·å§‹ä¿¡å·
+	IIC_Send_Byte(0XA2); //å‘é€å†™å‘½ä»¤
+	IIC_Wait_Ack(); //ç­‰å¾…åº”ç­”ä¿¡å·åˆ°æ¥
+	IIC_Send_Byte(0x02); //å‘é€ç§’åœ°å€
+	IIC_Wait_Ack(); //ç­‰å¾…åº”ç­”ä¿¡å·åˆ°æ¥
+	IIC_Send_Byte(dec2bcd(p->seconds)); //ç§’
+	IIC_Wait_Ack(); //ç­‰å¾…åº”ç­”ä¿¡å·åˆ°æ¥
+	IIC_Send_Byte(dec2bcd(p->minute)); //åˆ†
+	IIC_Wait_Ack(); //ç­‰å¾…åº”ç­”ä¿¡å·åˆ°æ¥
+	IIC_Send_Byte(dec2bcd(p->hour)); //æ—¶
+	IIC_Wait_Ack(); //ç­‰å¾…åº”ç­”ä¿¡å·åˆ°æ¥
+	IIC_Send_Byte(dec2bcd(p->day)); //æ—¥
+	IIC_Wait_Ack(); //ç­‰å¾…åº”ç­”ä¿¡å·åˆ°æ¥
+	IIC_Send_Byte(dec2bcd(p->week)); //å‘¨
+	IIC_Wait_Ack(); //ç­‰å¾…åº”ç­”ä¿¡å·åˆ°æ¥
+	IIC_Send_Byte(dec2bcd(p->month)); //æœˆ
+	IIC_Wait_Ack(); //ç­‰å¾…åº”ç­”ä¿¡å·åˆ°æ¥
+	IIC_Send_Byte(dec2bcd(p->years)); //å¹´
+	IIC_Wait_Ack(); //ç­‰å¾…åº”ç­”ä¿¡å·åˆ°æ¥
+	IIC_Stop();//äº§ç”Ÿä¸€ä¸ªåœæ­¢æ¡ä»¶
 }
 
 void HYM8563_init(void)
@@ -130,7 +130,7 @@ uint8_t RTC_GetWeek(void)
 
 void RTC_UpdateShutDownTime(uint8_t autoshut)
 {
-	uint8_t tim = autoshut + RTC_GetMinute();//ÏÖÔÚµÄÊ±¼ä¼ÓÉÏ×Ô¶¯¹Ø»úµÄÊ±¼ä
+	uint8_t tim = autoshut + RTC_GetMinute();//çŽ°åœ¨çš„æ—¶é—´åŠ ä¸Šè‡ªåŠ¨å…³æœºçš„æ—¶é—´
 	minute_ShutDown = (tim >= 60 ? tim - 60 : tim);
 }
 

@@ -18,16 +18,16 @@ PtrToNanoOptionNode NanoOption_NodeGenerate(uint8_t x, uint8_t y, uint8_t* Conte
 	p->next_option = p;
 	p->prev_option = p;
 	
-	p->x = x;                                 //ÆğÊ¼x×ø±ê
-	p->y = y;                                 //ÆğÊ¼y×ø±ê
-	p->content_chn = (uint8_t *)ContentChn;   //ÖĞÎÄÄÚÈİÖ¸Õë
+	p->x = x;                                 //èµ·å§‹xåæ ‡
+	p->y = y;                                 //èµ·å§‹yåæ ‡
+	p->content_chn = (uint8_t *)ContentChn;   //ä¸­æ–‡å†…å®¹æŒ‡é’ˆ
 	p->ChnContent_size = ChnLen;
 	
 	p->value = value;
 	p->min_value = min_value;
 	p->max_value = max_value;
 
-	p->content_eng = (uint8_t *)ContentEng;  //Ó¢ÎÄÄÚÈİÖ¸Õë
+	p->content_eng = (uint8_t *)ContentEng;  //è‹±æ–‡å†…å®¹æŒ‡é’ˆ
 	
 	p->IsSingle = IsSingle;
 	p->NanoOption_type = NanoOption_type;
@@ -54,13 +54,13 @@ void NanoOptionList_Add(uint8_t x, uint8_t y, uint8_t* ContentChn, uint8_t ChnLe
 	}
 }
 
-static uint8_t temp_num_arr[3]={0, 0, '\0'};//Êı×Ö±êÇ©ÏÔÊ¾»º´æÊı×é¡£
-//Ğ¡±êÇ©´òÓ¡
+static uint8_t temp_num_arr[3]={0, 0, '\0'};//æ•°å­—æ ‡ç­¾æ˜¾ç¤ºç¼“å­˜æ•°ç»„ã€‚
+//å°æ ‡ç­¾æ‰“å°
 void NanoOptionList_Print(list_NanoOption nanooptionlist, uint8_t IsChn)
 {
 	PtrToNanoOptionNode p = nanooptionlist;
 	
-	if(p == NULL) //ÅĞ¶ÏÊÇ·ñÊÇ¿ÕÁ´±í
+	if(p == NULL) //åˆ¤æ–­æ˜¯å¦æ˜¯ç©ºé“¾è¡¨
 	{
 		return;
 	}
@@ -94,7 +94,7 @@ void NanoOptionList_Print(list_NanoOption nanooptionlist, uint8_t IsChn)
 					
 					temp_num_arr[1] = '\0';
 				}
-				else//Èç¹ûÊÇµ¥Ò»Ò»Î»ÊıµÄ»°Ğ¡ÓÚ10Òª²¹0
+				else//å¦‚æœæ˜¯å•ä¸€ä¸€ä½æ•°çš„è¯å°äº10è¦è¡¥0
 				{
 					
 					temp_num_arr[0] = p->value / 10 + '0';
@@ -123,7 +123,7 @@ void NanoOptionList_Print(list_NanoOption nanooptionlist, uint8_t IsChn)
 
 		
 		p = p->next_option;
-	}while(p != nanooptionlist); //±éÀúÁ´±í²¢´òÓ¡
+	}while(p != nanooptionlist); //éå†é“¾è¡¨å¹¶æ‰“å°
 }
 
 
@@ -145,13 +145,13 @@ void NanoOptionList_Destory(PtrToNanoOptionNode *nanooptionlist)
 }
 
 
-/*»ñÈ¡Ã¿¸ö½ÚµãµÄÖµ*/
+/*è·å–æ¯ä¸ªèŠ‚ç‚¹çš„å€¼*/
 uint32_t NanoOptionList_GetValue(PtrToNanoOptionNode nanooptionlist, uint8_t coefficient)
 {
-	uint32_t ret = 0;//ÁÙÊ±±äÁ¿
-	PtrToNanoOptionNode p = nanooptionlist; //±éÀúÁ´±íµÄÁÙÊ±±äÁ¿
+	uint32_t ret = 0;//ä¸´æ—¶å˜é‡
+	PtrToNanoOptionNode p = nanooptionlist; //éå†é“¾è¡¨çš„ä¸´æ—¶å˜é‡
 	
-	if(nanooptionlist == NULL) //°²È«ĞÔ¼ì²â
+	if(nanooptionlist == NULL) //å®‰å…¨æ€§æ£€æµ‹
 	{
 		return 0;
 	}

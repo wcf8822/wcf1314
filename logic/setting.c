@@ -1,4 +1,4 @@
-//ÓÃÀ´±£´æºÍ¶ÁÈ¡ÉèÖÃ²ÎÊıµÄ
+//ç”¨æ¥ä¿å­˜å’Œè¯»å–è®¾ç½®å‚æ•°çš„
 #include "setting.h"
 #include "spi_flash.h"
 #include <string.h>
@@ -7,17 +7,24 @@
 STATIC setting_union setting;
 
 
-/*ÉèÖÃÖĞÓ¢ÎÄ*/
+/*è®¾ç½®ä¸­è‹±æ–‡*/
 void setting_SetIsChn(uint8_t IsChn)
 {
 	setting.setting_struct.IsChn = IsChn;
 }
-/*»ñÈ¡ÖĞÓ¢ÎÄÉèÖÃ*/
+/*è·å–ä¸­è‹±æ–‡è®¾ç½®*/
 uint8_t setting_GetIsChn(void)
 {
 	return setting.setting_struct.IsChn;
 }
-/*ÉèÖÃ°´¼üÒô¿ª¹Ø*/
+
+/*è·å–å®šåˆ¶ç±»å‹(å¼€æœºç•Œé¢)*/
+uint8_t setting_GetLogo(void)
+{
+	return setting.setting_struct.customize;
+}
+
+/*è®¾ç½®æŒ‰é”®éŸ³å¼€å…³*/
 void setting_SetKeyPadTone(uint8_t KeyPadTone)
 {
 	setting.setting_struct.KeyPadTone = KeyPadTone;
@@ -36,36 +43,36 @@ void setting_SetAutoLock(uint8_t AutoLock)
 
 
 
-/*»ñÈ¡°´¼üÒô*/
+/*è·å–æŒ‰é”®éŸ³*/
 uint8_t setting_GetKeyPadTone(void)
 {
 	return setting.setting_struct.KeyPadTone;
 }
-/*ÉèÖÃ±¨¾¯Òô¿ª¹Ø*/
+/*è®¾ç½®æŠ¥è­¦éŸ³å¼€å…³*/
 void setting_SetAlarmTone(uint8_t AlarmTone)
 {
 	setting.setting_struct.AlarmTone = AlarmTone;
 }
-/*»ñÈ¡±¨¾¯Òô*/
+/*è·å–æŠ¥è­¦éŸ³*/
 uint8_t setting_GetAlarmTone(void)
 {
 	return setting.setting_struct.AlarmTone;
 }
 
-//	uint8_t IsAlarm_pH;        //ÊÇ·ñ±¨¾¯
-//	uint8_t IsAlarm_DO;        //ÊÇ·ñ±¨¾¯
-//	uint8_t IsAlarm_FCL;        //ÊÇ·ñ±¨¾¯
-//	uint8_t IsAlarm_EC;        //ÊÇ·ñ±¨¾¯
-//	uint8_t IsAlarm_Tur;        //ÊÇ·ñ±¨¾¯
-//	uint8_t IsAlarm_ORP;        //ÊÇ·ñ±¨¾¯
-//	uint8_t IsAlarm_NH4;        //ÊÇ·ñ±¨¾¯
-//	uint8_t IsAlarm_F;        //ÊÇ·ñ±¨¾¯
-//	uint8_t IsAlarm_CL;        //ÊÇ·ñ±¨¾¯
-//	uint8_t IsAlarm_Chl;        //ÊÇ·ñ±¨¾¯
-//	uint8_t IsAlarm_Bga;        //ÊÇ·ñ±¨¾¯
-//	uint8_t IsAlarm_CODuv;        //ÊÇ·ñ±¨¾¯
+//	uint8_t IsAlarm_pH;        //æ˜¯å¦æŠ¥è­¦
+//	uint8_t IsAlarm_DO;        //æ˜¯å¦æŠ¥è­¦
+//	uint8_t IsAlarm_FCL;        //æ˜¯å¦æŠ¥è­¦
+//	uint8_t IsAlarm_EC;        //æ˜¯å¦æŠ¥è­¦
+//	uint8_t IsAlarm_Tur;        //æ˜¯å¦æŠ¥è­¦
+//	uint8_t IsAlarm_ORP;        //æ˜¯å¦æŠ¥è­¦
+//	uint8_t IsAlarm_NH4;        //æ˜¯å¦æŠ¥è­¦
+//	uint8_t IsAlarm_F;        //æ˜¯å¦æŠ¥è­¦
+//	uint8_t IsAlarm_CL;        //æ˜¯å¦æŠ¥è­¦
+//	uint8_t IsAlarm_Chl;        //æ˜¯å¦æŠ¥è­¦
+//	uint8_t IsAlarm_Bga;        //æ˜¯å¦æŠ¥è­¦
+//	uint8_t IsAlarm_CODuv;        //æ˜¯å¦æŠ¥è­¦
 
-/*ÉèÖÃÊÇ·ñ±¨¾¯*/
+/*è®¾ç½®æ˜¯å¦æŠ¥è­¦*/
 void setting_SetIsAlarm_pH(uint8_t IsAlarm)
 {
 	setting.setting_struct.IsAlarm_pH = IsAlarm;
@@ -115,7 +122,7 @@ void setting_SetIsAlarm_CODuv(uint8_t IsAlarm)
 	setting.setting_struct.IsAlarm_CODuv = IsAlarm;
 }
 
-/*»ñÈ¡ÊÇ·ñ±¨¾¯*/
+/*è·å–æ˜¯å¦æŠ¥è­¦*/
 uint8_t setting_GetIsAlarm_pH(void)
 {
 	return setting.setting_struct.IsAlarm_pH;
@@ -179,13 +186,13 @@ void flash_test(void)
 }
 */
 
-/*´Óflash¶ÁÈ¡ÉèÖÃ*/
+/*ä»flashè¯»å–è®¾ç½®*/
 void FlashToSetting(void)
 {
 	W25QXX_Read(setting.setting_arr, SETTING_START_ADDR, sizeof(setting.setting_arr));	
 }
 
-/*½«ÉèÖÃ±£´æµ½flash*/
+/*å°†è®¾ç½®ä¿å­˜åˆ°flash*/
 void SettingToFlash(void)
 {
 	W25QXX_Write(setting.setting_arr, SETTING_START_ADDR, sizeof(setting.setting_arr));
@@ -194,10 +201,27 @@ void SettingToFlash(void)
 void init_setting(void)
 {
 	uint8_t IsCN;
+	uint8_t customize_temp;
 	
-	W25QXX_Read(&IsCN, SETTING_CNORENG_ADDR, 1);//»ñÈ¡³õÊ¼»¯ÊÇ·ñÊÇÖĞÓ¢ÎÄÉèÖÃ
+	W25QXX_Read(&IsCN, SETTING_CNORENG_ADDR, 1);//è·å–åˆå§‹åŒ–æ˜¯å¦æ˜¯ä¸­è‹±æ–‡è®¾ç½®
+	setting.setting_struct.IsChn   = (IsCN ? 1 : 0);//å¦‚æœæ˜¯1çš„è¯å°±åˆå§‹åŒ–æˆä¸­æ–‡ å¦‚æœæ˜¯0çš„è¯åˆå§‹åŒ–æˆè‹±æ–‡
 	
-	setting.setting_struct.IsChn   = IsCN ? 1 : 0;//Èç¹ûÊÇ1µÄ»°¾Í³õÊ¼»¯³ÉÖĞÎÄ Èç¹ûÊÇ0µÄ»°³õÊ¼»¯³ÉÓ¢ÎÄ
+	W25QXX_Read(&customize_temp, SETTING_LOG_ADDR, 1);//è·å–åˆå§‹åŒ–æ˜¯å¦æ˜¯ä¸­è‹±æ–‡è®¾ç½®
+	switch(customize_temp)
+	{
+		case LUHENG:
+			setting.setting_struct.customize = LUHENG;
+			break;
+		
+		case HENGLAN:
+			setting.setting_struct.customize = HENGLAN;
+			break;
+		
+		default:
+			setting.setting_struct.customize = ZHONGXING;
+			break;
+	}
+	
 	setting.setting_struct.KeyPadTone = 1;
 	setting.setting_struct.AlarmTone = 1;
 	
@@ -219,63 +243,63 @@ void init_setting(void)
 	
 	setting.setting_struct.AutoShut = 10;
 	
-	setting.setting_struct.LowThreshold_pH = 0.00;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	setting.setting_struct.HighThreshold_pH = 0.00; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	setting.setting_struct.LowThreshold_pH = 0.00;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	setting.setting_struct.HighThreshold_pH = 0.00; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 
-	setting.setting_struct.LowThreshold_DO = 0.00;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ    ÅĞ¶Ïmg/L
-	setting.setting_struct.HighThreshold_DO = 0.00; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	setting.setting_struct.LowThreshold_DO = 0.00;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼    åˆ¤æ–­mg/L
+	setting.setting_struct.HighThreshold_DO = 0.00; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 
-	setting.setting_struct.LowThreshold_FCL = 0.00;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	setting.setting_struct.HighThreshold_FCL = 0.00; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	setting.setting_struct.LowThreshold_FCL = 0.00;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	setting.setting_struct.HighThreshold_FCL = 0.00; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 
-	setting.setting_struct.LowThreshold_EC = 0.00;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	setting.setting_struct.HighThreshold_EC = 0.00; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	setting.setting_struct.LowThreshold_EC = 0.00;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	setting.setting_struct.HighThreshold_EC = 0.00; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 
-	setting.setting_struct.LowThreshold_Tur = 0.00;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	setting.setting_struct.HighThreshold_Tur = 0.00; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	setting.setting_struct.LowThreshold_Tur = 0.00;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	setting.setting_struct.HighThreshold_Tur = 0.00; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 
-	setting.setting_struct.LowThreshold_ORP = 0.00;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	setting.setting_struct.HighThreshold_ORP = 0.00; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	setting.setting_struct.LowThreshold_ORP = 0.00;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	setting.setting_struct.HighThreshold_ORP = 0.00; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 
-	setting.setting_struct.LowThreshold_NH4 = 0.00;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	setting.setting_struct.HighThreshold_NH4 = 0.00; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	setting.setting_struct.LowThreshold_NH4 = 0.00;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	setting.setting_struct.HighThreshold_NH4 = 0.00; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 
-	setting.setting_struct.LowThreshold_F = 0.00;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	setting.setting_struct.HighThreshold_F = 0.00; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	setting.setting_struct.LowThreshold_F = 0.00;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	setting.setting_struct.HighThreshold_F = 0.00; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 
-	setting.setting_struct.LowThreshold_CL = 0.00;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	setting.setting_struct.HighThreshold_CL = 0.00; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	setting.setting_struct.LowThreshold_CL = 0.00;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	setting.setting_struct.HighThreshold_CL = 0.00; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 
-	setting.setting_struct.LowThreshold_Chl = 0.00;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	setting.setting_struct.HighThreshold_Chl = 0.00; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	setting.setting_struct.LowThreshold_Chl = 0.00;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	setting.setting_struct.HighThreshold_Chl = 0.00; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 
-	setting.setting_struct.LowThreshold_Bga = 0.00;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	setting.setting_struct.HighThreshold_Bga = 0.00; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	setting.setting_struct.LowThreshold_Bga = 0.00;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	setting.setting_struct.HighThreshold_Bga = 0.00; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 
-	setting.setting_struct.LowThreshold_CODuv = 0.00;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	setting.setting_struct.HighThreshold_CODuv = 0.00; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
+	setting.setting_struct.LowThreshold_CODuv = 0.00;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	setting.setting_struct.HighThreshold_CODuv = 0.00; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
 	
-	setting.setting_struct.AirPressure = 0.0;    //´óÆøÑ¹²¹³¥
-	setting.setting_struct.Salinity = 0.0;       //ÑÎ¶ÈÖµ
+	setting.setting_struct.AirPressure = 0.0;    //å¤§æ°”å‹è¡¥å¿
+	setting.setting_struct.Salinity = 0.0;       //ç›åº¦å€¼
 }
 
 
 
 /*
-	uint8_t IsChn :1;         //ÊÇ·ñÏÔÊ¾ÖĞÎÄ
-	uint8_t KeyPadTone:1;     //ÊÇ·ñÓĞ°´¼üÒô
-	uint8_t AlarmTone:1;      //ÊÇ·ñ´ò¿ª±¨¾¯ÌáÊ¾Òô
-	uint8_t IsAlarm:1;        //ÊÇ·ñ±¨¾¯
+	uint8_t IsChn :1;         //æ˜¯å¦æ˜¾ç¤ºä¸­æ–‡
+	uint8_t KeyPadTone:1;     //æ˜¯å¦æœ‰æŒ‰é”®éŸ³
+	uint8_t AlarmTone:1;      //æ˜¯å¦æ‰“å¼€æŠ¥è­¦æç¤ºéŸ³
+	uint8_t IsAlarm:1;        //æ˜¯å¦æŠ¥è­¦
 	
 	uint8_t AutoShut;         //0 5 10 20
 	uint8_t ModbusId;         //0-255
 	
-	value_type LowThreshold;  //µÍÃÅÏŞ±¨¾¯ãĞÖµ
-	value_type HighThreshold; //¸ßÃÅÏŞ±¨¾¯ãĞÖµ
-	value_type AirPressure;   //ÆøÑ¹²¹³¥
-	value_type Salinity;      //ÑÎ¶ÈÖµ
+	value_type LowThreshold;  //ä½é—¨é™æŠ¥è­¦é˜ˆå€¼
+	value_type HighThreshold; //é«˜é—¨é™æŠ¥è­¦é˜ˆå€¼
+	value_type AirPressure;   //æ°”å‹è¡¥å¿
+	value_type Salinity;      //ç›åº¦å€¼
 */
-/*»Ö¸´³ö³§ÉèÖÃ*/
+/*æ¢å¤å‡ºå‚è®¾ç½®*/
 void setting_reset(void)
 {
 	init_setting();
@@ -288,25 +312,27 @@ void setting_reset(void)
 
 void first_write(void)
 {
-//	uint8_t FirstStart_arr[sizeof(setting.setting_arr)]={0}; //µÚÒ»´ÎĞ´³õÊ¼»¯ÉèÖÃµÄÊı×é
-	uint8_t count_data[2] = {0, 0};                          //Çå¼ÇÂ¼ÊıµÄÊı×é
-	uint8_t first_start = SETTING_FIRSTRUN_JUDGE;            //½«µÚÒ»´Î±êÖ¾Î»Ğ´ÈëÊıÖµ
-	init_setting();                                          //³õÊ¼»¯ÉèÖÃ
+//	uint8_t FirstStart_arr[sizeof(setting.setting_arr)]={0}; //ç¬¬ä¸€æ¬¡å†™åˆå§‹åŒ–è®¾ç½®çš„æ•°ç»„
+	uint8_t count_data[2] = {0, 0};                          //æ¸…è®°å½•æ•°çš„æ•°ç»„
+	uint8_t first_start = SETTING_FIRSTRUN_JUDGE;            //å°†ç¬¬ä¸€æ¬¡æ ‡å¿—ä½å†™å…¥æ•°å€¼
+	
+	init_setting();                                          //åˆå§‹åŒ–è®¾ç½®
 	
 	//memcpy(FirstStart_arr, setting.setting_arr, sizeof(setting.setting_arr));
 	
-	W25QXX_Write(&first_start, SETTING_FIRSTRUN_ADDR, 1);                              //ÇåµÚÒ»´ÎÉÏµç
+	W25QXX_Write(&first_start, SETTING_FIRSTRUN_ADDR, 1);                              //æ¸…ç¬¬ä¸€æ¬¡ä¸Šç”µ
+	W25QXX_Write(count_data, LOG_COUNT_ADDR, 2);                                       //æ¸…è®°å½•æ¡æ•°
 	
-	W25QXX_Write(setting.setting_arr, SETTING_START_ADDR, sizeof(setting.setting_arr));//½«³ö³§ÉèÖÃĞ´Èëflash
+	SettingToFlash();
 	
-	W25QXX_Write(count_data, LOG_COUNT_ADDR, 2);                                       //Çå¼ÇÂ¼ÌõÊı
+//	W25QXX_Write(setting.setting_arr, SETTING_START_ADDR, sizeof(setting.setting_arr));//å°†å‡ºå‚è®¾ç½®å†™å…¥flash
 	
 	HAL_Delay(5);
 	FlashToSetting();
 }
 
 
-/*»ñÈ¡´óÆøÑ¹µÄ²¹³¥Öµ*/
+/*è·å–å¤§æ°”å‹çš„è¡¥å¿å€¼*/
 value_type setting_GetAirCompensate(void)
 {
 	return setting.setting_struct.AirPressure;
@@ -316,7 +342,7 @@ void setting_SetAirCompensate(value_type value)
 	setting.setting_struct.AirPressure = value;
 }
 
-/*»ñÈ¡ÑÎ¶ÈÖµ*/
+/*è·å–ç›åº¦å€¼*/
 value_type setting_GetSalinity(void)
 {
 	return setting.setting_struct.Salinity;
@@ -572,7 +598,10 @@ void settting_SetInitIsChn(uint8_t IsChn)
 	W25QXX_Write(&IsChn, SETTING_CNORENG_ADDR, 1);
 }
 
-
+void setting_SetInitLogo(uint8_t logo)
+{
+	W25QXX_Write(&logo, SETTING_LOG_ADDR, 1);
+}
 
 
 

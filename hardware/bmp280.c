@@ -98,11 +98,11 @@ void GetCompensation(void)
 {
 	uint8_t Lsb,Msb;
 	
-	/********************½ÓÏÂÀ´¶Á³ö½ÃÕı²ÎÊı*********************/
-	//ÎÂ¶È´«¸ĞÆ÷µÄ½ÃÕıÖµ
+	/********************æ¥ä¸‹æ¥è¯»å‡ºçŸ«æ­£å‚æ•°*********************/
+	//æ¸©åº¦ä¼ æ„Ÿå™¨çš„çŸ«æ­£å€¼
 	Lsb = BMP280_Read_Byte(BMP280_DIG_T1_LSB_REG);
 	Msb = BMP280_Read_Byte(BMP280_DIG_T1_MSB_REG);
-	bmp280_Compensation.T1 = (((uint16_t)Msb)<<8) + Lsb;			//¸ßÎ»¼ÓµÍÎ»
+	bmp280_Compensation.T1 = (((uint16_t)Msb)<<8) + Lsb;			//é«˜ä½åŠ ä½ä½
 	
 	Lsb = BMP280_Read_Byte(BMP280_DIG_T2_LSB_REG);
 	Msb = BMP280_Read_Byte(BMP280_DIG_T2_MSB_REG);
@@ -112,7 +112,7 @@ void GetCompensation(void)
 	Msb = BMP280_Read_Byte(BMP280_DIG_T3_MSB_REG);
 	bmp280_Compensation.T3 = (((uint16_t)Msb)<<8) + Lsb;		
 	
-	//´óÆøÑ¹´«¸ĞÆ÷µÄ½ÃÕıÖµ
+	//å¤§æ°”å‹ä¼ æ„Ÿå™¨çš„çŸ«æ­£å€¼
 	Lsb = BMP280_Read_Byte(BMP280_DIG_P1_LSB_REG);
 	Msb = BMP280_Read_Byte(BMP280_DIG_P1_MSB_REG);
 	bmp280_Compensation.P1 = (((uint16_t)Msb)<<8) + Lsb;
@@ -155,7 +155,7 @@ void GetCompensation(void)
 
 
 
-//ÉèÖÃBMP¹ı²ÉÑùÒò×Ó MODE 
+//è®¾ç½®BMPè¿‡é‡‡æ ·å› å­ MODE 
 //BMP280_SLEEP_MODE||BMP280_FORCED_MODE||BMP280_NORMAL_MODE
 void BMP280_Set_TemOversamp(BMP_OVERSAMPLE_MODE * Oversample_Mode)
 {
@@ -167,7 +167,7 @@ void BMP280_Set_TemOversamp(BMP_OVERSAMPLE_MODE * Oversample_Mode)
 	BMP280_Write_Byte(BMP280_CTRLMEAS_REG,Regtmp);
 }
 
-//ÉèÖÃ±£³ÖÊ±¼äºÍÂË²¨Æ÷·ÖÆµÒò×Ó
+//è®¾ç½®ä¿æŒæ—¶é—´å’Œæ»¤æ³¢å™¨åˆ†é¢‘å› å­
 void BMP280_Set_Standby_FILTER(BMP_CONFIG * BMP_Config)
 {
 	uint8_t Regtmp;
@@ -180,7 +180,7 @@ void BMP280_Set_Standby_FILTER(BMP_CONFIG * BMP_Config)
 
 
 
-BMP280_S32_t t_fine;			//ÓÃÓÚ¼ÆËã²¹³¥
+BMP280_S32_t t_fine;			//ç”¨äºè®¡ç®—è¡¥å¿
 
 #define	dig_T1			bmp280_Compensation.T1	
 #define	dig_T2			bmp280_Compensation.T2	
@@ -198,8 +198,8 @@ BMP280_S32_t t_fine;			//ÓÃÓÚ¼ÆËã²¹³¥
 
 
 
-/**************************´«¸ĞÆ÷Öµ×ª¶¨µãÖµ*************************************/
-// Returns temperature in DegC, double precision. Output value of ¡°51.23¡± equals 51.23 DegC.
+/**************************ä¼ æ„Ÿå™¨å€¼è½¬å®šç‚¹å€¼*************************************/
+// Returns temperature in DegC, double precision. Output value of â€œ51.23â€ equals 51.23 DegC.
 // t_fine carries fine temperature as global value
 double bmp280_compensate_T_double(BMP280_S32_t adc_T)
 {
@@ -212,7 +212,7 @@ double bmp280_compensate_T_double(BMP280_S32_t adc_T)
 	return T;
 }
 
-// Returns pressure in Pa as double. Output value of ¡°96386.2¡± equals 96386.2 Pa = 963.862 hPa
+// Returns pressure in Pa as double. Output value of â€œ96386.2â€ equals 96386.2 Pa = 963.862 hPa
 double bmp280_compensate_P_double(BMP280_S32_t adc_P)
 {
 	double var1, var2, p;
@@ -238,7 +238,7 @@ double bmp280_compensate_P_double(BMP280_S32_t adc_P)
 
 
 
-//»ñÈ¡BMPµ±Ç°×´Ì¬
+//è·å–BMPå½“å‰çŠ¶æ€
 //status_flag = BMP280_MEASURING ||
 //			 	BMP280_IM_UPDATE
 uint8_t  BMP280_GetStatus(uint8_t status_flag)
@@ -256,7 +256,7 @@ uint8_t  BMP280_GetStatus(uint8_t status_flag)
 }
 
 uint8_t XLsb,Lsb, Msb;
-//´óÆøÑ¹Öµ-Pa
+//å¤§æ°”å‹å€¼-Pa
 double BMP280_Get_Pressure(void)
 {
 	
@@ -265,12 +265,12 @@ double BMP280_Get_Pressure(void)
 	XLsb = BMP280_Read_Byte(BMP280_PRESSURE_XLSB_REG);
 	Lsb	 = BMP280_Read_Byte(BMP280_PRESSURE_LSB_REG);
 	Msb	 = BMP280_Read_Byte(BMP280_PRESSURE_MSB_REG);
-	Bit32 = ((long)(Msb << 12))|((long)(Lsb << 4))|(XLsb>>4);	//¼Ä´æÆ÷µÄÖµ,×é³ÉÒ»¸ö¸¡µãÊı
+	Bit32 = ((long)(Msb << 12))|((long)(Lsb << 4))|(XLsb>>4);	//å¯„å­˜å™¨çš„å€¼,ç»„æˆä¸€ä¸ªæµ®ç‚¹æ•°
 	pressure = bmp280_compensate_P_double(Bit32);
 	return pressure;
 }
 
-//ÎÂ¶ÈÖµ-¡æ
+//æ¸©åº¦å€¼-â„ƒ
 double BMP280_Get_Temperature(void)
 {
 	uint8_t XLsb,Lsb, Msb;
@@ -279,7 +279,7 @@ double BMP280_Get_Temperature(void)
 	XLsb = BMP280_Read_Byte(BMP280_TEMPERATURE_XLSB_REG);
 	Lsb	 = BMP280_Read_Byte(BMP280_TEMPERATURE_LSB_REG);
 	Msb	 = BMP280_Read_Byte(BMP280_TEMPERATURE_MSB_REG);
-	Bit32 = ((long)(Msb << 12))|((long)(Lsb << 4))|(XLsb>>4);	//¼Ä´æÆ÷µÄÖµ,×é³ÉÒ»¸ö¸¡µãÊı
+	Bit32 = ((long)(Msb << 12))|((long)(Lsb << 4))|(XLsb>>4);	//å¯„å­˜å™¨çš„å€¼,ç»„æˆä¸€ä¸ªæµ®ç‚¹æ•°
 	temperature = bmp280_compensate_T_double(Bit32);
 	return temperature;
 }
@@ -292,7 +292,7 @@ void bmp280_Init(SPI_HandleTypeDef *hspi)
 	
 	GetCompensation();
 	
-	BMP280_Write_Byte(BMP280_RESET_REG,BMP280_RESET_VALUE);	//Íù¸´Î»¼Ä´æÆ÷Ğ´Èë¸ø¶¨Öµ	
+	BMP280_Write_Byte(BMP280_RESET_REG,BMP280_RESET_VALUE);	//å¾€å¤ä½å¯„å­˜å™¨å†™å…¥ç»™å®šå€¼	
 	
 	HAL_Delay(20);
 	
@@ -308,7 +308,7 @@ void bmp280_Init(SPI_HandleTypeDef *hspi)
 	BMP_CONFIGStructure.SPI_EN = ENABLE;
 	BMP280_Set_Standby_FILTER(&BMP_CONFIGStructure);
 	
-	BMP280_Write_Byte(0x74, 0xff); //Ò»¶¨Òª¼ÓÕâ¸ö²»È»Êı¾İ²»»á±ä
+	BMP280_Write_Byte(0x74, 0xff); //ä¸€å®šè¦åŠ è¿™ä¸ªä¸ç„¶æ•°æ®ä¸ä¼šå˜
 	
 	HAL_Delay(10);
 }

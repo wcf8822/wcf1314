@@ -3,7 +3,7 @@
 
 #include "interfacial.h"
 
-//ÊµÀı»¯°´¼üflag
+//å®ä¾‹åŒ–æŒ‰é”®flag
 static volatile KeyFlag_t key_flag={
 	.flag_KeyUp = 0,
 	.flag_KeyDown = 0,
@@ -17,7 +17,7 @@ static volatile KeyFlag_t key_flag={
 	.flag_KeyCalLong = 0
 };
 
-//»ñÈ¡°´¼ü±êÖ¾
+//è·å–æŒ‰é”®æ ‡å¿—
 uint8_t get_KeyUpFlag(void)
 {
 	return key_flag.flag_KeyUp;
@@ -61,7 +61,7 @@ uint8_t get_KeyClickedFlag(void)
 
 
 
-//Çå³ı°´¼ü±êÖ¾
+//æ¸…é™¤æŒ‰é”®æ ‡å¿—
 void clear_KeyUpFlag(void)
 {
 	key_flag.flag_KeyUp = KEY_NORMAL;
@@ -116,7 +116,7 @@ void clear_KeyAllFlag(void)
 	key_flag.flag_KeyUp      = KEY_NORMAL;
 }
 
-//ÉèÖÃ°´¼ü½Ó¿Ú
+//è®¾ç½®æŒ‰é”®æ¥å£
 void set_KeyUpFlag(void)
 {
 	key_flag.flag_KeyUp = KEY_CLICKED;
@@ -164,22 +164,22 @@ void set_KeyClickedFlag(void)
 
 void key_scan(void)
 {
-	if(KEY_UP_STATUS == KEY_BURSTMODE) //up°´Å¥°´ÏÂÁË
+	if(KEY_UP_STATUS == KEY_BURSTMODE) //upæŒ‰é’®æŒ‰ä¸‹äº†
 	{
-		if(!get_KeyUpCountFlag())         //Èç¹ûÃ»ÓĞ¼ÆÊıµÄ»°¿ªÊ¼¼ÆÊı
+		if(!get_KeyUpCountFlag())         //å¦‚æœæ²¡æœ‰è®¡æ•°çš„è¯å¼€å§‹è®¡æ•°
 			set_KeyUpCountFlag();
 	}
-	else                                //ËÉ¿ª»òÕßÃ»°´ÏÂ
+	else                                //æ¾å¼€æˆ–è€…æ²¡æŒ‰ä¸‹
 	{
-		if(get_KeyUpClickedFlag())        //»ñÈ¡°´¼üÊÇ·ñ±»°´¹ı
+		if(get_KeyUpClickedFlag())        //è·å–æŒ‰é”®æ˜¯å¦è¢«æŒ‰è¿‡
 		{
-			set_KeyUpFlag();                //up°´Å¥±»°´ÏÂÁË
-			set_KeyClickedFlag();           //ÓĞ°´¼ü±»°´ÁË
+			set_KeyUpFlag();                //upæŒ‰é’®è¢«æŒ‰ä¸‹äº†
+			set_KeyClickedFlag();           //æœ‰æŒ‰é”®è¢«æŒ‰äº†
 		}
 		
-		clear_KeyUpClickedFlag();         //Çå°´¼ü±»°´¹ı±êÖ¾
-		clear_KeyUpCountFlag();           //Çå¼ÆÊıflag
-		clear_KeyUpCount();               //Çå¼ÆÊı
+		clear_KeyUpClickedFlag();         //æ¸…æŒ‰é”®è¢«æŒ‰è¿‡æ ‡å¿—
+		clear_KeyUpCountFlag();           //æ¸…è®¡æ•°flag
+		clear_KeyUpCount();               //æ¸…è®¡æ•°
 	}
 	
 	if(KEY_DOWN_STATUS == KEY_BURSTMODE)
@@ -210,13 +210,13 @@ void key_scan(void)
 		/*
 		if(get_KeyCalClickedFlag()) 
 		{
-			if(get_KeyCalCount() < KEY_TIM_LONG) //Èç¹û°´ÏÂÈ¥µÄÊ±¼äĞ¡ÓÚ³¤°´¹æ¶¨µÄÊ±¼äµÄ»°
+			if(get_KeyCalCount() < KEY_TIM_LONG) //å¦‚æœæŒ‰ä¸‹å»çš„æ—¶é—´å°äºé•¿æŒ‰è§„å®šçš„æ—¶é—´çš„è¯
 			{
-				set_KeyCalFlag();                  //ÉèÖÃ°´¼ü
+				set_KeyCalFlag();                  //è®¾ç½®æŒ‰é”®
 			}
 			set_KeyClickedFlag();
 		}
-		clear_KeyCalLongFlag();//Çå³ıĞ£×¼³¤°´±êÖ¾
+		clear_KeyCalLongFlag();//æ¸…é™¤æ ¡å‡†é•¿æŒ‰æ ‡å¿—
 		clear_KeyCalClickedFlag();
 		clear_KeyCalCountFlag();
 		clear_KeyCalCount();
@@ -237,7 +237,7 @@ void key_scan(void)
 			}
 			set_KeyClickedFlag();
 		}
-		clear_KeyOkLongFlag();//ÒòÎªÕâÀïÊÇ³¤°´Í¾ÖĞ½øÈë²»ÊÇ³¤°´½áÊøÖ®ºó½øÈëËùÒÔÒªÔÚÕâÀïÇå
+		clear_KeyOkLongFlag();//å› ä¸ºè¿™é‡Œæ˜¯é•¿æŒ‰é€”ä¸­è¿›å…¥ä¸æ˜¯é•¿æŒ‰ç»“æŸä¹‹åè¿›å…¥æ‰€ä»¥è¦åœ¨è¿™é‡Œæ¸…
 		clear_KeyOkClickedFlag();
 		clear_KeyOkCountFlag();
 		clear_KeyOkCount();
@@ -270,14 +270,14 @@ void key_scan(void)
 	{
 		if(get_KeyCalClickedFlag()) 
 		{
-//			if(get_KeyCalCount() < KEY_TIM_LONG) //Èç¹û°´ÏÂÈ¥µÄÊ±¼äĞ¡ÓÚ³¤°´¹æ¶¨µÄÊ±¼äµÄ»°
+//			if(get_KeyCalCount() < KEY_TIM_LONG) //å¦‚æœæŒ‰ä¸‹å»çš„æ—¶é—´å°äºé•¿æŒ‰è§„å®šçš„æ—¶é—´çš„è¯
 //			{
-//				set_KeyCalFlag();                  //ÉèÖÃ°´¼ü
+//				set_KeyCalFlag();                  //è®¾ç½®æŒ‰é”®
 //			}
 			set_KeyCalFlag();
 			set_KeyClickedFlag();
 		}
-		clear_KeyCalLongFlag();//Çå³ıĞ£×¼³¤°´±êÖ¾
+		clear_KeyCalLongFlag();//æ¸…é™¤æ ¡å‡†é•¿æŒ‰æ ‡å¿—
 		clear_KeyCalClickedFlag();
 		clear_KeyCalCountFlag();
 		clear_KeyCalCount();

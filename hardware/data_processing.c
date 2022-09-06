@@ -16,16 +16,16 @@
 
 
 
-/*ËùÓÐ´®¿ÚµÄ½ÓÊÕÖÐ¶Ï£¬±íÊ¾ÓÐ½ÓÊÕµ½Êý¾Ý*/
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)//ÕâÀï·Å½ÓÊÕ»Øµ÷
+/*æ‰€æœ‰ä¸²å£çš„æŽ¥æ”¶ä¸­æ–­ï¼Œè¡¨ç¤ºæœ‰æŽ¥æ”¶åˆ°æ•°æ®*/
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)//è¿™é‡Œæ”¾æŽ¥æ”¶å›žè°ƒ
 {
 	rs485_RxCallBack(huart);
 	gps_RxCallBack(huart);
 	ch340e_RxCallBack(huart);
 }
 
-/*ËùÓÐ´®¿ÚµÄ¿ÕÏÐÖÐ¶Ï£¬±íÊ¾½ÓÊÜÂúÒ»Ö¡Êý¾Ý*/
-void HAL_UART_IDLE_HANDLER(UART_HandleTypeDef *huart)//ÕâÀï·Å¿ÕÏÐ»Øµ÷
+/*æ‰€æœ‰ä¸²å£çš„ç©ºé—²ä¸­æ–­ï¼Œè¡¨ç¤ºæŽ¥å—æ»¡ä¸€å¸§æ•°æ®*/
+void HAL_UART_IDLE_HANDLER(UART_HandleTypeDef *huart)//è¿™é‡Œæ”¾ç©ºé—²å›žè°ƒ
 {
 	if((__HAL_UART_GET_FLAG(huart,UART_FLAG_IDLE) != RESET))
 	{
@@ -35,28 +35,28 @@ void HAL_UART_IDLE_HANDLER(UART_HandleTypeDef *huart)//ÕâÀï·Å¿ÕÏÐ»Øµ÷
 	}
 }
 
-/*ËùÓÐ´®¿ÚµÄ´íÎóÖÐ¶Ï£¬±íÊ¾´®¿Ú³ö´í*/
-void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) //ÕâÀï·Å´®¿Ú´íÎó»Øµ÷
+/*æ‰€æœ‰ä¸²å£çš„é”™è¯¯ä¸­æ–­ï¼Œè¡¨ç¤ºä¸²å£å‡ºé”™*/
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) //è¿™é‡Œæ”¾ä¸²å£é”™è¯¯å›žè°ƒ
 {
 }
 
 void close_circle(void)
 {
-	rs485_ClearCircularSentStatus(); //¹Ø±ÕÑ­»··¢ËÍ
-	rs485_ClearResendCount();        //Çå¿ÕÖØ·¢¼ÆÊý
+	rs485_ClearCircularSentStatus(); //å…³é—­å¾ªçŽ¯å‘é€
+	rs485_ClearResendCount();        //æ¸…ç©ºé‡å‘è®¡æ•°
 }
 
-//ÕâÊÇÔÚmainÀï´¦ÀíµÄ
+//è¿™æ˜¯åœ¨mainé‡Œå¤„ç†çš„
 void rs485_DataHandle(void)
 {
-	if(rs485_GetRxFlag())//Èç¹û½ÓÊÕµ½Êý¾Ý ²¢ Í¨¹ýcrcÐ£ÑéÁËµÄ»°
+	if(rs485_GetRxFlag())//å¦‚æžœæŽ¥æ”¶åˆ°æ•°æ® å¹¶ é€šè¿‡crcæ ¡éªŒäº†çš„è¯
 	{
 		rs485_ClearRxFlag();
 		if(CheckCrc(rs485_usart.rx_buf, rs485_usart.rx_size))
 		{
 			switch(rs485_GetSentType())
 			{
-				case DO_SendType_GetModbusId:   //ÈÜ½âÑõ»ñÈ¡modbus id
+				case DO_SendType_GetModbusId:   //æº¶è§£æ°§èŽ·å–modbus id
 					if(rs485_usart.rx_buf[0] == 0xFF && rs485_usart.rx_buf[1] == 0x03)
 					{
 						close_circle();
@@ -68,9 +68,9 @@ void rs485_DataHandle(void)
 						rs485_SetSensorType(TYPE_DO);
 						
 						
-//						if(get_CurPage() == PAGE_3_SENSORSSEARCH) //ËÑË÷Éè±¸½çÃæÉÏÌí¼ÓÉè±¸
+//						if(get_CurPage() == PAGE_3_SENSORSSEARCH) //æœç´¢è®¾å¤‡ç•Œé¢ä¸Šæ·»åŠ è®¾å¤‡
 //						{
-//							//ÕâÀïÌí¼Ó½Úµã
+//							//è¿™é‡Œæ·»åŠ èŠ‚ç‚¹
 //							LabelList_Add(0, 32 + LabelList_count(interfacial_ReturnCurrent()->label_head) * 16, NULL, 0, (uint8_t *)rs485_GetDeviceName(rs485_GetDeviceCount()), NOT_NUMBER, IS_STR, &(interfacial_ReturnCurrent()->label_head));
 //						}
 						
@@ -86,7 +86,7 @@ void rs485_DataHandle(void)
 					}
 					break;
 				
-				case DO_SendType_GetSN:         //»ñÈ¡ÈÜ½âÑõÉè±¸±àÂë
+				case DO_SendType_GetSN:         //èŽ·å–æº¶è§£æ°§è®¾å¤‡ç¼–ç 
 					if(rs485_usart.rx_buf[0] == get_CurDo()->modbus_id && rs485_usart.rx_buf[1] == 0x03 && rs485_usart.rx_buf[2] == 0x0E)
 					{
 						close_circle();
@@ -99,7 +99,7 @@ void rs485_DataHandle(void)
 					}
 					break;					
 				
-				case DO_SendType_GetSHWVersion: //ÈÜ½âÑõ»ñÈ¡ÈíÓ²¼þ°æ±¾ºÅ
+				case DO_SendType_GetSHWVersion: //æº¶è§£æ°§èŽ·å–è½¯ç¡¬ä»¶ç‰ˆæœ¬å·
 					if(rs485_usart.rx_buf[0] == get_CurDo()->modbus_id && rs485_usart.rx_buf[1] == 0x03 && rs485_usart.rx_buf[2] == 0x04)
 					{
 						close_circle();
@@ -112,7 +112,7 @@ void rs485_DataHandle(void)
 					}
 					break;
 					
-				case DO_SendType_GetKB:        //»ñÈ¡ÈÜ½âÑõµÄkbÊýÖµ
+				case DO_SendType_GetKB:        //èŽ·å–æº¶è§£æ°§çš„kbæ•°å€¼
 					if(rs485_usart.rx_buf[0] == get_CurDo()->modbus_id && rs485_usart.rx_buf[1] == 0x03 && rs485_usart.rx_buf[2] == 0x08)
 					{
 						close_circle();
@@ -125,7 +125,7 @@ void rs485_DataHandle(void)
 					}
 					break;
 					
-				case DO_SendType_GetSalinity:  //»ñÈ¡ÈÜ½âÑõÉèÖÃµÄÑÎ¶ÈÖµ
+				case DO_SendType_GetSalinity:  //èŽ·å–æº¶è§£æ°§è®¾ç½®çš„ç›åº¦å€¼
 					if(rs485_usart.rx_buf[0] == get_CurDo()->modbus_id && rs485_usart.rx_buf[1] == 0x03 && rs485_usart.rx_buf[2] == 0x04)
 					{
 						close_circle();
@@ -138,7 +138,7 @@ void rs485_DataHandle(void)
 					}
 					break;
 					
-				case DO_SendType_GetPressure: //»ñÈ¡ÈÜ½âÑõÉèÖÃµÄÆøÑ¹Öµ
+				case DO_SendType_GetPressure: //èŽ·å–æº¶è§£æ°§è®¾ç½®çš„æ°”åŽ‹å€¼
 					if(rs485_usart.rx_buf[0] == get_CurDo()->modbus_id && rs485_usart.rx_buf[1] == 0x03 && rs485_usart.rx_buf[2] == 0x04)
 					{
 						close_circle();
@@ -166,25 +166,25 @@ void rs485_DataHandle(void)
 					{
 						close_circle();
 						DO_UpdateTemp2DO(get_CurDo(), &(rs485_usart.rx_buf[3]));
-						DO_SetIsGetedValue(get_CurDo());//ÉèÖÃdoÉè±¸ÒÑ¾­ÓÐÊý¾ÝÁË
+						DO_SetIsGetedValue(get_CurDo());//è®¾ç½®doè®¾å¤‡å·²ç»æœ‰æ•°æ®äº†
 						rs485_SetSensorType(TYPE_DO);
 					}
 					break;
 				
 				case DO_SendType_SetKB:
-					if(rs485_usart.rx_buf[0] == get_CurDo()->modbus_id && rs485_usart.rx_buf[1] == 0x10 && rs485_usart.rx_buf[2] == 0x11)//Ð£×¼·µ»Ø
+					if(rs485_usart.rx_buf[0] == get_CurDo()->modbus_id && rs485_usart.rx_buf[1] == 0x10 && rs485_usart.rx_buf[2] == 0x11)//æ ¡å‡†è¿”å›ž
 					{
 						close_circle();
 						switch(interfacial_GetCurPage())
 						{
-//								interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//Ð£×¼³É¹¦
+//								interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//æ ¡å‡†æˆåŠŸ
 //								interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
 //								interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
 //								break;
 							case PAGE_1_RESETCAL:
 							case PAGE_5_ONE:
 							case PAGE_5_TWOSECOND:
-								interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//Ð£×¼³É¹¦
+								interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//æ ¡å‡†æˆåŠŸ
 								interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
 								interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
 								generate_MessageBox(MESSAGE_SUCCESSFUL, 1);

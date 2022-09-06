@@ -8,28 +8,28 @@
 
 #include "interfacial.h"
 
-///////////////////////////////////////////////////////////µÃÕûÒ»¸öÊ±¼äÃ°ºÅÉÁË¸µÄ¹¦ÄÜ
-///////////////////////////////////////////////////////////µÃÕûÒ»¸ö2sµ¯´°ÏÔÊ¾±£´æ³É¹¦
+///////////////////////////////////////////////////////////å¾—æ•´ä¸€ä¸ªæ—¶é—´å†’å·é—ªçƒçš„åŠŸèƒ½
+///////////////////////////////////////////////////////////å¾—æ•´ä¸€ä¸ª2så¼¹çª—æ˜¾ç¤ºä¿å­˜æˆåŠŸ
 
 
-//////////////////////////////////////////////////////////½á¹¹ÌåÉùÃ÷
+//////////////////////////////////////////////////////////ç»“æ„ä½“å£°æ˜
 
-//ËùÓĞmainÀïÒªÓÃµ½µÄflag½á¹¹ÌåÉùÃ÷
+//æ‰€æœ‰mainé‡Œè¦ç”¨åˆ°çš„flagç»“æ„ä½“å£°æ˜
 typedef struct{
-	uint8_t flag_RefreshLcd : 1; //½«»º´æË¢µ½ÆÁÄ»ÉÏÈ¥
-	uint8_t flag_RefreshRtc : 1; //rtc²É¼¯
-	uint8_t flag_RefreshBmp : 1; //²É¼¯ÆøÑ¹
-	uint8_t flag_RefreshBat : 1; //²É¼¯µç³Øad
-	uint8_t flag_RefreshGPS : 1; //¸üĞÂgpsĞÅÏ¢
-	uint8_t flag_interfacial: 1; //½«½çÃæË¢µ½»º´æÖĞ
-	uint8_t flag_warning    : 1; //±¨¾¯Í¼±êÉÁË¸
+	uint8_t flag_RefreshLcd : 1; //å°†ç¼“å­˜åˆ·åˆ°å±å¹•ä¸Šå»
+	uint8_t flag_RefreshRtc : 1; //rtcé‡‡é›†
+	uint8_t flag_RefreshBmp : 1; //é‡‡é›†æ°”å‹
+	uint8_t flag_RefreshBat : 1; //é‡‡é›†ç”µæ± ad
+	uint8_t flag_RefreshGPS : 1; //æ›´æ–°gpsä¿¡æ¯
+	uint8_t flag_interfacial: 1; //å°†ç•Œé¢åˆ·åˆ°ç¼“å­˜ä¸­
+	uint8_t flag_warning    : 1; //æŠ¥è­¦å›¾æ ‡é—ªçƒ
 	
-	uint8_t flag_Test       : 1; //²âÊÔÓÃ¶¨Ê±Æ÷
+	uint8_t flag_Test       : 1; //æµ‹è¯•ç”¨å®šæ—¶å™¨
 	
 }flag_t;
 
-//°´¼ü°´ÏÂÊ±³¤µÄ½á¹¹Ìå±äÁ¿ÉùÃ÷
-typedef struct{//°´¼üÏû¶¶¼ÆÊ±Æ÷
+//æŒ‰é”®æŒ‰ä¸‹æ—¶é•¿çš„ç»“æ„ä½“å˜é‡å£°æ˜
+typedef struct{//æŒ‰é”®æ¶ˆæŠ–è®¡æ—¶å™¨
 	uint8_t count_up : 4;
 	uint8_t count_down : 4;
 	uint8_t count_esc : 4;
@@ -45,9 +45,9 @@ typedef struct{
 	uint16_t count_SuccessfulTim;
 }Function_t;
 
-///////////////////////////////////////////////////////////½á¹¹ÌåÊµÀı»¯
+///////////////////////////////////////////////////////////ç»“æ„ä½“å®ä¾‹åŒ–
 
-//mainÖĞÒªÓÃµ½µÄ±êÖ¾
+//mainä¸­è¦ç”¨åˆ°çš„æ ‡å¿—
 static volatile flag_t MainFlags={
 	.flag_RefreshLcd = 0,
 	.flag_RefreshRtc = 0,
@@ -63,7 +63,7 @@ static volatile Function_t functions={
 	.count_SuccessfulTim =0
 };
 
-//°´¼üÊÂ¼ş
+//æŒ‰é”®äº‹ä»¶
 static volatile KeyCount_t key_count={
 	.count_up = 0,
 	.count_down = 0,
@@ -74,7 +74,7 @@ static volatile KeyCount_t key_count={
 	.count_blu = 0,
 };
 
-//°´¼ü¿ªÊ¼¼ÆÊı±êÖ¾
+//æŒ‰é”®å¼€å§‹è®¡æ•°æ ‡å¿—
 static volatile KeyFlag_t key_CountFlag={
 	.flag_KeyUp = 0,
 	.flag_KeyDown = 0,
@@ -85,7 +85,7 @@ static volatile KeyFlag_t key_CountFlag={
 	.flag_KeyBlu = 0,
 };
 
-//°´¼üÊÇ·ñ±»°´¹ı±êÖ¾
+//æŒ‰é”®æ˜¯å¦è¢«æŒ‰è¿‡æ ‡å¿—
 static volatile KeyFlag_t key_ClickedFlag={
 	.flag_KeyUp = 0,
 	.flag_KeyDown = 0,
@@ -125,7 +125,7 @@ static volatile KeyFlag_t key_ClickedFlag={
 
 
 
-//main½Ó¿Ú
+//mainæ¥å£
 uint8_t get_RtcFlag(void)
 {
 	return MainFlags.flag_RefreshRtc;
@@ -194,8 +194,8 @@ void clear_WarningFlag(void)
 }
 
 
-//°´¼ü¼ÆÊ±¿ªÊ¼½áÊø¶ÁÈ¡×´Ì¬
-void set_KeyUpCountFlag(void)//¿ªÊ¼¼ÆÊ±
+//æŒ‰é”®è®¡æ—¶å¼€å§‹ç»“æŸè¯»å–çŠ¶æ€
+void set_KeyUpCountFlag(void)//å¼€å§‹è®¡æ—¶
 {
 	key_CountFlag.flag_KeyUp = 1;
 }
@@ -226,7 +226,7 @@ void set_KeyBluCountFlag(void)
 
 
 
-uint8_t get_KeyUpCountFlag(void)//»ñÈ¡ÊÇ·ñÔÚ¼ÆÊ±
+uint8_t get_KeyUpCountFlag(void)//è·å–æ˜¯å¦åœ¨è®¡æ—¶
 {
 	return key_CountFlag.flag_KeyUp;
 }
@@ -258,7 +258,7 @@ uint8_t get_KeyBluCountFlag(void)
 
 
 
-void clear_KeyUpCountFlag(void)//Çå³ı¼ÆÊ±±êÖ¾
+void clear_KeyUpCountFlag(void)//æ¸…é™¤è®¡æ—¶æ ‡å¿—
 {
 	key_CountFlag.flag_KeyUp = 0;
 }
@@ -289,7 +289,7 @@ void clear_KeyBluCountFlag(void)
 
 
 
-//Çå³ı°´¼ü¶¨Ê±Æ÷¼ÆÊı
+//æ¸…é™¤æŒ‰é”®å®šæ—¶å™¨è®¡æ•°
 void clear_KeyUpCount(void)
 {
 	key_count.count_up = 0;
@@ -319,7 +319,7 @@ void clear_KeyBluCount(void)
 	key_count.count_blu = 0;
 }
 
-//ÓÃÓÚcal³¤°´ÅĞ¶Ï
+//ç”¨äºcalé•¿æŒ‰åˆ¤æ–­
 uint16_t get_KeyCalCount(void)
 {
 	return key_count.count_cal;
@@ -329,8 +329,8 @@ uint16_t get_KeyOkCount(void)
 	return key_count.count_ok;
 }
 
-//»ñÈ¡°´¼üÊÇ·ñ±»°´¹ı±êÖ¾
-uint8_t get_KeyUpClickedFlag(void)//»ñÈ¡
+//è·å–æŒ‰é”®æ˜¯å¦è¢«æŒ‰è¿‡æ ‡å¿—
+uint8_t get_KeyUpClickedFlag(void)//è·å–
 {
 	return key_ClickedFlag.flag_KeyUp;
 }
@@ -359,7 +359,7 @@ uint8_t get_KeyBluClickedFlag(void)
 	return key_ClickedFlag.flag_KeyBlu;
 }	
 
-void clear_KeyUpClickedFlag(void)//Çå³ı
+void clear_KeyUpClickedFlag(void)//æ¸…é™¤
 {
 	key_ClickedFlag.flag_KeyUp = 0;
 }
@@ -412,9 +412,9 @@ void clear_WarningCount(void)
 	count_warning = 0;
 }
 
-//#define TIM_REFRESHBAT  3000  //µç³ØµçÁ¿¸üĞÂÊ±¼ä
-//#define TIM_REFRESHGPS  5000  //gps¸üĞÂÊ±¼ä
-//#define TIM_INTERFACIAL 200   //ÏÔ´æ¸üĞÂÊ±¼ä
+//#define TIM_REFRESHBAT  3000  //ç”µæ± ç”µé‡æ›´æ–°æ—¶é—´
+//#define TIM_REFRESHGPS  5000  //gpsæ›´æ–°æ—¶é—´
+//#define TIM_INTERFACIAL 200   //æ˜¾å­˜æ›´æ–°æ—¶é—´
 void main_tim(void)
 {
 	static uint8_t count_lcd = 0;
@@ -501,7 +501,7 @@ void key_tim(void)
 		key_ClickedFlag.flag_KeyOk = 1;
 		if(key_count.count_ok >= KEY_TIM_LONG)
 		{
-			set_KeyOkLongFlag();              //ÉèÖÃ³¤°´±êÖ¾
+			set_KeyOkLongFlag();              //è®¾ç½®é•¿æŒ‰æ ‡å¿—
 		}
 	}
 	
@@ -517,7 +517,7 @@ void key_tim(void)
 		key_ClickedFlag.flag_KeyCal = 1;
 		if(key_count.count_cal >= KEY_TIM_LONG)
 		{
-			set_KeyCalLongFlag();              //ÉèÖÃ³¤°´±êÖ¾
+			set_KeyCalLongFlag();              //è®¾ç½®é•¿æŒ‰æ ‡å¿—
 		}
 	}
 	
@@ -543,7 +543,7 @@ void functions_tim(void)
 			clear_SuccessfulTimCount();
 			clear_SuccessfulTimStartFlag();
 			interfacial_SetNeedDestroyMSG();
-			//destory_MessageBox();//Õâ¸ö·Åµ½mainÀïÃæÇå
+			//destory_MessageBox();//è¿™ä¸ªæ”¾åˆ°mainé‡Œé¢æ¸…
 		}
 	}
 }
@@ -559,7 +559,7 @@ void logo_tim(void)
 }
 
 
-/*ÏµÍ³ĞÄÌø¶¨Ê±Æ÷ÖĞ¶Ï*/
+/*ç³»ç»Ÿå¿ƒè·³å®šæ—¶å™¨ä¸­æ–­*/
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	

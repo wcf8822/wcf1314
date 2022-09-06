@@ -7,17 +7,17 @@
 
 
 /*
-	uint8_t IsSelected : 1;                //ÊÇ·ñ±»Ñ¡ÖÐÁË
-	uint8_t IsLarge : 1;                   //ÊÇ·ñÊÇÄÇÖÖ´óµÄÑ¡ÏîÒªË¢Ò»ÌõºáµÄ
+	uint8_t IsSelected : 1;                //æ˜¯å¦è¢«é€‰ä¸­äº†
+	uint8_t IsLarge : 1;                   //æ˜¯å¦æ˜¯é‚£ç§å¤§çš„é€‰é¡¹è¦åˆ·ä¸€æ¡æ¨ªçš„
 	
-	uint8_t ChnContent_size;               //ÖÐÎÄ±êÇ©µÄ³¤¶È
+	uint8_t ChnContent_size;               //ä¸­æ–‡æ ‡ç­¾çš„é•¿åº¦
 	
-	PAGE_NUM next_page;                    //Èç¹û±»Ñ¡ÖÐ°´È·¶¨ºóÌø×ªµÄ½çÃæ
-	uint8_t* content_chn;                  //ÏÔÊ¾µÄÖÐÎÄÄÚÈÝ
-	uint8_t* content_eng;                  //ÏÔÊ¾µÄÓ¢ÎÄÄÚÈÝ
-	struct struct_option* next_option;     //ÎªÁË·½±ãÏÂÒ»¸öÑ¡ÏîµÄÖ¸Õë
-	struct struct_option* prev_option;     //ÎªÁË·½±ãÉÏÒ»¸öÑ¡ÏîµÄÖ¸Õë
-	struct struct_NanoOption* son_option;  //×Ó±êÇ©µÄÖ¸Õë
+	PAGE_NUM next_page;                    //å¦‚æžœè¢«é€‰ä¸­æŒ‰ç¡®å®šåŽè·³è½¬çš„ç•Œé¢
+	uint8_t* content_chn;                  //æ˜¾ç¤ºçš„ä¸­æ–‡å†…å®¹
+	uint8_t* content_eng;                  //æ˜¾ç¤ºçš„è‹±æ–‡å†…å®¹
+	struct struct_option* next_option;     //ä¸ºäº†æ–¹ä¾¿ä¸‹ä¸€ä¸ªé€‰é¡¹çš„æŒ‡é’ˆ
+	struct struct_option* prev_option;     //ä¸ºäº†æ–¹ä¾¿ä¸Šä¸€ä¸ªé€‰é¡¹çš„æŒ‡é’ˆ
+	struct struct_NanoOption* son_option;  //å­æ ‡ç­¾çš„æŒ‡é’ˆ
 */
 
 STATIC PtrToOptionNode pTop;
@@ -28,30 +28,30 @@ PtrToOptionNode Option_NodeGenerate(uint8_t index, uint8_t* ContentChn, uint8_t 
 {
 	PtrToOptionNode p = NULL;
 	
-	p = (PtrToOptionNode)malloc(sizeof(node_option)); //·ÖÅä¿Õ¼ä
+	p = (PtrToOptionNode)malloc(sizeof(node_option)); //åˆ†é…ç©ºé—´
 	
-	if(p == NULL)    //°²È«ÐÔÅÐ¶Ï
+	if(p == NULL)    //å®‰å…¨æ€§åˆ¤æ–­
 	{
 		return NULL;
 	}
 	
-	p->next_option = p;//Ö±½Ó´´½¨Ò»¸öÑ­»·½Úµã
+	p->next_option = p;//ç›´æŽ¥åˆ›å»ºä¸€ä¸ªå¾ªçŽ¯èŠ‚ç‚¹
 	p->prev_option = p;
 	
 	p->option_index = index;
 	
 	
-	p->next_page = NextPage;                 //ÏÂÒ»Ò³
-	p->IsSelected = 0;                        //ÊÇ·ñ±»Ñ¡ÖÐ
-	p->IsLarge = IsLarge;                     //ÊÇ·ñÊÇÄÇÖÖ´ó±êÇ©
+	p->next_page = NextPage;                 //ä¸‹ä¸€é¡µ
+	p->IsSelected = 0;                        //æ˜¯å¦è¢«é€‰ä¸­
+	p->IsLarge = IsLarge;                     //æ˜¯å¦æ˜¯é‚£ç§å¤§æ ‡ç­¾
 	p->IsCanBeSelected = IsCanBeSelected;
 	p->IsLanguage = IsLanguage;
 	p->IsEngOnly = IsEngOnly;
 	
-	p->content_chn = (uint8_t *)ContentChn;  //ÖÐÎÄÄÚÈÝÖ¸Õë
+	p->content_chn = (uint8_t *)ContentChn;  //ä¸­æ–‡å†…å®¹æŒ‡é’ˆ
 	p->ChnContent_size = ChnLen;
 	
-	p->content_eng = (uint8_t *)ContentEng;  //Ó¢ÎÄÄÚÈÝÖ¸Õë
+	p->content_eng = (uint8_t *)ContentEng;  //è‹±æ–‡å†…å®¹æŒ‡é’ˆ
 	
 	p->son_option = NanoOptionList;
 
@@ -59,16 +59,16 @@ PtrToOptionNode Option_NodeGenerate(uint8_t index, uint8_t* ContentChn, uint8_t 
 }
 
 
-//Ìí¼Ó½Úµã
-void OptionList_Add(uint8_t index, uint8_t* ContentChn, uint8_t ChnLen, uint8_t* ContentEng, PAGE_NUM NextPage, uint8_t IsLarge, uint8_t IsCanBeSelected, uint8_t IsLanguage, uint8_t IsEngOnly, list_NanoOption NanoOptionList, list_option* OptionList) //Í·²å
+//æ·»åŠ èŠ‚ç‚¹
+void OptionList_Add(uint8_t index, uint8_t* ContentChn, uint8_t ChnLen, uint8_t* ContentEng, PAGE_NUM NextPage, uint8_t IsLarge, uint8_t IsCanBeSelected, uint8_t IsLanguage, uint8_t IsEngOnly, list_NanoOption NanoOptionList, list_option* OptionList) //å¤´æ’
 {
-	PtrToOptionNode p = Option_NodeGenerate(index, ContentChn, ChnLen, ContentEng, NextPage, IsLarge, IsCanBeSelected, IsLanguage, IsEngOnly, NanoOptionList);//Éú³ÉÒ»¸öÐÂµÄ½Úµã
+	PtrToOptionNode p = Option_NodeGenerate(index, ContentChn, ChnLen, ContentEng, NextPage, IsLarge, IsCanBeSelected, IsLanguage, IsEngOnly, NanoOptionList);//ç”Ÿæˆä¸€ä¸ªæ–°çš„èŠ‚ç‚¹
 	
-	if((*OptionList) == NULL)//Èç¹ûÁ´±íÊÇ¿ÕµÄ»°¾ÍÖ±½Ó°ÑÍ·Ö¸ÕëÖ¸ÏòµÚÒ»¸ö½Úµã
+	if((*OptionList) == NULL)//å¦‚æžœé“¾è¡¨æ˜¯ç©ºçš„è¯å°±ç›´æŽ¥æŠŠå¤´æŒ‡é’ˆæŒ‡å‘ç¬¬ä¸€ä¸ªèŠ‚ç‚¹
 	{
 		*OptionList = p;
 	}
-	else//²»ÊÇµÄ»°¾ÍÎ²²åÒ»¸ö½Úµã
+	else//ä¸æ˜¯çš„è¯å°±å°¾æ’ä¸€ä¸ªèŠ‚ç‚¹
 	{
 		p->prev_option = (*OptionList)->prev_option;
 		p->next_option = (*OptionList);
@@ -90,7 +90,7 @@ void OptionList_Destory(PtrToOptionNode *optionlist)
 	do
 	{
 		temp = p->next_option;
-		if(p->son_option != NULL)//Èç¹ûÑ¡ÏîÓÐÐ¡Ñ¡ÏîµÄ»°É¾³ýÐ¡Ñ¡ÏîÁÐ±í
+		if(p->son_option != NULL)//å¦‚æžœé€‰é¡¹æœ‰å°é€‰é¡¹çš„è¯åˆ é™¤å°é€‰é¡¹åˆ—è¡¨
 		{
 			NanoOptionList_Destory(&(p->son_option));
 		}
@@ -104,21 +104,21 @@ void OptionList_Destory(PtrToOptionNode *optionlist)
 }
 
 
-//´°¿ÚÉèÖÃÖÐÈç¹ûÑ¡Ïî¸öÊý³¬¹ý´°¿ÚÖµ²¢ÇÒÓÐ¿ÕµÄÏî»áÒç³ö0 234ÕâÖÖ»áÒç³öÒòÎªÕâÀïÊÇ°´¸öÊýËãµÄ²»ÊÇ°´ÕÕÑ¡ÏîÏÂ±êËãµÄ
-void OptionList_Print(list_option OptionList , uint8_t IsChn, float RowSpacing)    //´òÓ¡Ñ¡ÏîÁÐ±í
+//çª—å£è®¾ç½®ä¸­å¦‚æžœé€‰é¡¹ä¸ªæ•°è¶…è¿‡çª—å£å€¼å¹¶ä¸”æœ‰ç©ºçš„é¡¹ä¼šæº¢å‡º0 234è¿™ç§ä¼šæº¢å‡ºå› ä¸ºè¿™é‡Œæ˜¯æŒ‰ä¸ªæ•°ç®—çš„ä¸æ˜¯æŒ‰ç…§é€‰é¡¹ä¸‹æ ‡ç®—çš„
+void OptionList_Print(list_option OptionList , uint8_t IsChn, float RowSpacing)    //æ‰“å°é€‰é¡¹åˆ—è¡¨
 {
-	PtrToOptionNode p = NULL;  //±éÀúÁ´±íµÄÁÙÊ±Ö¸Õë
+	PtrToOptionNode p = NULL;  //éåŽ†é“¾è¡¨çš„ä¸´æ—¶æŒ‡é’ˆ
 	
-	uint8_t index_temp = 0;    //¼ÇÂ¼´°¿ÚµÚÒ»¸öÑ¡ÏîµÄÏÂ±í·½±ã¼ÆËãË¢ÐÂµÄyÖµ
-	uint8_t option_y = 0;      //±êÇ©Ë¢ÐÂËùÔÚµÄyÖµ
-	uint8_t index = 1;         //ÓÃÓÚµÚÒ»´ÎÕÒµ½Í·Î²½ÚµãÖ¸Õë
+	uint8_t index_temp = 0;    //è®°å½•çª—å£ç¬¬ä¸€ä¸ªé€‰é¡¹çš„ä¸‹è¡¨æ–¹ä¾¿è®¡ç®—åˆ·æ–°çš„yå€¼
+	uint8_t option_y = 0;      //æ ‡ç­¾åˆ·æ–°æ‰€åœ¨çš„yå€¼
+	uint8_t index = 1;         //ç”¨äºŽç¬¬ä¸€æ¬¡æ‰¾åˆ°å¤´å°¾èŠ‚ç‚¹æŒ‡é’ˆ
 	
-	if(OptionList == NULL) //ÅÐ¶ÏÊÇ·ñÊÇ¿ÕÁ´±í
+	if(OptionList == NULL) //åˆ¤æ–­æ˜¯å¦æ˜¯ç©ºé“¾è¡¨
 	{
 		return;
 	}
 	
-	if(pTop == NULL || pTail == NULL)         //¾ÍÊÇµÚÒ»±éÈ»ºó±éÀú×Ô¶¯½ØÈ¡´°¿Ú³¤¶ÈµÄ±íÍ·±íÎ²
+	if(pTop == NULL || pTail == NULL)         //å°±æ˜¯ç¬¬ä¸€éç„¶åŽéåŽ†è‡ªåŠ¨æˆªå–çª—å£é•¿åº¦çš„è¡¨å¤´è¡¨å°¾
 	{
 		pTop = OptionList;
 		pTail = OptionList;
@@ -129,8 +129,8 @@ void OptionList_Print(list_option OptionList , uint8_t IsChn, float RowSpacing) 
 		} while (pTail->next_option != OptionList && ++index < MAX_WINDOW);
 	}
 	
-	p = pTop;                     //´Ó´°¿ÚÍ·¿ªÊ¼±éÀú
-	index_temp = p->option_index; //´°¿ÚÆðÊ¼ÏÂ±êÎª±íÍ·µÄÏÂ±ê
+	p = pTop;                     //ä»Žçª—å£å¤´å¼€å§‹éåŽ†
+	index_temp = p->option_index; //çª—å£èµ·å§‹ä¸‹æ ‡ä¸ºè¡¨å¤´çš„ä¸‹æ ‡
 	do
 	{
 		option_y = OPTION_STARTY + RowSpacing  + (p->option_index - index_temp)*(16+ RowSpacing);
@@ -138,7 +138,7 @@ void OptionList_Print(list_option OptionList , uint8_t IsChn, float RowSpacing) 
 		{
 			//GUI_RectangleFill(0, option_y, 159, option_y+16, p->IsSelected);
 			gui_ClearLines(option_y-1, option_y+17,  p->IsSelected);
-			set_StartPoint(16);//»­¿òµÄÊ±ºòË¢ÐÂÏÂ¿ªÊ¼Ë¢ÐÂµÄµã///////////////////////32
+			set_StartPoint(16);//ç”»æ¡†çš„æ—¶å€™åˆ·æ–°ä¸‹å¼€å§‹åˆ·æ–°çš„ç‚¹///////////////////////32
 		}
 		
 		if(p->IsLanguage)
@@ -166,27 +166,27 @@ void OptionList_Print(list_option OptionList , uint8_t IsChn, float RowSpacing) 
 			NanoOptionList_Print(p->son_option, IsChn);
 		}
 		p = p->next_option;
-	}while(p != pTail->next_option); //±éÀúÁ´±í²¢´òÓ¡
+	}while(p != pTail->next_option); //éåŽ†é“¾è¡¨å¹¶æ‰“å°
 		
 }
 
-void set_OptionTop(PtrToOptionNode node)     //ÉèÖÃ´°¿Ú¶¥Ö¸Õë
+void set_OptionTop(PtrToOptionNode node)     //è®¾ç½®çª—å£é¡¶æŒ‡é’ˆ
 {
 	pTop = node;
 }
-void set_OptionTail(PtrToOptionNode node)    //ÉèÖÃ´°¿ÚÎ²Ö¸Õë
+void set_OptionTail(PtrToOptionNode node)    //è®¾ç½®çª—å£å°¾æŒ‡é’ˆ
 {
 	pTail = node;
 }
 
-uint8_t get_OptionTopIndex(void)             //»ñÈ¡Ñ¡ÏîµÄÏÂ±ê
+uint8_t get_OptionTopIndex(void)             //èŽ·å–é€‰é¡¹çš„ä¸‹æ ‡
 {
 	return pTop->option_index;
 }
 
-void window_change(PtrToOptionNode option_selected, list_option head)  //»¬¶¯´°¿Ú
+void window_change(PtrToOptionNode option_selected, list_option head)  //æ»‘åŠ¨çª—å£
 {
-	uint8_t index = 1;               //Í·Î²³¤¶È¼ÆÊý
+	uint8_t index = 1;               //å¤´å°¾é•¿åº¦è®¡æ•°
 	
 	if(option_selected == pTail->next_option)
 	{
@@ -215,7 +215,7 @@ void window_change(PtrToOptionNode option_selected, list_option head)  //»¬¶¯´°¿
 		}
 		else
 		{
-			pTail = head->prev_option;         //Ö¸ÏòÁ´±íµÄ×îºóÒ»¸ö½Úµã
+			pTail = head->prev_option;         //æŒ‡å‘é“¾è¡¨çš„æœ€åŽä¸€ä¸ªèŠ‚ç‚¹
 			pTop = head->prev_option;
 
 			do

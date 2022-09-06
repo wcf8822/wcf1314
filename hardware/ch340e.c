@@ -17,8 +17,8 @@ void ch340e_UartInit(UART_HandleTypeDef *huart);
 void ch340e_UartInit(UART_HandleTypeDef *huart)
 {
 	ch340e_usart.huart = huart;
-	__HAL_UART_ENABLE_IT(ch340e_usart.huart, UART_IT_IDLE);      //¿ªÆô¿ÕÏĞÖĞ¶Ï
-	HAL_UART_Receive_DMA(ch340e_usart.huart, ch340e_usart.rx_buf, CH340E_RXBUFFSIZE);//¿ªÊ¼dma½ÓÊÕ
+	__HAL_UART_ENABLE_IT(ch340e_usart.huart, UART_IT_IDLE);      //å¼€å¯ç©ºé—²ä¸­æ–­
+	HAL_UART_Receive_DMA(ch340e_usart.huart, ch340e_usart.rx_buf, CH340E_RXBUFFSIZE);//å¼€å§‹dmaæ¥æ”¶
 }
 
 
@@ -50,15 +50,15 @@ void ch340e_IDLECallBack(UART_HandleTypeDef *huart)
 	
 	if(huart->Instance == CH340E_USART)
 	{
-		__HAL_UART_CLEAR_IDLEFLAG(huart);		//ÇåÖĞ¶Ï
+		__HAL_UART_CLEAR_IDLEFLAG(huart);		//æ¸…ä¸­æ–­
 
-		HAL_UART_AbortReceive(huart);	//ÒÑ¾­½ÓÊÕÍêÒ»Ö¡Êı¾İ,ËùÒÔÕâÀïÒªÍ£Ö¹½ÓÊÕ,È»ºóÔÙÖØĞÂ½ÓÊÕ		
+		HAL_UART_AbortReceive(huart);	//å·²ç»æ¥æ”¶å®Œä¸€å¸§æ•°æ®,æ‰€ä»¥è¿™é‡Œè¦åœæ­¢æ¥æ”¶,ç„¶åå†é‡æ–°æ¥æ”¶		
 		
-		ch340e_usart.rx_size = CH340E_RXBUFFSIZE - hdma_usart1_rx.Instance->CNDTR;  //½ÓÊÕµ½¶àÉÙÊı¾İ
+		ch340e_usart.rx_size = CH340E_RXBUFFSIZE - hdma_usart1_rx.Instance->CNDTR;  //æ¥æ”¶åˆ°å¤šå°‘æ•°æ®
 		
 		ch340e_SetRxFlag();
 
-		HAL_UART_Receive_DMA(ch340e_usart.huart, ch340e_usart.rx_buf, CH340E_RXBUFFSIZE);//¿ªÊ¼dma½ÓÊÕ
+		HAL_UART_Receive_DMA(ch340e_usart.huart, ch340e_usart.rx_buf, CH340E_RXBUFFSIZE);//å¼€å§‹dmaæ¥æ”¶
 	}
 }
 
@@ -85,14 +85,14 @@ int fputc(int ch, FILE *f)
 
 void ch340_DataHandle(void)
 {
-	uint16_t temp_index = 0; // ²éÑ¯¼ÇÂ¼ÏÂ±ê
+	uint16_t temp_index = 0; // æŸ¥è¯¢è®°å½•ä¸‹æ ‡
 	
-	uint8_t check_byte = 0;  // ÓÃÀ´È·ÈÏflashÊÇ·ñĞ´Èë³É¹¦ÁË
+	uint8_t check_byte = 0;  // ç”¨æ¥ç¡®è®¤flashæ˜¯å¦å†™å…¥æˆåŠŸäº†
 	
-	datetime_t temp_time;    // ÉèÖÃÊ±¼äÁÙÊ±±äÁ¿
+	datetime_t temp_time;    // è®¾ç½®æ—¶é—´ä¸´æ—¶å˜é‡
 	uint8_t setting_callback[6];
 	
-	if(ch340e_GetRxFlag())//Èç¹û½ÓÊÕµ½Êı¾İ ²¢ Í¨¹ıcrcĞ£ÑéÁËµÄ»°
+	if(ch340e_GetRxFlag())//å¦‚æœæ¥æ”¶åˆ°æ•°æ® å¹¶ é€šè¿‡crcæ ¡éªŒäº†çš„è¯
 	{
 		ch340e_ClearRxFlag();
 		if(CheckCrc(ch340e_usart.rx_buf, ch340e_usart.rx_size))
@@ -101,10 +101,10 @@ void ch340_DataHandle(void)
 			{
 				switch(ch340e_usart.rx_buf[1])
 				{
-					case 0x02://Ğ´Êı¾İ
+					case 0x02://å†™æ•°æ®
 						switch(ch340e_usart.rx_buf[2])
 						{
-							case 0x03://»Ö¸´³ö³§ÉèÖÃÖĞÓ¢ÎÄ
+							case 0x03://æ¢å¤å‡ºå‚è®¾ç½®ä¸­è‹±æ–‡
 								W25QXX_Write(&(ch340e_usart.rx_buf[3]), SETTING_CNORENG_ADDR, 1);
 								
 								setting_reset();
@@ -113,14 +113,10 @@ void ch340_DataHandle(void)
 								setting_callback[1] = 0x02;
 								setting_callback[2] = 0x03;
 								W25QXX_Read(&check_byte, SETTING_CNORENG_ADDR, 1);
-								setting_callback[3] = check_byte == ch340e_usart.rx_buf[3] ? 1 : 0;
-								
-								SetCrc(setting_callback, sizeof(setting_callback));
-								HAL_UART_Transmit(ch340e_usart.huart, setting_callback, sizeof(setting_callback),200);
-							
+								setting_callback[3] = ((check_byte == ch340e_usart.rx_buf[3]) ? 1 : 0);
 								break;
 							
-							case 0x04://ÉèÖÃÊ±¼ä
+							case 0x04://è®¾ç½®æ—¶é—´
 								temp_time.years   = ch340e_usart.rx_buf[3];
 								temp_time.month   = ch340e_usart.rx_buf[4];
 								temp_time.day     = ch340e_usart.rx_buf[5];
@@ -141,26 +137,46 @@ void ch340_DataHandle(void)
 								{
 									setting_callback[3] = 0;
 								}
-								
-								SetCrc(setting_callback, sizeof(setting_callback));
-								HAL_UART_Transmit(ch340e_usart.huart, setting_callback, sizeof(setting_callback),200);
 								break;
-							case 0x05://¶¨ÖÆÊ±ºòÇĞ»»logo
+								
+							case 0x05://å®šåˆ¶æ—¶å€™åˆ‡æ¢logo
+								W25QXX_Write(&(ch340e_usart.rx_buf[3]), SETTING_LOG_ADDR, 1);
+								setting_reset();
+								setting_callback[0] = 0xFF;
+								setting_callback[1] = 0x02;
+								setting_callback[2] = 0x05;
+								W25QXX_Read(&check_byte, SETTING_LOG_ADDR, 1);
+								setting_callback[3] = ((check_byte == ch340e_usart.rx_buf[3]) ? 1 : 0);
+								break;
+							
+							case 0x06://æ¸…flash
+								setting_callback[0] = 0xFF;
+								setting_callback[1] = 0x02;
+								setting_callback[2] = 0x06;
+							
+								W25QXX_Erase_Chip();
+								HAL_Delay(300);
+							
+								setting_callback[3] = 0x01;
+								first_write();
 								break;
 							
 							default:
 								break;							
 						}
+						
+						SetCrc(setting_callback, sizeof(setting_callback));
+						HAL_UART_Transmit(ch340e_usart.huart, setting_callback, sizeof(setting_callback),200);
 						break;
 					
-					case 0x03://²éÊı¾İ
+					case 0x03://æŸ¥æ•°æ®
 						switch(ch340e_usart.rx_buf[2])
 						{
-							case 0x01://²é¼ÇÂ¼ÌõÊı
+							case 0x01://æŸ¥è®°å½•æ¡æ•°
 								log_SendCount();
 								break;
 							
-							case 0x02://²éµÚ¼¸Ìõ¼ÇÂ¼
+							case 0x02://æŸ¥ç¬¬å‡ æ¡è®°å½•
 								temp_index = (ch340e_usart.rx_buf[3]<<8) | ch340e_usart.rx_buf[4];
 								log_SendBytes(temp_index);
 								break;
@@ -169,6 +185,8 @@ void ch340_DataHandle(void)
 								break;
 						}
 						break;
+					
+					
 						
 					default:
 						break;

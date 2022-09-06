@@ -19,14 +19,14 @@ typedef struct{
 	uint8_t k7[4];
 }SensorCap_t;
 
-/*µ±Ç°Éè±¸Ïà¹Ø*/
+/*å½“å‰è®¾å¤‡ç›¸å…³*/
 void DO_SetCurDO(uint8_t ModbusId, PtrToDOProbe DO_head);
 PtrToDOProbe get_CurDo(void);
 void DO_ClearCueDO(void);
 
-/*Éè±¸Á´±íÏà¹Ø*/
-void DO_AddProbe(uint8_t ModbusId, PtrToDOProbe *DO_head);   //Ìí¼ÓÈÜ½âÑõÉè±¸
-void DO_DelProbe(uint8_t ModbusId, PtrToDOProbe *DO_head);   //É¾³ıÉè±¸
+/*è®¾å¤‡é“¾è¡¨ç›¸å…³*/
+void DO_AddProbe(uint8_t ModbusId, PtrToDOProbe *DO_head);   //æ·»åŠ æº¶è§£æ°§è®¾å¤‡
+void DO_DelProbe(uint8_t ModbusId, PtrToDOProbe *DO_head);   //åˆ é™¤è®¾å¤‡
 PtrToDOProbe DO_FindByName(uint8_t* name, PtrToDOProbe *DO_head);
 uint8_t DO_GetIsInit(PtrToDOProbe ptd);
 void DO_SetIsInit(PtrToDOProbe ptd);
@@ -35,16 +35,16 @@ void DO_SetIsGetedValue(PtrToDOProbe ptd);
 
 void DO_UpdatePressSal(PtrToDOProbe *DO_head);
 
-/*Éè±¸Ğ¯´øĞÅÏ¢*/
+/*è®¾å¤‡æºå¸¦ä¿¡æ¯*/
 void DO_rs485_GetModbusId(void);
 void DO_rs485_GetSN(PtrToDOProbe ptd);
 void DO_rs485_GetSHWVersion(PtrToDOProbe ptd);
 void DO_rs485_GetKB(PtrToDOProbe ptd);
-void DO_rs485_GetSalinity(PtrToDOProbe ptd);//»ñÈ¡ÑÎ¶ÈÊı¾İ
-void DO_rs485_GetPressure(PtrToDOProbe ptd);//»ñÈ¡ÆøÑ¹Êı¾İ
+void DO_rs485_GetSalinity(PtrToDOProbe ptd);//è·å–ç›åº¦æ•°æ®
+void DO_rs485_GetPressure(PtrToDOProbe ptd);//è·å–æ°”å‹æ•°æ®
 
 
-/*²âÁ¿»ñÈ¡Êı¾İ*/
+/*æµ‹é‡è·å–æ•°æ®*/
 void DO_rs485_Start(PtrToDOProbe ptd);
 void DO_rs485_Stop(PtrToDOProbe ptd);
 void DO_rs485_GetTempTwoDO(PtrToDOProbe ptd);
@@ -52,7 +52,7 @@ void DO_rs485_GetTemperature(PtrToDOProbe ptd);
 void DO_rs485_GetDOPercent(PtrToDOProbe ptd);
 void DO_rs485_GetDOmgL(PtrToDOProbe ptd);
 
-/*²âÁ¿ÉèÖÃÊı¾İ*/
+/*æµ‹é‡è®¾ç½®æ•°æ®*/
 void DO_rs485_SetKB(PtrToDOProbe ptd, float k, float b);
 void DO_rs485_SetK(PtrToDOProbe ptd, float k);
 void DO_rs485_SetB(PtrToDOProbe ptd, float b);
@@ -60,7 +60,7 @@ void DO_rs485_SetSalinity(PtrToDOProbe ptd, float sal);
 void DO_rs485_SetPressure(PtrToDOProbe ptd, float press);
 void DO_rs485_SetAddr(PtrToDOProbe ptd, uint8_t NewId);
 
-/*»ñÈ¡doÖµ*/
+/*è·å–doå€¼*/
 float DO_GetKFloat(PtrToDOProbe ptd);
 float DO_GetBFloat(PtrToDOProbe ptd);
 float DO_GetPressure(PtrToDOProbe ptd);
@@ -69,7 +69,7 @@ float DO_GetDOPercent(PtrToDOProbe ptd);
 float DO_GetDOmgL(PtrToDOProbe ptd);
 float DO_GetTemperature(PtrToDOProbe ptd);
 
-/*´ÓrxbufÖĞ»ñÈ¡doÊı¾İ*/
+/*ä»rxbufä¸­è·å–doæ•°æ®*/
 void DO_SetSN(PtrToDOProbe ptd, uint8_t* buff, uint8_t len);
 void DO_SetKBArr(PtrToDOProbe ptd, uint8_t* data);
 void DO_SetSHWVersion(PtrToDOProbe ptd, uint8_t* data);
@@ -77,12 +77,12 @@ void DO_SetPressureArr(PtrToDOProbe ptd, uint8_t* dat);
 void DO_SetSalinityArr(PtrToDOProbe ptd, uint8_t* dat);
 void DO_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat);
 
-/*¶îÍâ¹¦ÄÜ*/
+/*é¢å¤–åŠŸèƒ½*/
 uint8_t DO_ValueCheckFirst(PtrToDOProbe ptd, float data);
 void DO_SetTempZero(void);
-uint8_t DO_GetValueLocked(PtrToDOProbe ptd); //»ñÈ¡doÊÇ·ñ±»Ëø×¡
-void DO_SetValueLocked(PtrToDOProbe ptd);    //Ö±½ÓËø×¡
-void DO_SetValueUnlocked(PtrToDOProbe ptd);  //½âËø
+uint8_t DO_GetValueLocked(PtrToDOProbe ptd); //è·å–doæ˜¯å¦è¢«é”ä½
+void DO_SetValueLocked(PtrToDOProbe ptd);    //ç›´æ¥é”ä½
+void DO_SetValueUnlocked(PtrToDOProbe ptd);  //è§£é”
 void clear_DOShakeCount(void);
 #endif
 

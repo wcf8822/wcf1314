@@ -6,49 +6,49 @@
 
 #define RS485_USART USART3
 
-#define RS485_RXBUFFSIZE 20   //485µÄ¶ÁÈ¡»º´æbuf×î´óÖµ
-#define RS485_TXBUFFSIZE 42   //485µÄĞ´Èë»º´æbuf×î´óÖµ
+#define RS485_RXBUFFSIZE 20   //485çš„è¯»å–ç¼“å­˜bufæœ€å¤§å€¼
+#define RS485_TXBUFFSIZE 42   //485çš„å†™å…¥ç¼“å­˜bufæœ€å¤§å€¼
 
 #define RS485_DE_H()    HAL_GPIO_WritePin(RS485_DE_GPIO_Port, RS485_DE_Pin, GPIO_PIN_SET)
 #define RS485_DE_L()    HAL_GPIO_WritePin(RS485_DE_GPIO_Port, RS485_DE_Pin, GPIO_PIN_RESET)
 
-#define RS485_CIRCULAR_TIM 800  //Ñ­»··¢ËÍµÄ»°¶à¾Ã·¢Ò»´Î
+#define RS485_CIRCULAR_TIM 800  //å¾ªç¯å‘é€çš„è¯å¤šä¹…å‘ä¸€æ¬¡
 
-#define RESEND_MAX 4 //×î´óÖØ·¢Êı£¬³¬¹ıÕâ¸öÊı¾ÍÈÏÎªÉè±¸¶Ï¿ªÁ¬½ÓÁË
-
-
-//	uint8_t IsAlarm_DO;        //ÊÇ·ñ±¨¾¯
-//	uint8_t IsAlarm_pH;        //ÊÇ·ñ±¨¾¯
-//	uint8_t IsAlarm_Tur;        //ÊÇ·ñ±¨¾¯
-
-//	uint8_t IsAlarm_FCL;        //ÊÇ·ñ±¨¾¯
-//	uint8_t IsAlarm_EC;        //ÊÇ·ñ±¨¾¯
-
-//	uint8_t IsAlarm_ORP;        //ÊÇ·ñ±¨¾¯
-//	uint8_t IsAlarm_NH4;        //ÊÇ·ñ±¨¾¯
-//	uint8_t IsAlarm_F;        //ÊÇ·ñ±¨¾¯
-//	uint8_t IsAlarm_CL;        //ÊÇ·ñ±¨¾¯
-//	uint8_t IsAlarm_Chl;        //ÊÇ·ñ±¨¾¯
-//	uint8_t IsAlarm_Bga;        //ÊÇ·ñ±¨¾¯
-//	uint8_t IsAlarm_CODuv;        //ÊÇ·ñ±¨¾¯
+#define RESEND_MAX 4 //æœ€å¤§é‡å‘æ•°ï¼Œè¶…è¿‡è¿™ä¸ªæ•°å°±è®¤ä¸ºè®¾å¤‡æ–­å¼€è¿æ¥äº†
 
 
-/*´«¸ĞÆ÷ÀàĞÍ*/
+//	uint8_t IsAlarm_DO;        //æ˜¯å¦æŠ¥è­¦
+//	uint8_t IsAlarm_pH;        //æ˜¯å¦æŠ¥è­¦
+//	uint8_t IsAlarm_Tur;        //æ˜¯å¦æŠ¥è­¦
+
+//	uint8_t IsAlarm_FCL;        //æ˜¯å¦æŠ¥è­¦
+//	uint8_t IsAlarm_EC;        //æ˜¯å¦æŠ¥è­¦
+
+//	uint8_t IsAlarm_ORP;        //æ˜¯å¦æŠ¥è­¦
+//	uint8_t IsAlarm_NH4;        //æ˜¯å¦æŠ¥è­¦
+//	uint8_t IsAlarm_F;        //æ˜¯å¦æŠ¥è­¦
+//	uint8_t IsAlarm_CL;        //æ˜¯å¦æŠ¥è­¦
+//	uint8_t IsAlarm_Chl;        //æ˜¯å¦æŠ¥è­¦
+//	uint8_t IsAlarm_Bga;        //æ˜¯å¦æŠ¥è­¦
+//	uint8_t IsAlarm_CODuv;        //æ˜¯å¦æŠ¥è­¦
+
+
+/*ä¼ æ„Ÿå™¨ç±»å‹*/
 typedef enum{
-	TYPE_DO = 0,           //ÈÜ½âÑõ
+	TYPE_DO = 0,           //æº¶è§£æ°§
 	TYPE_pH,               //ph
-	TYPE_Tur,              //×Ç¶È
-	TYPE_FCL,              //×Ç¶È
-	TYPE_EC,              //×Ç¶È
-	TYPE_ORP,              //×Ç¶È
-	TYPE_NH4,              //×Ç¶È
-	TYPE_F,              //×Ç¶È
-	TYPE_CL,              //×Ç¶È
-	TYPE_Chl,              //×Ç¶È
-	TYPE_Bga,              //×Ç¶È
-	TYPE_CODuv,              //×Ç¶È
+	TYPE_Tur,              //æµŠåº¦
+	TYPE_FCL,              //æµŠåº¦
+	TYPE_EC,              //æµŠåº¦
+	TYPE_ORP,              //æµŠåº¦
+	TYPE_NH4,              //æµŠåº¦
+	TYPE_F,              //æµŠåº¦
+	TYPE_CL,              //æµŠåº¦
+	TYPE_Chl,              //æµŠåº¦
+	TYPE_Bga,              //æµŠåº¦
+	TYPE_CODuv,              //æµŠåº¦
 	
-	TYPE_NONE              //Î´½Ó´«¸ĞÆ÷
+	TYPE_NONE              //æœªæ¥ä¼ æ„Ÿå™¨
 }SENSOR_TYPE;
 
 
@@ -57,12 +57,12 @@ typedef enum{
 
 struct DO_struct;
 typedef struct DO_struct{
-	uint8_t is_init:1;          //ÊÇ·ñ³õÊ¼»¯ÁË
-	uint8_t is_GetedValue:1;    //ÊÇ·ñ»ñÈ¡µ½Êı¾İÁË
-	uint8_t is_FirstGetValue:1; //ÊÇ·ñµÚÒ»´Î»ñÈ¡µ½Êı¾İ
-	uint8_t is_ValueLocked:1;   //ÖµÊÇ·ñ±»Ëø×¡
+	uint8_t is_init:1;          //æ˜¯å¦åˆå§‹åŒ–äº†
+	uint8_t is_GetedValue:1;    //æ˜¯å¦è·å–åˆ°æ•°æ®äº†
+	uint8_t is_FirstGetValue:1; //æ˜¯å¦ç¬¬ä¸€æ¬¡è·å–åˆ°æ•°æ®
+	uint8_t is_ValueLocked:1;   //å€¼æ˜¯å¦è¢«é”ä½
 	
-	uint8_t modbus_id;         //Éè±¸µÄModbus ID
+	uint8_t modbus_id;         //è®¾å¤‡çš„Modbus ID
 	uint8_t new_ModbusID;
 	
 	char SWV[4];
@@ -70,32 +70,32 @@ typedef struct DO_struct{
 	
 	char name[6];
 	
-	char temperature_arr[6];   //ÎÂ¶ÈÏÔÊ¾Êı×é
-	char DOpercent_arr[7];     //DO %    ÏÔÊ¾Êı×é
-	char DOmgl_arr[6];         //DO mg/L ÏÔÊ¾Êı×é 
+	char temperature_arr[6];   //æ¸©åº¦æ˜¾ç¤ºæ•°ç»„
+	char DOpercent_arr[7];     //DO %    æ˜¾ç¤ºæ•°ç»„
+	char DOmgl_arr[6];         //DO mg/L æ˜¾ç¤ºæ•°ç»„ 
 	
-	uint8_t SN[13];            //Éè±¸snÂë  »¹Òª¼ÓÒ»Î»\0
+	uint8_t SN[13];            //è®¾å¤‡snç   è¿˜è¦åŠ ä¸€ä½\0
 	
-	float_u temperature;       //ÎÂ¶ÈÖµ
+	float_u temperature;       //æ¸©åº¦å€¼
 	float_u DOpercent;         //DO %
 	float_u DOmgl;             //DO mg/L
 	
-	float_u compensate_k;      //²¹³¥µÄkÖµ
-	float_u compensate_b;      //²¹³¥µÄbÖµ
+	float_u compensate_k;      //è¡¥å¿çš„kå€¼
+	float_u compensate_b;      //è¡¥å¿çš„bå€¼
 	
-	float_u sal;               //ÑÎ¶È
-	float_u press;             //ÆøÑ¹Öµ
+	float_u sal;               //ç›åº¦
+	float_u press;             //æ°”å‹å€¼
 	
-	struct DO_struct* next_DO; //ÏÂÒ»¸öÈÜ½âÑõÉè±¸
+	struct DO_struct* next_DO; //ä¸‹ä¸€ä¸ªæº¶è§£æ°§è®¾å¤‡
 	
 	
 }DOProbe_t;
-typedef DOProbe_t* PtrToDOProbe;//DOÉè±¸Ö¸Õë
+typedef DOProbe_t* PtrToDOProbe;//DOè®¾å¤‡æŒ‡é’ˆ
 
 
-typedef struct{//ËùÓĞÉè±¸ÁĞ±íµÄ½á¹¹Ìå
+typedef struct{//æ‰€æœ‰è®¾å¤‡åˆ—è¡¨çš„ç»“æ„ä½“
 	
-	SENSOR_TYPE current_sensor_type; //ÓÃÀ´Éè±¸¹ÜÀíÀïÃæÑ¡ÖĞÉè±¸Ö®ºóÓÃÄÄ¸öcurÉè±¸Ö¸Õë
+	SENSOR_TYPE current_sensor_type; //ç”¨æ¥è®¾å¤‡ç®¡ç†é‡Œé¢é€‰ä¸­è®¾å¤‡ä¹‹åç”¨å“ªä¸ªcurè®¾å¤‡æŒ‡é’ˆ
 	
 	PtrToDOProbe DO_list;
 
@@ -127,29 +127,29 @@ typedef enum{
 
 
 
-//´®¿ÚÊı¾İ½á¹¹
+//ä¸²å£æ•°æ®ç»“æ„
 typedef struct
 {
-	uint8_t tx_flag :1;                       //485ÒÑ·¢ËÍÊı¾İ±êÖ¾£¬·½±ãÅĞ¶ÏÊÇ·ñ»Ø´«
-	uint8_t rx_flag :1;                       //485½ÓÊÕµ½Êı¾İ±êÖ¾
+	uint8_t tx_flag :1;                       //485å·²å‘é€æ•°æ®æ ‡å¿—ï¼Œæ–¹ä¾¿åˆ¤æ–­æ˜¯å¦å›ä¼ 
+	uint8_t rx_flag :1;                       //485æ¥æ”¶åˆ°æ•°æ®æ ‡å¿—
 	
-	uint8_t rs485_circular_sent:1;            //ÊÇ·ñÑ­»··¢ËÍ±êÖ¾
-	uint8_t rs485_need_sent:1;                //ÊÇ·ñĞèÒª·¢ËÍbuf±êÖ¾
-	uint8_t rs485_is_disconnect:1;            //Éè±¸ÊÇ·ñ¶Ï¿ªÁ¬½Ó±êÖ¾
+	uint8_t rs485_circular_sent:1;            //æ˜¯å¦å¾ªç¯å‘é€æ ‡å¿—
+	uint8_t rs485_need_sent:1;                //æ˜¯å¦éœ€è¦å‘é€bufæ ‡å¿—
+	uint8_t rs485_is_disconnect:1;            //è®¾å¤‡æ˜¯å¦æ–­å¼€è¿æ¥æ ‡å¿—
 	
-	uint8_t device_count;                     //ÒÑÁ´½ÓÉè±¸¼ÆÊı
-	uint8_t resend_count;                     //ÖØ·¢´ÎÊı¼ÆÊı
+	uint8_t device_count;                     //å·²é“¾æ¥è®¾å¤‡è®¡æ•°
+	uint8_t resend_count;                     //é‡å‘æ¬¡æ•°è®¡æ•°
 	
-	uint8_t tx_size;                          //·¢ËÍbuf´óĞ¡ ·½±ãÖØ·¢
-	uint8_t rx_size;                          //½ÓÊÕbuf´óĞ¡
+	uint8_t tx_size;                          //å‘é€bufå¤§å° æ–¹ä¾¿é‡å‘
+	uint8_t rx_size;                          //æ¥æ”¶bufå¤§å°
 	
-	uint8_t rx_buf[RS485_RXBUFFSIZE];         //485¶ÁÈ¡Êı¾İbuf
-	uint8_t tx_buf[RS485_TXBUFFSIZE];         //485Êä³öbuf·½±ãÖØ·¢
+	uint8_t rx_buf[RS485_RXBUFFSIZE];         //485è¯»å–æ•°æ®buf
+	uint8_t tx_buf[RS485_TXBUFFSIZE];         //485è¾“å‡ºbufæ–¹ä¾¿é‡å‘
 
-	rs485_sent_type sent_type;                //1×Ö½Ú  ·¢ËÍÖ¸ÁîµÄÀàĞÍ
+	rs485_sent_type sent_type;                //1å­—èŠ‚  å‘é€æŒ‡ä»¤çš„ç±»å‹
 	
-	void (*init)(UART_HandleTypeDef *huart);  //485³õÊ¼»¯º¯ÊıÖ¸Õë
-	UART_HandleTypeDef *huart;                //485Ê¹ÓÃµÄÊÇÄÄ¸ö´®¿Ú
+	void (*init)(UART_HandleTypeDef *huart);  //485åˆå§‹åŒ–å‡½æ•°æŒ‡é’ˆ
+	UART_HandleTypeDef *huart;                //485ä½¿ç”¨çš„æ˜¯å“ªä¸ªä¸²å£
 	
 	
 	
@@ -163,9 +163,9 @@ extern rs485_t rs485_usart;
 void rs485_SendBuf(void);
 void rs485_ClearRxBuf(void);
 
-void rs485_RxCallBack(UART_HandleTypeDef *huart);//485´®¿ÚµÄ»Øµ÷º¯Êı
+void rs485_RxCallBack(UART_HandleTypeDef *huart);//485ä¸²å£çš„å›è°ƒå‡½æ•°
 void rs485_TxCallBack(UART_HandleTypeDef *huart);//
-void rs485_IDLECallBack(UART_HandleTypeDef *huart);//485´®¿Ú¿ÕÏĞÖĞ¶Ï»Øµ÷
+void rs485_IDLECallBack(UART_HandleTypeDef *huart);//485ä¸²å£ç©ºé—²ä¸­æ–­å›è°ƒ
 
 void rs485_SetSensorType(SENSOR_TYPE st);
 SENSOR_TYPE rs485_GetSensorType(void);
