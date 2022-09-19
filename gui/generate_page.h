@@ -17,55 +17,55 @@
 #define ROWSPACING_MORE  2
 
 log_union* generate_GetLogUnion(void);
-float get_RowSpacing(void);                                                          //»ñÈ¡µ±Ç°ĞĞ¼ä¾àÖµ
-void set_RowSpacing(float value);                                                    //ÉèÖÃÑ¡ÏîĞĞ¼ä¾à
+float get_RowSpacing(void);                                                          //è·å–å½“å‰è¡Œé—´è·å€¼
+void set_RowSpacing(float value);                                                    //è®¾ç½®é€‰é¡¹è¡Œé—´è·
 uint8_t* generate_GetLogTimeArr(void);
 
-void generate_StartPage(PtrToInterfacial interfacial);                               //Éú³É³õÊ¼½çÃæ
+void generate_StartPage(PtrToInterfacial interfacial);                               //ç”Ÿæˆåˆå§‹ç•Œé¢
 
-void generate_MenuPage(PtrToInterfacial interfacial);                                //Éú³É²Ëµ¥½çÃæ
+void generate_MenuPage(PtrToInterfacial interfacial);                                //ç”Ÿæˆèœå•ç•Œé¢
 
-void generate_SensorManage(PtrToInterfacial interfacial);                            //Éú³ÉÉè±¸¹ÜÀí½çÃæ
-void generate_SystemPage(PtrToInterfacial interfacial);                              //Éú³ÉÏµÍ³ÉèÖÃ½çÃæ
-void generate_Histor(PtrToInterfacial interfacial);                                  //Éú³ÉÀúÊ·Êı¾İ½çÃæ
+void generate_SensorManage(PtrToInterfacial interfacial);                            //ç”Ÿæˆè®¾å¤‡ç®¡ç†ç•Œé¢
+void generate_SystemPage(PtrToInterfacial interfacial);                              //ç”Ÿæˆç³»ç»Ÿè®¾ç½®ç•Œé¢
+void generate_Histor(PtrToInterfacial interfacial);                                  //ç”Ÿæˆå†å²æ•°æ®ç•Œé¢
 
-void generate_SetTimePage(PtrToInterfacial interfacial);                             //Éú³ÉÊ±¼äÉèÖÃ½çÃæ
-void generate_AutoShut(PtrToInterfacial interfacial);                                //Éú³É×Ô¶¯¹Ø»ú½çÃæ
-void generate_SetPressure(PtrToInterfacial interfacial);                             //Éú³ÉÆøÑ¹ÉèÖÃ½çÃæ
-void generate_SetSalinity(PtrToInterfacial interfacial);                             //Éú³ÉÑÎ¶ÈÉèÖÃ½çÃæ
-void generate_GpsInfo(PtrToInterfacial interfacial);                                 //Éú³Égps²éÑ¯½çÃæ
-void generate_Language(PtrToInterfacial interfacial);                                //Éú³ÉÓïÑÔÉèÖÃ½çÃæ
+void generate_SetTimePage(PtrToInterfacial interfacial);                             //ç”Ÿæˆæ—¶é—´è®¾ç½®ç•Œé¢
+void generate_AutoShut(PtrToInterfacial interfacial);                                //ç”Ÿæˆè‡ªåŠ¨å…³æœºç•Œé¢
+void generate_SetPressure(PtrToInterfacial interfacial);                             //ç”Ÿæˆæ°”å‹è®¾ç½®ç•Œé¢
+void generate_SetSalinity(PtrToInterfacial interfacial);                             //ç”Ÿæˆç›åº¦è®¾ç½®ç•Œé¢
+void generate_GpsInfo(PtrToInterfacial interfacial);                                 //ç”ŸæˆgpsæŸ¥è¯¢ç•Œé¢
+void generate_Language(PtrToInterfacial interfacial);                                //ç”Ÿæˆè¯­è¨€è®¾ç½®ç•Œé¢
 
 void generate_AlarmType(PtrToInterfacial interfacial);
 void generate_MeterInfo(PtrToInterfacial interfacial);
-void generate_reset(PtrToInterfacial interfacial);                                   //Éú³É»Ö¸´³ö³§ÉèÖÃ½çÃæ
-void generate_AutoLock(PtrToInterfacial interfacial);                                //Éú³É×Ô¶¯Ëø¶¨ÉèÖÃ½çÃæ
+void generate_reset(PtrToInterfacial interfacial);                                   //ç”Ÿæˆæ¢å¤å‡ºå‚è®¾ç½®ç•Œé¢
+void generate_AutoLock(PtrToInterfacial interfacial);                                //ç”Ÿæˆè‡ªåŠ¨é”å®šè®¾ç½®ç•Œé¢
 
 
-void generate_DataView(PtrToInterfacial interfacial, uint16_t data_index);           //Éú³ÉÈÕÖ¾²éÑ¯½çÃæ
+void generate_DataView(PtrToInterfacial interfacial, uint16_t data_index);           //ç”Ÿæˆæ—¥å¿—æŸ¥è¯¢ç•Œé¢
 
-void generate_AlarmTone(PtrToInterfacial interfacial);                               //Éú³É±¨¾¯ÒôÉèÖÃ½çÃæ
-void generate_KeypadTone(PtrToInterfacial interfacial);                              //Éú³É°´¼üÒôÉèÖÃ½çÃæ
-void generate_BeepSeting(PtrToInterfacial interfacial);                              //Éú³ÉÌáÊ¾ÒôÉèÖÃ½çÃæ
-void generate_AlarmSetting(PtrToInterfacial interfacial);                            //Éú³É¿ª¹Ø±¨¾¯½çÃæ
+void generate_AlarmTone(PtrToInterfacial interfacial);                               //ç”ŸæˆæŠ¥è­¦éŸ³è®¾ç½®ç•Œé¢
+void generate_KeypadTone(PtrToInterfacial interfacial);                              //ç”ŸæˆæŒ‰é”®éŸ³è®¾ç½®ç•Œé¢
+void generate_BeepSeting(PtrToInterfacial interfacial);                              //ç”Ÿæˆæç¤ºéŸ³è®¾ç½®ç•Œé¢
+void generate_AlarmSetting(PtrToInterfacial interfacial);                            //ç”Ÿæˆå¼€å…³æŠ¥è­¦ç•Œé¢
 
-void generate_SensorSearch(PtrToInterfacial interfacial);                            //Éú³É²éÕÒÉè±¸½çÃæ
-void generate_Sensors(PtrToInterfacial interfacial);                                 //Éú³É¾ßÌåµÄ´«¸ĞÆ÷½çÃæ
+void generate_SensorSearch(PtrToInterfacial interfacial);                            //ç”ŸæˆæŸ¥æ‰¾è®¾å¤‡ç•Œé¢
+void generate_Sensors(PtrToInterfacial interfacial);                                 //ç”Ÿæˆå…·ä½“çš„ä¼ æ„Ÿå™¨ç•Œé¢
 
-void generate_SensorInfo(PtrToInterfacial interfacial);                              //Éú³É´«¸ĞÆ÷ĞÅÏ¢½çÃæ
-void generate_ResetCal(PtrToInterfacial interfacial);                                //Éú³ÉÖØÖÃĞ£×¼ÏµÊı½çÃæ
-void generate_ParameterSetting(PtrToInterfacial interfacial);                        //Éú³É´«¸ĞÆ÷²ÎÊıÉèÖÃ½çÃæ
+void generate_SensorInfo(PtrToInterfacial interfacial);                              //ç”Ÿæˆä¼ æ„Ÿå™¨ä¿¡æ¯ç•Œé¢
+void generate_ResetCal(PtrToInterfacial interfacial);                                //ç”Ÿæˆé‡ç½®æ ¡å‡†ç³»æ•°ç•Œé¢
+void generate_ParameterSetting(PtrToInterfacial interfacial);                        //ç”Ÿæˆä¼ æ„Ÿå™¨å‚æ•°è®¾ç½®ç•Œé¢
 
-void generate_AlarmValueSetting(PtrToInterfacial interfacial);                       //Éú³É±¨¾¯ãĞÖµÉèÖÃ½çÃæ
-void generate_DataStore(PtrToInterfacial interfacial);                               //Éú³ÉÊı¾İ±£´æ½çÃæ
-void generate_DataDelete(PtrToInterfacial interfacial);                              //Éú³ÉÊı¾İÉ¾³ı½çÃæ
-void generate_DataLog(PtrToInterfacial interfacial);                                 //Éú³ÉÏÔÊ¾¾ßÌåÊı¾İµÄ½çÃæ
-void generate_DataLogGPS(PtrToInterfacial interfacial);                              //Éú³ÉÏÔÊ¾¾ßÌåÊı¾İgpsµÄ½çÃæ
+void generate_AlarmValueSetting(PtrToInterfacial interfacial);                       //ç”ŸæˆæŠ¥è­¦é˜ˆå€¼è®¾ç½®ç•Œé¢
+void generate_DataStore(PtrToInterfacial interfacial);                               //ç”Ÿæˆæ•°æ®ä¿å­˜ç•Œé¢
+void generate_DataDelete(PtrToInterfacial interfacial);                              //ç”Ÿæˆæ•°æ®åˆ é™¤ç•Œé¢
+void generate_DataLog(PtrToInterfacial interfacial);                                 //ç”Ÿæˆæ˜¾ç¤ºå…·ä½“æ•°æ®çš„ç•Œé¢
+void generate_DataLogGPS(PtrToInterfacial interfacial);                              //ç”Ÿæˆæ˜¾ç¤ºå…·ä½“æ•°æ®gpsçš„ç•Œé¢
 
-void generate_Cal(PtrToInterfacial interfacial, PAGE_NUM father_page);               //Éú³ÉĞ£×¼½çÃæ
-void generate_OnePoint(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);       //Éú³ÉÒ»µãĞ£×¼½çÃæ
-void generate_TwoPointFirst(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);  //Éú³ÉÁ½µãĞ£×¼ µÚÒ»µã½çÃæ
-void generate_TwoPointSecond(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type); //Éú³ÉÁ½µãĞ£×¼ µÚ¶şµã½çÃæ
+void generate_Cal(PtrToInterfacial interfacial, PAGE_NUM father_page);               //ç”Ÿæˆæ ¡å‡†ç•Œé¢
+void generate_OnePoint(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);       //ç”Ÿæˆä¸€ç‚¹æ ¡å‡†ç•Œé¢
+void generate_TwoPointFirst(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);  //ç”Ÿæˆä¸¤ç‚¹æ ¡å‡† ç¬¬ä¸€ç‚¹ç•Œé¢
+void generate_TwoPointSecond(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type); //ç”Ÿæˆä¸¤ç‚¹æ ¡å‡† ç¬¬äºŒç‚¹ç•Œé¢
 
 void update_LogTitle(log_union* log , uint8_t index);
 

@@ -73,7 +73,7 @@ STATIC uint8_t AncestorPage_OptionIndex = 0;//阿太界面所选的标签下标
 STATIC uint8_t flag_NeedWarning = 0;
 
 HARDWARE_VERSION hardware_version; //硬件版本
-const uint8_t software_version[] = "v1.0";  //软件版本
+const uint8_t software_version[] = "v1.2";  //软件版本
 
 void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack);//通过枚举变量设置显示的界面
 
@@ -2245,12 +2245,18 @@ void interfacial_refresh(void)                                                  
 //						{
 //							DO_rs485_GetTempTwoDO(get_CurDo());
 //						}
+						if(get_CurDo()->DOpercent.value_f < 0)//如果值为负值的话直接让它显示0
+						{
+							DO_zero_buf_mgl(get_CurDo());
+							DO_zero_buf_percent(get_CurDo());
+						}
 						
 						if(rs485_GetIsChangeSenesor())//第一次是溶解氧的话添加一下三个参数标签
 						{
 							rs485_ClearIsChangeSenesor();
 							
 							list_label label_head = NULL; //溶解氧数据label列表
+							
 							LabelList_Add( 16,  36, NULL, 0, (uint8_t *)get_CurDo()->DOpercent_arr,   LABEL_LARGE,  LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //do %
 							LabelList_Add( 32,  72, NULL, 0, (uint8_t *)get_CurDo()->DOmgl_arr,       LABEL_LARGE, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //do mg/L
 							LabelList_Add( 62, 112, NULL, 0, (uint8_t *)get_CurDo()->temperature_arr, LABEL_MEDIUM, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //temperature

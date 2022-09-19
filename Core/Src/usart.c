@@ -332,13 +332,8 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
-/*********************************  
-* 函数名称：CalCrc
-* �?    述：计算crc校验码，自动把后两位写入crc
-* �?    入：buf   �?要进行crc校验的数�?
-						len   除两位crc外的数据长度
-* �?    出：�?   
-***********************************/ 
+
+/*计算crc长度是不包括两位crc*/
 uint16_t CalCrc(uint8_t* buf, uint16_t len)
 {
 	uint32_t i;
@@ -361,6 +356,7 @@ uint16_t CalCrc(uint8_t* buf, uint16_t len)
 	return crc;
 }
 
+/*设置crc 长度包括两位crc*/
 void SetCrc(uint8_t *buf, uint16_t len)
 {
 	uint16_t crc = CalCrc(buf, len-2);
@@ -368,7 +364,7 @@ void SetCrc(uint8_t *buf, uint16_t len)
 	buf[len - 1] = crc >> 8;
 }
 
-/*验证crc*/
+/*验证crc 长度包括两位crc*/
 uint8_t CheckCrc(uint8_t *buf, uint16_t len)
 {
 	uint16_t crc = CalCrc(buf, len-2);

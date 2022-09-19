@@ -84,6 +84,10 @@ uint8_t DO_GetValueLocked(PtrToDOProbe ptd); //获取do是否被锁住
 void DO_SetValueLocked(PtrToDOProbe ptd);    //直接锁住
 void DO_SetValueUnlocked(PtrToDOProbe ptd);  //解锁
 void clear_DOShakeCount(void);
+
+void DO_zero_buf_mgl(PtrToDOProbe p);
+void DO_zero_buf_percent(PtrToDOProbe p);
+
 #endif
 
 

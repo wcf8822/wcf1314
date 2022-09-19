@@ -57,6 +57,27 @@ void DO_ClearCueDO(void)
 	cur_DO = NULL;
 }
 
+void DO_zero_buf_mgl(PtrToDOProbe p)
+{
+	p->DOmgl_arr[0] = ' ';
+	p->DOmgl_arr[1] = '0';
+	p->DOmgl_arr[2] = '.';
+	p->DOmgl_arr[3] = '0';
+	p->DOmgl_arr[4] = '0';
+	p->DOmgl_arr[5] = '\0';
+}
+
+void DO_zero_buf_percent(PtrToDOProbe p)
+{
+	p->DOpercent_arr[0] = ' ';
+	p->DOpercent_arr[1] = ' ';
+	p->DOpercent_arr[2] = '0';
+	p->DOpercent_arr[3] = '.';
+	p->DOpercent_arr[4] = '0';
+	p->DOpercent_arr[5] = '0';
+	p->DOpercent_arr[6] = '\0';
+}
+
 void DO_AddProbe(uint8_t ModbusId, PtrToDOProbe *DO_head)//这里得添加名字
 {
 	PtrToDOProbe p = NULL;
@@ -87,20 +108,23 @@ void DO_AddProbe(uint8_t ModbusId, PtrToDOProbe *DO_head)//这里得添加名字
 	p->temperature.value_f = 0.0;
 	
 	//显示buff初始化一下全都显示成0
-	p->DOmgl_arr[0] = ' ';
-	p->DOmgl_arr[1] = '0';
-	p->DOmgl_arr[2] = '.';
-	p->DOmgl_arr[3] = '0';
-	p->DOmgl_arr[4] = '0';
-	p->DOmgl_arr[5] = '\0';
-	
-	p->DOpercent_arr[0] = ' ';
-	p->DOpercent_arr[1] = ' ';
-	p->DOpercent_arr[2] = '0';
-	p->DOpercent_arr[3] = '.';
-	p->DOpercent_arr[4] = '0';
-	p->DOpercent_arr[5] = '0';
-	p->DOpercent_arr[6] = '\0';
+//	p->DOmgl_arr[0] = ' ';
+//	p->DOmgl_arr[1] = '0';
+//	p->DOmgl_arr[2] = '.';
+//	p->DOmgl_arr[3] = '0';
+//	p->DOmgl_arr[4] = '0';
+//	p->DOmgl_arr[5] = '\0';
+//	
+//	p->DOpercent_arr[0] = ' ';
+//	p->DOpercent_arr[1] = ' ';
+//	p->DOpercent_arr[2] = '0';
+//	p->DOpercent_arr[3] = '.';
+//	p->DOpercent_arr[4] = '0';
+//	p->DOpercent_arr[5] = '0';
+//	p->DOpercent_arr[6] = '\0';
+
+	DO_zero_buf_mgl(p);
+	DO_zero_buf_percent(p);
 	
 	p->temperature_arr[0] = ' ';
 	p->temperature_arr[1] = '0';
@@ -871,12 +895,6 @@ void CheckValueLock(PtrToDOProbe ptd)
 
 void DO_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)//要添加数字滤波
 {
-	
-	
-	
-	
-	
-	
 	float temperature_temp = 0.0;
 	float DO_Percent_temp = 0.0;
 	float DO_mgl_temp = 0.0;
@@ -898,7 +916,7 @@ void DO_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)//要添加数字滤波
 		ptd->DOmgl.value_arr[i] = *(dat++);
 	}
 	
-	ptd->DOpercent.value_f = fabs(ptd->DOpercent.value_f);
+	//ptd->DOpercent.value_f = fabs(ptd->DOpercent.value_f);//为了屏蔽负值这里变成绝对值
 	
 	if(ptd->is_FirstGetValue)//如果是第一次获取到数据的话给它一个值
 	{

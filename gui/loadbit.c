@@ -116,7 +116,7 @@ void  GUI_PutCharArr(uint8_t x, uint8_t y, uint8_t *dat, uint8_t hno, uint8_t ln
 		if((hno&0x07)!=0) dat++;
 	}
 }
-
+/*小写字母*/
 void GUI_PutChar(uint8_t x, uint8_t y, char c, uint8_t hno, uint8_t lno, uint8_t IsInverse)
 {
 // (0) .(1) :(2) /(3) %(4) 
@@ -172,6 +172,7 @@ void GUI_PutChar(uint8_t x, uint8_t y, char c, uint8_t hno, uint8_t lno, uint8_t
 	}
 }
 
+/*大写字母*/
 void GUI_PutLargeChar(uint8_t x, uint8_t y, char c, uint8_t hno, uint8_t lno, uint8_t IsInverse)
 {
 	switch(c)
