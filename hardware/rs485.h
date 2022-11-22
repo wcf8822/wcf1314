@@ -3,6 +3,7 @@
 
 #include "main.h"
 #include "usart.h"
+#include "calculate.h"
 
 #define RS485_USART USART3
 
@@ -12,7 +13,7 @@
 #define RS485_DE_H()    HAL_GPIO_WritePin(RS485_DE_GPIO_Port, RS485_DE_Pin, GPIO_PIN_SET)
 #define RS485_DE_L()    HAL_GPIO_WritePin(RS485_DE_GPIO_Port, RS485_DE_Pin, GPIO_PIN_RESET)
 
-#define RS485_CIRCULAR_TIM 800  //循环发送的话多久发一次
+#define RS485_CIRCULAR_TIM 850  //循环发送的话多久发一次
 
 #define RESEND_MAX 4 //最大重发数，超过这个数就认为设备断开连接了
 
@@ -57,6 +58,7 @@ typedef enum{
 
 struct DO_struct;
 typedef struct DO_struct{
+	
 	uint8_t is_init:1;          //是否初始化了
 	uint8_t is_GetedValue:1;    //是否获取到数据了
 	uint8_t is_FirstGetValue:1; //是否第一次获取到数据
@@ -76,6 +78,8 @@ typedef struct DO_struct{
 	
 	uint8_t SN[13];            //设备sn码  还要加一位\0
 	
+	
+	
 	float_u temperature;       //温度值
 	float_u DOpercent;         //DO %
 	float_u DOmgl;             //DO mg/L
@@ -85,6 +89,10 @@ typedef struct DO_struct{
 	
 	float_u sal;               //盐度
 	float_u press;             //气压值
+	
+	LiQueue* queue_domgl;      //mg/l 数据队列
+	LiQueue* queue_dopercent;  //%    数据队列
+	LiQueue* queue_temp;       //℃    数据队列
 	
 	struct DO_struct* next_DO; //下一个溶解氧设备
 	

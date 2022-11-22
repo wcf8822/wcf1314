@@ -7,7 +7,7 @@
 
 #define GPS_USART USART2
 
-//¶¨ÒåÊı×é³¤¶È
+//å®šä¹‰æ•°ç»„é•¿åº¦
 #define GPS_Buffer_Length  100
 #define UTCTime_Length     11
 #define latitude_Length    12
@@ -17,7 +17,7 @@
 
 #define GPS_SMALLER 0
 
-#define USART_REC_LEN  		 900  	//¶¨Òå×î´ó½ÓÊÕ×Ö½ÚÊı 200
+#define USART_REC_LEN  		 900  	//å®šä¹‰æœ€å¤§æ¥æ”¶å­—èŠ‚æ•° 200
 
 #define false  0
 #define true   1
@@ -26,20 +26,20 @@
 
 typedef struct 
 { 
-	char isGetData   :1;		                  //    ÊÇ·ñ»ñÈ¡µ½GPSÊı¾İ
-	char isParseData :1;	                    //    ÊÇ·ñ½âÎöÍê³É
-	char isUsefully  :1;	 	                  //1   ¶¨Î»ĞÅÏ¢ÊÇ·ñÓĞĞ§
+	char isGetData   :1;		                  //    æ˜¯å¦è·å–åˆ°GPSæ•°æ®
+	char isParseData :1;	                    //    æ˜¯å¦è§£æå®Œæˆ
+	char isUsefully  :1;	 	                  //1   å®šä½ä¿¡æ¯æ˜¯å¦æœ‰æ•ˆ
 	
 	char E_W[E_W_Length];		                  //2   E/W
 	char N_S[N_S_Length];		                  //2   N/S
 	
-	char UTCTime[UTCTime_Length];		          //11  UTCÊ±¼ä
-	char latitude[latitude_Length];		        //11  Î³¶È
-	char longitude[longitude_Length];		      //12  ¾­¶È
-	char GPS_Buffer[GPS_Buffer_Length];       //80  gps buf³¤¶È
+	char UTCTime[UTCTime_Length];		          //11  UTCæ—¶é—´
+	char latitude[latitude_Length];		        //11  çº¬åº¦
+	char longitude[longitude_Length];		      //12  ç»åº¦
+	char GPS_Buffer[GPS_Buffer_Length];       //80  gps bufé•¿åº¦
 	
-	void (*init)(UART_HandleTypeDef *huart);  //4   ³õÊ¼»¯º¯ÊıÖ¸Õë
-	UART_HandleTypeDef *huart;                //4   Ê¹ÓÃµÄÊÇÄÄ¸ö´®¿Ú
+	void (*init)(UART_HandleTypeDef *huart);  //4   åˆå§‹åŒ–å‡½æ•°æŒ‡é’ˆ
+	UART_HandleTypeDef *huart;                //4   ä½¿ç”¨çš„æ˜¯å“ªä¸ªä¸²å£
 	
 	
 	
@@ -56,7 +56,7 @@ void gps_RxCallBack(UART_HandleTypeDef *huart);
 
 
 
-void get_GpsData(void); //´ÓdmaÊı¾İÖĞ½âÎö³ö×ø±êĞÅÏ¢
+void get_GpsData(void); //ä»dmaæ•°æ®ä¸­è§£æå‡ºåæ ‡ä¿¡æ¯
 
 char* get_LatitudeArr(void);
 char* get_LongitudeArr(void);

@@ -150,13 +150,14 @@ void Error_Handler(void);
 
 
 
-#define SETTING_FIRSTRUN_JUDGE 0x58     //第一次开机判断的数值
+#define SETTING_FIRSTRUN_JUDGE 0x66     //第一次开机判断的数�??
 
 #define SETTING_FIRSTRUN_ADDR  0x000000 //第一次开机的存放位置
-#define SETTING_CNORENG_ADDR   0x000100 //恢复出厂的存放位置
-#define LOG_COUNT_ADDR         0x000200 //记录条数的存放位置
-#define SETTING_START_ADDR     0x000300 //设置起始的存放位置
-#define SETTING_LOG_ADDR    	 0x000400 //设置开机界面的存放位置
+#define SETTING_CNORENG_ADDR   0x000100 //恢复出厂的存放位�?
+#define LOG_COUNT_ADDR         0x000200 //记录条数的存放位�?
+#define SETTING_START_ADDR     0x000300 //设置起始的存放位�?
+#define SETTING_LOGO_ADDR    	 0x000400 //设置�?机界面的存放位置
+#define SETTING_HAVEGPS_ADDR   0x000500 //设置是否有gps的存放位�?
 #define LOG_FIRST_ADDR         0x3CB000 //第一条记录的存放位置
 
 

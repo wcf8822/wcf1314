@@ -2,7 +2,7 @@
 #define __FONT_LIB_H
 
 /*字库大小*/
-#define CHN_FONT_NUM 169
+#define CHN_FONT_NUM 174
 #define ENG_FONT_NUM 73
 
 /*字库定义*/
@@ -29,7 +29,7 @@
 
 
 extern const unsigned char eng_8x16[ENG_FONT_NUM][16];
-extern const unsigned char chn_16x16[CHN_FONT_NUM][32];
+extern unsigned char chn_16x16[CHN_FONT_NUM][32];
 extern const unsigned char num_16x32[13][64];
 extern const unsigned char num_10x20[13][40];
 
@@ -212,7 +212,7 @@ extern const unsigned char diandaolvjiaozhun_cn[5];
 extern const unsigned char diandaolvjiaozhun_en[];
 extern const unsigned char zhuodujiaozhun_cn[4];
 extern const unsigned char zhuodujiaozhun_en[];
-extern const unsigned char wendujiaozhun_cn[4];
+//extern const unsigned char wendujiaozhun_cn[4];
 extern const unsigned char wendujiaozhun_en[];
 extern const unsigned char pHjiaozhun_cn[3];
 extern const unsigned char pHjiaozhun_en[];
@@ -391,6 +391,24 @@ extern const unsigned char CL_str[];
 extern const unsigned char Chl_str[];
 extern const unsigned char Vga_str[];
 extern const unsigned char CODuv_str[];
+
+extern const unsigned char lvboshezhi_cn[4];
+extern const unsigned char lvboshezhi_en[];
+
+extern const unsigned char canshu_cn[3];
+extern const unsigned char canshu_en[];
+
+extern const unsigned char cishuxianzhi_slideavg[];
+
+
+extern const unsigned char kuai_cn[1];
+extern const unsigned char kuai_en[];
+	
+extern const unsigned char man_cn[1];
+extern const unsigned char man_en[];
+	
+extern const unsigned char zhongdeng_cn[2];
+extern const unsigned char zhongdeng_en[];
 
 
 #endif

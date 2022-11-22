@@ -42,7 +42,7 @@ void HYM8563_UpdateTime(void) //采用写地址读数据模式
 	machine_time.hour = bcd2dec(IIC_Read_Byte(1) & 0x3f);
 	machine_time.day = bcd2dec(IIC_Read_Byte(1) & 0x3f);
 	machine_time.week = bcd2dec(IIC_Read_Byte(1) & 0x07);
-	machine_time.month = bcd2dec(IIC_Read_Byte(1) & 0x0f);
+	machine_time.month = bcd2dec(IIC_Read_Byte(1) & 0x1f);
 	machine_time.years = bcd2dec(IIC_Read_Byte(0));
 	IIC_Stop();//产生一个停止条件
 	

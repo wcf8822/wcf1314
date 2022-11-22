@@ -85,7 +85,6 @@ void generate_ResetCal(PtrToInterfacial interfacial)
 	list_option option_head = NULL;     //生成一个临时的选项链表头
 	
 	OptionList_Add(0, (uint8_t *)&shi_cn, 1, (uint8_t *)shi_en, NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
-//	OptionList_Add(1, (uint8_t *)&fou_cn, 1, (uint8_t *)fou_en, NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NULL, &option_head);	//报警音
 	
 	interfacial->page_father = PAGE_0_START;//设定父界面
 	
@@ -111,8 +110,6 @@ void generate_SensorManage(PtrToInterfacial interfacial)
 	
 	list_option option_head = NULL;    //主标签
 	
-	/*自动搜索设备*/
-//	OptionList_Add(0, (uint8_t *)zidongsousuoshebei_cn , sizeof(zidongsousuoshebei_cn), (uint8_t *)zidongsousuoshebei_en, PAGE_3_SENSORSSEARCH, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NULL, &option_head);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////这里的传感器得根据情况自动生成然后添加到这个链表上
 	if(p != NULL)//如果do设备不为空的话
 	{
@@ -121,8 +118,6 @@ void generate_SensorManage(PtrToInterfacial interfacial)
 			OptionList_Add(option_index++, NULL, 0, (uint8_t *)(p->name), PAGE_3_SENSORS, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, IS_ENG_ONLY, NULL, &option_head);
 			p = p->next_DO;
 		}
-		
-		//
 	}
 				
 	
@@ -153,25 +148,32 @@ void generate_SensorSearch(PtrToInterfacial interfacial)
 /*系统设置界面*/
 void generate_SystemPage(PtrToInterfacial interfacial)
 {
+	uint8_t index = 0; //因为gps不一定有所以序号要自动增加不能直接写死
 	set_RowSpacing(ROWSPACING_MORE);//设置选项行间距为0
 	
 	CurInterfacial_Destory();
 	
 	list_option option_head = NULL;    //主标签
 	
-	OptionList_Add(0, (uint8_t *)zuobiaochaxun_cn,       sizeof(zuobiaochaxun_cn),       (uint8_t *)zuobiaochaxun_en,       PAGE_3_GPS,        OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//坐标查询
-	OptionList_Add(1, (uint8_t *)yandushezhi_cn,         sizeof(yandushezhi_cn),         (uint8_t *)yandushezhi_en,         PAGE_3_SALT,       OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//盐度设置
-	OptionList_Add(2, (uint8_t *)qiyashezhi_cn,          sizeof(qiyashezhi_cn),          (uint8_t *)qiyashezhi_en,          PAGE_3_PRESSURE,   OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//气压设置
-	OptionList_Add(3, (uint8_t *)zidongguanji_cn,        sizeof(zidongguanji_cn),        (uint8_t *)zidongguanji_en,        PAGE_3_AUTOSHUT,   OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//自动关机
-	OptionList_Add(4, (uint8_t *)baojingshezhi_cn,       sizeof(baojingshezhi_cn),       (uint8_t *)baojingshezhi_en,       PAGE_3_ALARM_TYPE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//报警设置
-	OptionList_Add(5, (uint8_t *)tishiyinshezhi_cn,      sizeof(tishiyinshezhi_cn),      (uint8_t *)tishiyinshezhi_en,      PAGE_3_BEEP,       OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//按键音设置
-	OptionList_Add(6, (uint8_t *)shijianshezhi_cn,       sizeof(shijianshezhi_cn),       (uint8_t *)shijianshezhi_en,       PAGE_3_TIME,       OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head); //时间设置
+	if(setting_GetHaveGps())
+	{
+		OptionList_Add(index++,  (uint8_t *)zuobiaochaxun_cn,  sizeof(zuobiaochaxun_cn),  (uint8_t *)zuobiaochaxun_en,  PAGE_3_GPS,        OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//坐标查询
+	}
+		
+	OptionList_Add(index++,  (uint8_t *)yandushezhi_cn,    sizeof(yandushezhi_cn),    (uint8_t *)yandushezhi_en,    PAGE_3_SALT,       OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//盐度设置
+	OptionList_Add(index++,  (uint8_t *)qiyashezhi_cn,     sizeof(qiyashezhi_cn),     (uint8_t *)qiyashezhi_en,     PAGE_3_PRESSURE,   OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//气压设置
+	OptionList_Add(index++,  (uint8_t *)zidongguanji_cn,   sizeof(zidongguanji_cn),   (uint8_t *)zidongguanji_en,   PAGE_3_AUTOSHUT,   OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//自动关机
+	OptionList_Add(index++,  (uint8_t *)baojingshezhi_cn,  sizeof(baojingshezhi_cn),  (uint8_t *)baojingshezhi_en,  PAGE_3_ALARM_TYPE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//报警设置
+	OptionList_Add(index++,  (uint8_t *)tishiyinshezhi_cn, sizeof(tishiyinshezhi_cn), (uint8_t *)tishiyinshezhi_en, PAGE_3_BEEP,       OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//按键音设置
+	OptionList_Add(index++,  (uint8_t *)shijianshezhi_cn,  sizeof(shijianshezhi_cn),  (uint8_t *)shijianshezhi_en,  PAGE_3_TIME,       OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head); //时间设置
 	
-	OptionList_Add(7, (uint8_t *)dushusuoding_cn,       sizeof(dushusuoding_cn),         (uint8_t *)dushusuoding_en,     PAGE_3_AUTOLOCK,   OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//语言设置
+	OptionList_Add(index++,  (uint8_t *)lvboshezhi_cn, sizeof(lvboshezhi_cn), (uint8_t *)lvboshezhi_en, PAGE_3_SLIDEAVG,   OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//滑动平均
 	
-	OptionList_Add(8, (uint8_t *)yuyanshezhi_cn,         sizeof(yuyanshezhi_cn),         (uint8_t *)yuyanshezhi_en,         PAGE_3_LANGUAGE,   OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//语言设置
-	OptionList_Add(9, (uint8_t *)yibiaoxinxi_cn,         sizeof(yibiaoxinxi_cn),         (uint8_t *)yibiaoxinxi_en,         PAGE_3_INFO,       OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//仪表信息
-	OptionList_Add(10, (uint8_t *)chuchangshezhi_cn,       sizeof(chuchangshezhi_cn),     (uint8_t *)chuchangshezhi_en,       PAGE_3_RESERT,     OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head); //恢复出厂设置
+	OptionList_Add(index++,  (uint8_t *)dushusuoding_cn,   sizeof(dushusuoding_cn),   (uint8_t *)dushusuoding_en,   PAGE_3_AUTOLOCK_TYPE,   OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//读书锁定
+	
+	OptionList_Add(index++,  (uint8_t *)yuyanshezhi_cn,    sizeof(yuyanshezhi_cn),    (uint8_t *)yuyanshezhi_en,    PAGE_3_LANGUAGE,   OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//语言设置
+	OptionList_Add(index++,  (uint8_t *)yibiaoxinxi_cn,    sizeof(yibiaoxinxi_cn),    (uint8_t *)yibiaoxinxi_en,    PAGE_3_INFO,       OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//仪表信息
+	OptionList_Add(index++,  (uint8_t *)chuchangshezhi_cn, sizeof(chuchangshezhi_cn), (uint8_t *)chuchangshezhi_en, PAGE_3_RESERT,     OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head); //恢复出厂设置
 	
 	
 	interfacial->option_head = option_head;
@@ -521,8 +523,6 @@ void generate_AlarmType(PtrToInterfacial interfacial)///////////////////////////
 /*报警设置是否开启*/
 void generate_AlarmSetting(PtrToInterfacial interfacial)
 {
-	
-	
 	set_RowSpacing(ROWSPACING_TWO);
 	CurInterfacial_Destory();           //清空当前界面所有的链表
 	
@@ -544,7 +544,7 @@ void generate_AlarmSetting(PtrToInterfacial interfacial)
 /*高低门限阈值设置*/
 void generate_AlarmValueSetting(PtrToInterfacial interfacial)
 {
-	uint8_t other_y;
+	uint8_t other_y;//y临时变量 用于设定位置方便生成数值标签
 	
 	value_type temp_high;
 	value_type temp_low;
@@ -557,7 +557,7 @@ void generate_AlarmValueSetting(PtrToInterfacial interfacial)
 	list_option option_head  = NULL;
 	list_NanoOption NanoHigh  = NULL;
 	list_NanoOption NanoLow  = NULL;
-	list_label label_head    = NULL;      //标签项  显示单位 实时数值 和一些标签
+	list_label label_head    = NULL;      //标签项  显示小数点
 	
 //	temp = setting_GetLowThreshold();
 	
@@ -566,39 +566,6 @@ void generate_AlarmValueSetting(PtrToInterfacial interfacial)
 		case TYPE_DO:
 			temp_low = setting_GetLowThreshold_DO();
 			temp_high = setting_GetHighThreshold_DO();
-			break;
-		
-		case TYPE_Bga:
-			break;
-		
-		case TYPE_Chl:
-			break;
-		
-		case TYPE_CL:
-			break;
-		
-		case TYPE_CODuv:
-			break;
-		
-		case TYPE_EC:
-			break;
-		
-		case TYPE_F:
-			break;
-		
-		case TYPE_FCL:
-			break;
-		
-		case TYPE_NH4:
-			break;
-		
-		case TYPE_ORP:
-			break;
-		
-		case TYPE_pH:
-			break;
-		
-		case TYPE_Tur:
 			break;
 		
 		default:
@@ -652,28 +619,6 @@ void generate_reset(PtrToInterfacial interfacial)
 	interfacial->content_chn = (uint8_t *)chuchangshezhi_cn ;
 	interfacial->ChnContent_size = sizeof(chuchangshezhi_cn);
 	interfacial->content_eng = (uint8_t *)chuchangshezhi_en;
-	
-	interfacial->option_head = option_head;
-}
-
-/*自动锁定*/
-void generate_AutoLock(PtrToInterfacial interfacial)
-{
-	set_RowSpacing(ROWSPACING_THREE);
-	CurInterfacial_Destory();           //清空当前界面所有的链表
-	
-	list_option option_head = NULL;     //生成一个临时的选项链表头
-	
-	OptionList_Add(0, (uint8_t *)guanbi_cn,   sizeof(guanbi_cn),   (uint8_t *)guanbi_en,   NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
-	OptionList_Add(1, (uint8_t *)zidong_cn,   sizeof(zidong_cn),   (uint8_t *)zidong_en,   NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
-	OptionList_Add(2, (uint8_t *)shoudong_cn, sizeof(shoudong_cn), (uint8_t *)shoudong_en, NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
-	
-	
-	interfacial->page_father = PAGE_2_SYSTEM;//设定父界面
-	
-	interfacial->content_chn = (uint8_t *)dushusuoding_cn ;
-	interfacial->ChnContent_size = sizeof(dushusuoding_cn);
-	interfacial->content_eng = (uint8_t *)dushusuoding_en;
 	
 	interfacial->option_head = option_head;
 }
@@ -756,6 +701,7 @@ void generate_SensorInfo(PtrToInterfacial interfacial)
 	interfacial->ChnContent_size = sizeof(chuanganqixinxi_cn);
 	interfacial->content_eng = (uint8_t *)chuanganqixinxi_en;
 }
+
 /*传感器界面里的参数设置*/
 void generate_ParameterSetting(PtrToInterfacial interfacial)
 {
@@ -787,6 +733,17 @@ void generate_SensorCap(PtrToInterfacial interfacial)
 	
 }
 
+void generate_cal_DO(PtrToInterfacial interfacial, list_option* option_head)
+{
+	OptionList_Add(0, (uint8_t *)wendu_cn,     sizeof(wendu_cn),     (uint8_t *)wendujiaozhun_en, PAGE_5_TEMP,     OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &(*option_head));
+	OptionList_Add(1, (uint8_t *)dandian_cn,   sizeof(dandian_cn),   (uint8_t *)dandian_en,       PAGE_5_ONE,      OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &(*option_head));
+	OptionList_Add(2, (uint8_t *)liangdian_cn, sizeof(liangdian_cn), (uint8_t *)liangdian_en,     PAGE_5_TWOFIRST, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &(*option_head));
+	interfacial->content_chn = (uint8_t *)rongjieyangjiaozhun_cn;
+	interfacial->ChnContent_size = sizeof(rongjieyangjiaozhun_cn);
+	interfacial->content_eng = (uint8_t *)rongjieyangjiaozhun_en;
+}
+
+
 /*校准界面*/
 void generate_Cal(PtrToInterfacial interfacial, PAGE_NUM father_page)
 {
@@ -803,11 +760,7 @@ void generate_Cal(PtrToInterfacial interfacial, PAGE_NUM father_page)
 			sensor_name = interfacial_GetOptionSensorName();
 			if(sensor_name!=NULL && sensor_name[0] == 'D')//如果是溶解氧的话
 			{
-				OptionList_Add(0, (uint8_t *)dandian_cn,   sizeof(dandian_cn),   (uint8_t *)dandian_en,   PAGE_5_ONE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
-				OptionList_Add(1, (uint8_t *)liangdian_cn, sizeof(liangdian_cn), (uint8_t *)liangdian_en, PAGE_5_TWOFIRST, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
-				interfacial->content_chn = (uint8_t *)rongjieyangjiaozhun_cn;
-				interfacial->ChnContent_size = sizeof(rongjieyangjiaozhun_cn);
-				interfacial->content_eng = (uint8_t *)rongjieyangjiaozhun_en;
+				generate_cal_DO(interfacial, &option_head);
 			}
 			break;
 		
@@ -815,11 +768,7 @@ void generate_Cal(PtrToInterfacial interfacial, PAGE_NUM father_page)
 			switch(rs485_GetSensorType())
 			{
 				case TYPE_DO:
-					OptionList_Add(0, (uint8_t *)dandian_cn,   sizeof(dandian_cn),   (uint8_t *)dandian_en,   PAGE_5_ONE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
-					OptionList_Add(1, (uint8_t *)liangdian_cn, sizeof(liangdian_cn), (uint8_t *)liangdian_en, PAGE_5_TWOFIRST, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
-					interfacial->content_chn = (uint8_t *)rongjieyangjiaozhun_cn;
-					interfacial->ChnContent_size = sizeof(rongjieyangjiaozhun_cn);
-					interfacial->content_eng = (uint8_t *)rongjieyangjiaozhun_en;
+					generate_cal_DO(interfacial, &option_head);
 				break;
 				
 				default:
@@ -907,17 +856,6 @@ void generate_TwoPointFirst(PtrToInterfacial interfacial, SENSOR_TYPE sensor_typ
 			OptionList_Add(0, (uint8_t *)jinrujiaozhunmoshi_cn, sizeof(jinrujiaozhunmoshi_cn), (uint8_t *)jinrujiaozhunmoshi_en, NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NanoPercent, &option_head);
 		
 			break;
-
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		default:
 			break;
 	}
@@ -931,6 +869,7 @@ void generate_TwoPointFirst(PtrToInterfacial interfacial, SENSOR_TYPE sensor_typ
 	interfacial->ChnContent_size = sizeof(liangdian_cn);
 	interfacial->content_eng = (uint8_t *)liangdian_en;
 }
+
 /*两点校准的第二个界面*/
 void generate_TwoPointSecond(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type)
 {
@@ -974,6 +913,7 @@ void generate_TwoPointSecond(PtrToInterfacial interfacial, SENSOR_TYPE sensor_ty
 	interfacial->ChnContent_size = sizeof(liangdian_cn);
 	interfacial->content_eng = (uint8_t *)liangdian_en;
 }
+
 /*历史数据界面*/
 void generate_Histor(PtrToInterfacial interfacial)
 {
@@ -1190,7 +1130,250 @@ void generate_DataLogGPS(PtrToInterfacial interfacial)
 	interfacial->content_eng = (uint8_t *)shujuxianshi_en;
 }
 
+/*滑动平均开关界面*/
+void generate_SlideAverageSwitch(PtrToInterfacial interfacial)
+{
+	set_RowSpacing(ROWSPACING_TWO);//两个
+	CurInterfacial_Destory();           //清空当前界面所有的链表
+	
+	list_option option_head = NULL;     //生成一个临时的选项链表头
+	
+	OptionList_Add(0, (uint8_t *)kaiqi_cn,  sizeof(kaiqi_cn),  (uint8_t *)kaiqi_en,  PAGE_4_SLIDEVALUE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head); //按键音
+	OptionList_Add(1, (uint8_t *)guanbi_cn, sizeof(guanbi_cn), (uint8_t *)guanbi_en, NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//报警音
+	
+	interfacial->page_father = PAGE_2_SYSTEM;//设定父界面
+	
+	interfacial->content_chn = (uint8_t *)lvboshezhi_cn ;
+	interfacial->ChnContent_size = sizeof(lvboshezhi_cn);
+	interfacial->content_eng = (uint8_t *)lvboshezhi_en;
+	
+	interfacial->option_head = option_head;
+}
+
+/*滑动平均数值设置界面*/
+void generate_SlideAverageValue(PtrToInterfacial interfacial)
+{
+	uint8_t other_y;
+	
+	uint8_t temp;
+	
+	set_RowSpacing(ROWSPACING_TWO);
+	
+	other_y = get_RowSpacing() + OPTION_STARTY;
+	
+	temp = setting_GetSlideAvgTimes();
+	
+	CurInterfacial_Destory();
+	
+	list_option option_head  = NULL;//标签 次数 保存
+	list_NanoOption NanoTimes  = NULL;//就次数设置
+	list_label label_head = NULL;
+	
+	
+	NanoOptionList_Add( 88, other_y, NULL, 0, NULL, NANOOPTION_NUMBER, temp/10, 0, 4, IS_SINGLE, &NanoTimes);//低门限
+	NanoOptionList_Add( 96, other_y, NULL, 0, NULL, NANOOPTION_NUMBER, temp%10, 0, 9, IS_SINGLE, &NanoTimes);
+	
+	LabelList_Add( 112, other_y, NULL, 0, (uint8_t *)cishuxianzhi_slideavg,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//(2-40)
+	
+	OptionList_Add(0, (uint8_t *)canshu_cn,  sizeof(canshu_cn),  (uint8_t *)canshu_en,  NONE_PAGE, OPTION_SMALL, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NanoTimes, &option_head);	//报警音
+	OptionList_Add(1, (uint8_t *)baocun_cn, sizeof(baocun_cn), (uint8_t *)baocun_en, NONE_PAGE, OPTION_SMALL, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL,      &option_head);//保存
+	
+	
+	
+	interfacial->label_head = label_head;
+	
+	interfacial->page_father = PAGE_3_SLIDEAVG;//设定父界面
+	
+	interfacial->content_chn = (uint8_t *)lvboshezhi_cn;
+	interfacial->ChnContent_size = sizeof(lvboshezhi_cn);
+	interfacial->content_eng = (uint8_t *)lvboshezhi_en;
+	
+	interfacial->option_head = option_head;
+}
+
+/*
+set_RowSpacing(44);
+CurInterfacial_Destory();
+
+list_option option_head = NULL;
+list_NanoOption NanoPercent = NULL;
+
+list_label label_head = NULL;
+
+switch (sensor_type)
+{
+	case TYPE_DO:
+		LabelList_Add( 0, 36, (uint8_t *)diyidian_cn, sizeof(diyidian_cn), (uint8_t *)diyidian_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head); //第一点
+		LabelList_Add(100, 56, NULL, 0, (uint8_t *)BAIFENGHAO,  LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+		LabelList_Add(76, 56, NULL, 0, (uint8_t *)XIAOSHUDIAN,  LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+	
+		NanoOptionList_Add(52, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent); //数值
+		NanoOptionList_Add(60, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+		NanoOptionList_Add(68, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+		NanoOptionList_Add(84, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+	
+		OptionList_Add(0, (uint8_t *)jinrujiaozhunmoshi_cn, sizeof(jinrujiaozhunmoshi_cn), (uint8_t *)jinrujiaozhunmoshi_en, NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NanoPercent, &option_head);
+	
+		break;
+	default:
+		break;
+}
+
+interfacial->option_head = option_head;
+interfacial->label_head = label_head;
+
+interfacial->page_father = PAGE_4_CAL;//设定父界面
+
+interfacial->content_chn = (uint8_t *)liangdian_cn;
+interfacial->ChnContent_size = sizeof(liangdian_cn);
+interfacial->content_eng = (uint8_t *)liangdian_en;
+
+*/
 
 
+/*生成温度校准界面*/
+void generate_Cal_temp(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type)
+{
+	double temp;
+	int temp_int;
+	uint8_t other_y;
+	PtrToDOProbe p;
+	
+	set_RowSpacing(ROWSPACING_THREE);//设置行间距
+	other_y = get_RowSpacing() + OPTION_STARTY;//用于子标签或者别的标签定位用y值
+	
+	CurInterfacial_Destory();
+	
+	list_option option_head   = NULL;    //主选项  就一个save
+	list_NanoOption NanoPress = NULL;    //子选项  就一串数字
+	list_label label_head     = NULL;    //标签项  显示单位 实时数值 和一些标签
+	
+	switch (sensor_type)
+	{
+		case TYPE_DO:
+			
+			if(interfacial_GetTempFatherPage() == PAGE_0_START)
+			{
+				p = get_CurDo();
+			}
+			else if(interfacial_GetTempFatherPage() == PAGE_3_SENSORS)
+			{
+				p = DO_FindByName(interfacial_GetOptionSensorName(),rs485_GetDoList());
+			}
+			
+			temp = p->temperature.value_f + Do_GetTempOffset();
+			
+			temp_int = (int)((temp*100) + 0.5);
+			
+			LabelList_Add( 80, other_y, NULL, 0, (uint8_t *)get_CurDo()->temperature_arr, LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//显示溶解氧的温度
+			OptionList_Add(0, (uint8_t *)dangqianzhi_cn, sizeof(dangqianzhi_cn), (uint8_t *)dangqianzhi_en, NONE_PAGE, OPTION_SMALL, CANNOT_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL,      &option_head);//当前值
+			
+			other_y += 16 + get_RowSpacing();
+			NanoOptionList_Add( 80, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int/1000), 0, 9, IS_SINGLE,  &NanoPress);
+			NanoOptionList_Add( 88, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%1000/100),   0, 9, IS_SINGLE,  &NanoPress);
+			NanoOptionList_Add(104, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%100/10),     0, 9, IS_SINGLE,  &NanoPress);//小数点后1位
+			NanoOptionList_Add(112, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%10),         0, 9, IS_SINGLE,  &NanoPress);//小数点后两位
+			LabelList_Add(96, other_y, NULL, 0, (uint8_t *)XIAOSHUDIAN, LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+			OptionList_Add(1, (uint8_t *)xiaozhunzhi_cn, sizeof(xiaozhunzhi_cn), (uint8_t *)xiaozhunzhi_en, NONE_PAGE, OPTION_SMALL, CAN_BE_SELECTED,    NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NanoPress, &option_head);//实际值
+			
+			OptionList_Add(2, (uint8_t *)baocun_cn,      sizeof(baocun_cn),      (uint8_t *)baocun_en,      NONE_PAGE, OPTION_SMALL, CAN_BE_SELECTED,    NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL,      &option_head);//保存
+			break;
+			
+		default:
+			break;
+			
+	}
+	interfacial->option_head = option_head;
+	interfacial->label_head = label_head;
+	
+	interfacial->page_father = PAGE_4_CAL;//设定父界面
+	
+	interfacial->content_chn = (uint8_t *)wendu_cn ;
+	interfacial->ChnContent_size = sizeof(wendu_cn);
+	interfacial->content_eng = (uint8_t *)wendujiaozhun_en;
+}
+
+/*自动锁定*/
+void generate_AutoLock_type(PtrToInterfacial interfacial)
+{
+//	set_RowSpacing(ROWSPACING_THREE);
+//	CurInterfacial_Destory();           //清空当前界面所有的链表
+//	
+//	list_option option_head = NULL;     //生成一个临时的选项链表头
+//	
+//	OptionList_Add(0, (uint8_t *)guanbi_cn,   sizeof(guanbi_cn),   (uint8_t *)guanbi_en,   NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
+//	OptionList_Add(1, (uint8_t *)zidong_cn,   sizeof(zidong_cn),   (uint8_t *)zidong_en,   PAGE_4_LOCKLEVEL, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
+//	OptionList_Add(2, (uint8_t *)shoudong_cn, sizeof(shoudong_cn), (uint8_t *)shoudong_en, NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
+//	
+//	
+//	interfacial->page_father = PAGE_2_SYSTEM;//设定父界面
+//	
+//	interfacial->content_chn = (uint8_t *)dushusuoding_cn ;
+//	interfacial->ChnContent_size = sizeof(dushusuoding_cn);
+//	interfacial->content_eng = (uint8_t *)dushusuoding_en;
+//	
+//	interfacial->option_head = option_head;
+	
+	uint8_t option_index = 0;
+	list_option option_head = NULL;     //生成一个临时的选项链表头
+	
+	set_RowSpacing(ROWSPACING_TWO);
+	CurInterfacial_Destory();           //清空当前界面所有的链表
+	if(*(rs485_GetDoList())!=NULL)         //如果do设备列表中有设备的话添加DO设备
+	{
+		OptionList_Add(option_index++, (uint8_t *)rongjieyang_cn, sizeof(rongjieyang_cn), (uint8_t *)rongjieyang_en_quan, PAGE_4_AUTOLOCK, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
+	}
+	
+	interfacial->page_father = PAGE_2_SYSTEM;//设定父界面
+	
+	interfacial->content_chn = (uint8_t *)dushusuoding_cn ;
+	interfacial->ChnContent_size = sizeof(dushusuoding_cn);
+	interfacial->content_eng = (uint8_t *)dushusuoding_en;
+	
+	interfacial->option_head = option_head;
+}
+
+void generate_AutoLock(PtrToInterfacial interfacial)
+{
+	set_RowSpacing(ROWSPACING_THREE);
+	CurInterfacial_Destory();           //清空当前界面所有的链表
+	
+	list_option option_head = NULL;     //生成一个临时的选项链表头
+	
+	OptionList_Add(0, (uint8_t *)guanbi_cn,   sizeof(guanbi_cn),   (uint8_t *)guanbi_en,   NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
+	OptionList_Add(1, (uint8_t *)zidong_cn,   sizeof(zidong_cn),   (uint8_t *)zidong_en,   PAGE_5_AUTOLOCKVALUE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
+	OptionList_Add(2, (uint8_t *)shoudong_cn, sizeof(shoudong_cn), (uint8_t *)shoudong_en, NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
+	
+	
+	interfacial->page_father = PAGE_3_AUTOLOCK_TYPE;//设定父界面
+	
+	interfacial->content_chn = (uint8_t *)dushusuoding_cn ;
+	interfacial->ChnContent_size = sizeof(dushusuoding_cn);
+	interfacial->content_eng = (uint8_t *)dushusuoding_en;
+	
+	interfacial->option_head = option_head;
+}
+
+/*自动锁定 档位设置 快 中等 慢*/
+void generate_AutoLock_value(PtrToInterfacial interfacial)//PAGE_4_LOCKLEVEL
+{
+	set_RowSpacing(ROWSPACING_THREE);
+	
+	CurInterfacial_Destory();           //清空当前界面所有的链表
+	
+	list_option option_head = NULL;     //生成一个临时的选项链表头
+	
+	OptionList_Add(0, (uint8_t *)man_cn,  sizeof(man_cn),  (uint8_t *)man_en,  NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head); //慢
+	OptionList_Add(1, (uint8_t *)zhongdeng_cn, sizeof(zhongdeng_cn), (uint8_t *)zhongdeng_en, NONE_PAGE,  OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//中等
+	OptionList_Add(2, (uint8_t *)kuai_cn, sizeof(kuai_cn), (uint8_t *)kuai_en, NONE_PAGE,  OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//快
+	
+	interfacial->page_father = PAGE_4_AUTOLOCK;//设定父界面
+	
+	interfacial->content_chn = (uint8_t *)dushusuoding_cn;
+	interfacial->ChnContent_size = sizeof(dushusuoding_cn);
+	interfacial->content_eng = (uint8_t *)dushusuoding_en;
+	
+	interfacial->option_head = option_head;
+}
 
 

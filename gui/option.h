@@ -3,9 +3,9 @@
 
 #include "gui.h"
 
-//大小选项标志
-#define OPTION_LARGE 1 //大选项
-#define OPTION_SMALL 0 //小选项
+//澶у皬閫夐」鏍囧織
+#define OPTION_LARGE 1 //澶ч�夐」
+#define OPTION_SMALL 0 //灏忛�夐」
 
 #define CAN_BE_SELECTED    1
 #define CANNOT_BE_SELECTED 0
@@ -21,7 +21,7 @@
 #define OPTION_STARTY 32
 
 
-//双向链表
+//鍙屽悜閾捐〃
 
 
 void OptionList_Add(uint8_t index, uint8_t* ContentChn, uint8_t ChnLen, uint8_t* ContentEng, PAGE_NUM NextPage, uint8_t IsLarge, uint8_t IsCanBeSelected, uint8_t IsLanguage, uint8_t IsEngOnly, list_NanoOption NanoOptionList, list_option* OptionList);

@@ -6,7 +6,7 @@
 
 
 
-void HAL_UART_IDLE_HANDLER(UART_HandleTypeDef *huart);//ø’œ–÷–∂œ
+void HAL_UART_IDLE_HANDLER(UART_HandleTypeDef *huart);//¬ø√ï√è√ê√ñ√ê¬∂√è
 
 
 

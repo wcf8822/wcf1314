@@ -5,6 +5,8 @@
 
 #include "setting.h"
 
+#include "calculate.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -14,6 +16,23 @@ const float press_error = 0.3;    //气压差值
 const float EPSILON = 1.0E-6;
 
 STATIC PtrToDOProbe cur_DO;
+
+float temp_offset = 0.0; //温度补偿值
+
+STATIC uint8_t is_FirstFilter = 1;
+
+//#define DO_EPS 0.0145//0.015
+
+const float DO_AutoLock_eps[3] = {0.03, 0.05, 0.1};
+
+void DO_SetTempOffset(float value)
+{
+	temp_offset = value;
+}
+float Do_GetTempOffset(void)
+{
+	return temp_offset;
+}
 
 //要不要按照modbusid 来对设备进行操作 就是先find一下然后如果没找到重新创建一个
 
@@ -102,27 +121,16 @@ void DO_AddProbe(uint8_t ModbusId, PtrToDOProbe *DO_head)//这里得添加名字
 	
 	p->modbus_id = ModbusId;
 	
+	p->queue_domgl = Queue_init();      //初始化一下mg/l 数值指针
+	p->queue_dopercent = Queue_init();  //初始化一下%    数值指针
+	p->queue_temp = Queue_init();       //初始化一下℃    数值指针
+	
 	//传感器的值初始化一下都成0
 	p->DOmgl.value_f = 0.0;
 	p->DOpercent.value_f = 0.0;
 	p->temperature.value_f = 0.0;
 	
 	//显示buff初始化一下全都显示成0
-//	p->DOmgl_arr[0] = ' ';
-//	p->DOmgl_arr[1] = '0';
-//	p->DOmgl_arr[2] = '.';
-//	p->DOmgl_arr[3] = '0';
-//	p->DOmgl_arr[4] = '0';
-//	p->DOmgl_arr[5] = '\0';
-//	
-//	p->DOpercent_arr[0] = ' ';
-//	p->DOpercent_arr[1] = ' ';
-//	p->DOpercent_arr[2] = '0';
-//	p->DOpercent_arr[3] = '.';
-//	p->DOpercent_arr[4] = '0';
-//	p->DOpercent_arr[5] = '0';
-//	p->DOpercent_arr[6] = '\0';
-
 	DO_zero_buf_mgl(p);
 	DO_zero_buf_percent(p);
 	
@@ -166,15 +174,20 @@ void DO_DelProbe(uint8_t ModbusId, PtrToDOProbe *DO_head) //好像要对头指�
 		return;
 	}
 
-	
 	if(cur->modbus_id == ModbusId)//如果头指针指的就是
 	{
 		*DO_head = (*DO_head)->next_DO;
+		Queue_Destroy(&(cur->queue_domgl));
+		Queue_Destroy(&(cur->queue_dopercent));
+		Queue_Destroy(&(cur->queue_temp));
 		free(cur);
 	}
 	if(cur->next_DO->modbus_id == ModbusId)//如果第二个节点是
 	{
 		(*DO_head)->next_DO = (*DO_head)->next_DO->next_DO;
+		Queue_Destroy(&(cur->next_DO->queue_domgl));
+		Queue_Destroy(&(cur->next_DO->queue_dopercent));
+		Queue_Destroy(&(cur->next_DO->queue_temp));
 		free(cur->next_DO);
 	}
 }
@@ -789,7 +802,7 @@ void DO_SetTempZero(void)
 }
 
 
-#define DO_EPS 0.0145//0.015
+
 #define SHAKE_TIMES 8//8
 #define SAME_TIMES 3
 
@@ -806,31 +819,24 @@ float last_DOmgl=0.0;
 
 void CheckValueLock(PtrToDOProbe ptd)
 {
+	float eps = DO_AutoLock_eps[setting_GetAutoLockLevel_DO()];
 	double difference = 0.0;//差值
 	static uint8_t last_trend = 1;//1 上涨 0 下降
 	static uint8_t up_count = 0;
 	static uint8_t down_count = 0;
 	
-	if(setting_GetAutoLock() == AUTOLOCK_AUTO)
+	
+	if(setting_GetAutoLock_DO() == AUTOLOCK_AUTO)
 	{
 		
 		difference = ptd->DOmgl.value_f - last_DOmgl;
 		
-//		if(++n <= 50)
-//		{
-//			printf("%.4f,", difference);
-//		}
-//		else
-//		{
-//			n = 101;
-//		}
-//		
 		if(difference >= 0)//这次是上涨
 		{
 			down_count = 0;
 			if(last_trend == 1)//上次是上涨
 			{
-				if(fabs(difference) >= DO_EPS)//连续上涨一定次数
+				if(fabs(difference) >= eps)//连续上涨一定次数
 				{
 					shake_count = 0;
 					up_count = 0;
@@ -846,7 +852,7 @@ void CheckValueLock(PtrToDOProbe ptd)
 			}
 			else//上次是跌 \/
 			{
-					if(fabs(difference) < DO_EPS)
+					if(fabs(difference) < eps)
 					{
 						shake_count++;
 					}
@@ -858,7 +864,7 @@ void CheckValueLock(PtrToDOProbe ptd)
 			up_count = 0;
 			if(last_trend == 0)//上次是跌的话
 			{
-				if(fabs(difference) >= DO_EPS)//连续跌一定次数
+				if(fabs(difference) >= eps)//连续跌一定次数
 				{
 					shake_count = 0;
 					down_count = 0;
@@ -874,23 +880,19 @@ void CheckValueLock(PtrToDOProbe ptd)
 			}
 			else//上次是涨
 			{
-				if(fabs(difference) < DO_EPS)
+				if(fabs(difference) < eps)
 				{
 					shake_count++;
 				}
 			}
 			last_trend = 0;
 		}
-		
-		
 		if(shake_count >= SHAKE_TIMES)
 		{
 			shake_count = 0;
 		  ptd->is_ValueLocked = 1;//上锁
 		}
-
 	}
-	
 }
 
 void DO_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)//要添加数字滤波
@@ -939,12 +941,40 @@ void DO_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)//要添加数字滤波
 		
 		
 		last_DOmgl = ptd->DOmgl.value_f;//更新一下上次的值
+		
 		if(++update_count >= 3)
 		{
 			
 			temperature_temp = temperature_sum / ((float)update_count);
 			DO_Percent_temp = DOpercent_sum / ((float)update_count);
 			DO_mgl_temp = DOmgl_sum / ((float)update_count);
+			
+			
+			
+			if(setting_GetIsOpen_SlideAvg() && setting_GetSlideAvgTimes()>=2)//开启并且次数最起码为2次
+			{
+				if(is_FirstFilter)
+				{
+					is_FirstFilter = 0;
+					
+					Queue_Clear(ptd->queue_domgl);
+					Queue_Clear(ptd->queue_dopercent);
+					Queue_Clear(ptd->queue_temp);
+				}
+				Queue_insert(ptd->queue_domgl,     DO_mgl_temp,      setting_GetSlideAvgTimes());
+				Queue_insert(ptd->queue_dopercent, DO_Percent_temp,  setting_GetSlideAvgTimes());
+				Queue_insert(ptd->queue_temp,      temperature_temp, setting_GetSlideAvgTimes());
+				
+				Queue_GetAvg(ptd->queue_temp,      &temperature_temp);
+				Queue_GetAvg(ptd->queue_dopercent, &DO_Percent_temp);
+				Queue_GetAvg(ptd->queue_domgl,     &DO_mgl_temp);
+			}
+			else
+			{
+				is_FirstFilter = 1;
+			}
+			
+			temperature_temp += temp_offset;
 			
 			if(!DO_GetValueLocked(ptd))
 			{

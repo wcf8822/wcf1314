@@ -140,12 +140,12 @@ void ch340_DataHandle(void)
 								break;
 								
 							case 0x05://定制时候切换logo
-								W25QXX_Write(&(ch340e_usart.rx_buf[3]), SETTING_LOG_ADDR, 1);
+								W25QXX_Write(&(ch340e_usart.rx_buf[3]), SETTING_LOGO_ADDR, 1);
 								setting_reset();
 								setting_callback[0] = 0xFF;
 								setting_callback[1] = 0x02;
 								setting_callback[2] = 0x05;
-								W25QXX_Read(&check_byte, SETTING_LOG_ADDR, 1);
+								W25QXX_Read(&check_byte, SETTING_LOGO_ADDR, 1);
 								setting_callback[3] = ((check_byte == ch340e_usart.rx_buf[3]) ? 1 : 0);
 								break;
 							
@@ -159,6 +159,18 @@ void ch340_DataHandle(void)
 							
 								setting_callback[3] = 0x01;
 								first_write();
+								break;
+							
+							case 0x07://写是否有gps
+								W25QXX_Write(&(ch340e_usart.rx_buf[3]), SETTING_HAVEGPS_ADDR, 1);
+								
+								setting_reset();
+								
+								setting_callback[0] = 0xFF;
+								setting_callback[1] = 0x02;
+								setting_callback[2] = 0x07;
+								W25QXX_Read(&check_byte, SETTING_HAVEGPS_ADDR, 1);
+								setting_callback[3] = ((check_byte == ch340e_usart.rx_buf[3]) ? 1 : 0);
 								break;
 							
 							default:

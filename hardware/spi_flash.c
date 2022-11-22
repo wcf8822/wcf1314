@@ -285,6 +285,17 @@ void W25QXX_Write(uint8_t *pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite)
 //	free(W25QXX_BUF);
 }
 
+///*重写不用缓存buf版*/
+//void W25QXX_Write(uint8_t *pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite)
+//{
+//	uint32_t secpos;
+//	secpos = WriteAddr / 4096;//扇区号
+//	
+//	W25QXX_Erase_Sector(secpos);		//擦除这个扇区
+//	
+//	W25QXX_Write_NoCheck(pBuffer, WriteAddr, NumByteToWrite);
+//}
+
 //擦除整个芯片
 //等待时间超长...
 void W25QXX_Erase_Chip(void)

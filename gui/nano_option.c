@@ -146,6 +146,7 @@ void NanoOptionList_Destory(PtrToNanoOptionNode *nanooptionlist)
 
 
 /*获取每个节点的值*/
+/*coefficient 进制 100就两位数 10就单位数 */
 uint32_t NanoOptionList_GetValue(PtrToNanoOptionNode nanooptionlist, uint8_t coefficient)
 {
 	uint32_t ret = 0;//临时变量

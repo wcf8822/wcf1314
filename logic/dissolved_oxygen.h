@@ -88,6 +88,9 @@ void clear_DOShakeCount(void);
 void DO_zero_buf_mgl(PtrToDOProbe p);
 void DO_zero_buf_percent(PtrToDOProbe p);
 
+
+void DO_SetTempOffset(float value);
+float Do_GetTempOffset(void);
 #endif
 
 

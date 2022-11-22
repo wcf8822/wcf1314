@@ -10,7 +10,7 @@
 
 STATIC uint8_t is_change_senesor = 0;
 
-STATIC connected_probe_t connected_probe = {
+connected_probe_t connected_probe = {
 	.DO_list = NULL,
 	.current_sensor_type = TYPE_NONE
 };
@@ -202,6 +202,7 @@ void rs485_send(void)
 	
 	HAL_UART_Transmit(rs485_usart.huart, rs485_usart.tx_buf, rs485_usart.tx_size,200);
 	rs485_usart.tx_flag = 1;
+	
 	for(uint16_t i=1000;i>0;i--);
 	RS485_DE_L();
 }
@@ -209,7 +210,6 @@ void rs485_send(void)
 /*将发送buf发送出去*/
 void rs485_SendBuf(void)//这个也是在main函数里面运行的
 {
-	
 	if(rs485_GetSentType() != DO_SendType_GetModbusId && ++rs485_usart.resend_count >= RESEND_MAX)//当不是搜索设备的时候发送次数超过设定值 就放弃这个设备
 	{
 		rs485_ClearCircularSentStatus(); //关闭循环发送
@@ -240,7 +240,7 @@ void rs485_TimHandle(void)
 	
 }
 
-float float_format(float data)
+float float_format(float data)//保留小数点后两位
 {
 	return (int)((data*100) + 0.5)/100.0;
 }

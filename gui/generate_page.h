@@ -39,8 +39,9 @@ void generate_Language(PtrToInterfacial interfacial);                           
 void generate_AlarmType(PtrToInterfacial interfacial);
 void generate_MeterInfo(PtrToInterfacial interfacial);
 void generate_reset(PtrToInterfacial interfacial);                                   //生成恢复出厂设置界面
-void generate_AutoLock(PtrToInterfacial interfacial);                                //生成自动锁定设置界面
 
+
+void generate_SlideAverageSwitch(PtrToInterfacial interfacial);                      //生成滑动平均界面
 
 void generate_DataView(PtrToInterfacial interfacial, uint16_t data_index);           //生成日志查询界面
 
@@ -57,6 +58,7 @@ void generate_ResetCal(PtrToInterfacial interfacial);                           
 void generate_ParameterSetting(PtrToInterfacial interfacial);                        //生成传感器参数设置界面
 
 void generate_AlarmValueSetting(PtrToInterfacial interfacial);                       //生成报警阈值设置界面
+void generate_SlideAverageValue(PtrToInterfacial interfacial);                       //生成滑动平均次数设置界面
 void generate_DataStore(PtrToInterfacial interfacial);                               //生成数据保存界面
 void generate_DataDelete(PtrToInterfacial interfacial);                              //生成数据删除界面
 void generate_DataLog(PtrToInterfacial interfacial);                                 //生成显示具体数据的界面
@@ -68,6 +70,12 @@ void generate_TwoPointFirst(PtrToInterfacial interfacial, SENSOR_TYPE sensor_typ
 void generate_TwoPointSecond(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type); //生成两点校准 第二点界面
 
 void update_LogTitle(log_union* log , uint8_t index);
+
+void generate_Cal_temp(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+
+void generate_AutoLock_type(PtrToInterfacial interfacial);                           //生成自动锁定选择传感器类型界面
+void generate_AutoLock(PtrToInterfacial interfacial);                                //生成自动锁定设置界面
+void generate_AutoLock_value(PtrToInterfacial interfacial);                          //生成自动锁定等级设置界面
 
 #endif
 

@@ -4,39 +4,39 @@
 
 #include "main.h"
 
-//	uint8_t flag_RefreshLcd : 1; //½«»º´æË¢µ½ÆÁÄ»ÉÏÈ¥
-//	uint8_t flag_RefreshRtc : 1; //rtc²É¼¯
-//	uint8_t flag_RefreshBmp : 1; //²É¼¯ÆøÑ¹
-//	uint8_t flag_RefreshBat : 1; //²É¼¯µç³Øad
-//	uint8_t flag_RefreshGPS : 1; //¸üĞÂgpsĞÅÏ¢
-//	uint8_t flag_interfacial: 1; //½«½çÃæË¢µ½»º´æÖĞ
+//	uint8_t flag_RefreshLcd : 1; //å°†ç¼“å­˜åˆ·åˆ°å±å¹•ä¸Šå»
+//	uint8_t flag_RefreshRtc : 1; //rtcé‡‡é›†
+//	uint8_t flag_RefreshBmp : 1; //é‡‡é›†æ°”å‹
+//	uint8_t flag_RefreshBat : 1; //é‡‡é›†ç”µæ± ad
+//	uint8_t flag_RefreshGPS : 1; //æ›´æ–°gpsä¿¡æ¯
+//	uint8_t flag_interfacial: 1; //å°†ç•Œé¢åˆ·åˆ°ç¼“å­˜ä¸­
 //	
-//	uint8_t flag_Test       : 1; //²âÊÔÓÃ¶¨Ê±Æ÷
+//	uint8_t flag_Test       : 1; //æµ‹è¯•ç”¨å®šæ—¶å™¨
 
 
-#define TIM_REFRESHLCD  1     //ÆÁÄ»Ë¢ĞÂ¼ä¸ô£¨µ¥Î»ms£©
-#define TIM_REFRESHRTC  751   //RTCË¢ĞÂ¼ä¸ô£¨µ¥Î»ms£©
-#define TIM_REFRESHBMP  2002  //ÆøÑ¹ÎÂ¶ÈË¢ĞÂ¼ä¸ô£¨µ¥Î»ms£©
-#define TIM_REFRESHBAT  1513  //µç³ØµçÁ¿¸üĞÂÊ±¼ä
-#define TIM_REFRESHGPS  4504  //gps¸üĞÂÊ±¼ä
-#define TIM_INTERFACIAL 250   //ÏÔ´æ¸üĞÂÊ±¼ä  Õâ¸öÓ¦¸Ã»¹ÄÜÔÙ¸ÄĞ¡Ò»¶ª¶ªµ«ÊÇ²»ÄÜĞ¡ÓÚµÈÓÚ200 200µÄ»°»áË¢ĞÂ²»È«
-#define TIM_WARNING     1306  //±¨¾¯Í¼±êÉÁË¸¼ä¸ô
-#define TIM_TEST        2507   //²âÊÔÓÃ¶¨Ê±Æ÷ ÏÖÔÚÔİÊ±ÓÃÓÚ±éÀúÁ´±í
+#define TIM_REFRESHLCD  1     //å±å¹•åˆ·æ–°é—´éš”ï¼ˆå•ä½msï¼‰
+#define TIM_REFRESHRTC  751   //RTCåˆ·æ–°é—´éš”ï¼ˆå•ä½msï¼‰
+#define TIM_REFRESHBMP  2002  //æ°”å‹æ¸©åº¦åˆ·æ–°é—´éš”ï¼ˆå•ä½msï¼‰
+#define TIM_REFRESHBAT  1513  //ç”µæ± ç”µé‡æ›´æ–°æ—¶é—´
+#define TIM_REFRESHGPS  4504  //gpsæ›´æ–°æ—¶é—´
+#define TIM_INTERFACIAL 250   //æ˜¾å­˜æ›´æ–°æ—¶é—´  è¿™ä¸ªåº”è¯¥è¿˜èƒ½å†æ”¹å°ä¸€ä¸¢ä¸¢ä½†æ˜¯ä¸èƒ½å°äºç­‰äº200 200çš„è¯ä¼šåˆ·æ–°ä¸å…¨
+#define TIM_WARNING     1306  //æŠ¥è­¦å›¾æ ‡é—ªçƒé—´éš”
+#define TIM_TEST        2507   //æµ‹è¯•ç”¨å®šæ—¶å™¨ ç°åœ¨æš‚æ—¶ç”¨äºéå†é“¾è¡¨
 
 
-#define KEY_TIM 10            //¶Ì°´Ïû¶¶Ê±¼ä
-#define KEY_TIM_LONG 2000     //³¤°´ÅĞ¶ÏÊ±¼ä
+#define KEY_TIM 10            //çŸ­æŒ‰æ¶ˆæŠ–æ—¶é—´
+#define KEY_TIM_LONG 2000     //é•¿æŒ‰åˆ¤æ–­æ—¶é—´
 
-#define TIM_SUCCEFFUL 1500    //³É¹¦µ¯´°Í£ÁôÊ±¼ä
+#define TIM_SUCCEFFUL 1500    //æˆåŠŸå¼¹çª—åœç•™æ—¶é—´
 
-#define LOGO_TIM 1500         //¿ª»úlogoÏÔÊ¾Ê±¼ä
+#define LOGO_TIM 1500         //å¼€æœºlogoæ˜¾ç¤ºæ—¶é—´
 
-#define BATTERY_TIM 1000      //Ã»µçÁËÉÁµÄÊ±¼ä
+#define BATTERY_TIM 1000      //æ²¡ç”µäº†é—ªçš„æ—¶é—´
 
-#define ALARM_TIM 1000        //±¨¾¯±êÖ¾
+#define ALARM_TIM 1000        //æŠ¥è­¦æ ‡å¿—
 
 
-//mainº¯ÊıÏà¹ØµÄflag±êÖ¾½Ó¿Ú
+//mainå‡½æ•°ç›¸å…³çš„flagæ ‡å¿—æ¥å£
 uint8_t get_RtcFlag(void);
 uint8_t get_BmpFlag(void);
 uint8_t get_LcdFlag(void);
@@ -55,7 +55,7 @@ void clear_InterfacialFlag(void);
 void clear_GPSFlag(void);
 void clear_WarningFlag(void);
 
-//°´¼ü°´ÏÂ¿ªÊ¼¼ÆÊ±µÄÏà¹Ø½Ó¿Ú                     ¼ÆÊ±µÄ±êÖ¾¶¼ÊÇCountFlag½áÎ²
+//æŒ‰é”®æŒ‰ä¸‹å¼€å§‹è®¡æ—¶çš„ç›¸å…³æ¥å£                     è®¡æ—¶çš„æ ‡å¿—éƒ½æ˜¯CountFlagç»“å°¾
 void set_KeyUpCountFlag(void);
 void set_KeyDownCountFlag(void);
 void set_KeyOkCountFlag(void);
@@ -90,7 +90,7 @@ void clear_KeyBluCountFlag(void);
 
 
 
-//°´¼ü±»°´¹ıµÄÏà¹Ø½Ó¿Ú                           °´¹ıµÄ±êÖ¾¶¼ÊÇClickedFlag½áÎ²
+//æŒ‰é”®è¢«æŒ‰è¿‡çš„ç›¸å…³æ¥å£                           æŒ‰è¿‡çš„æ ‡å¿—éƒ½æ˜¯ClickedFlagç»“å°¾
 uint8_t get_KeyUpClickedFlag(void);
 uint8_t get_KeyDownClickedFlag(void);
 uint8_t get_KeyOkClickedFlag(void);
@@ -112,7 +112,7 @@ void clear_KeyBluClickedFlag(void);
 
 
 
-//Çå¿Õ°´¼ü°´ÏÂ¼ÆÊ±¼ÆÊıµÄ
+//æ¸…ç©ºæŒ‰é”®æŒ‰ä¸‹è®¡æ—¶è®¡æ•°çš„
 void clear_KeyUpCount(void);
 void clear_KeyDownCount(void);
 void clear_KeyEscCount(void);

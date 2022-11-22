@@ -64,12 +64,14 @@ typedef enum{
 	PAGE_3_GPS,            //gps
 	PAGE_3_INFO,           //仪表信息
 	PAGE_3_RESERT,         //恢复出厂设置
-	PAGE_3_AUTOLOCK,
+	PAGE_3_AUTOLOCK_TYPE,
 	
 	PAGE_3_DATASAVE,       //数据保存
 	PAGE_3_DATASHOW,       //数据显示
 	PAGE_3_DATADELETE,     //数据删除
 	PAGE_3_LOG,            //日志
+	
+	PAGE_3_SLIDEAVG,       //滑动平均
 	
 	
 	/*四级界面*/
@@ -77,6 +79,7 @@ typedef enum{
 	PAGE_4_KEYPADTONE,		 //按键音
 	
 	PAGE_4_ALARM,          //不同类型选择点进去之后的界面
+	PAGE_4_AUTOLOCK,       //不同类型选择点进去之后的界面
 	
 	PAGE_4_DATALOG,        //数据日志
 	PAGE_4_DATALOG_GPS,    //数据日志gps界面
@@ -85,9 +88,14 @@ typedef enum{
 	PAGE_4_CAL,           //校准
 	PAGE_4_PARASET,       //参数设置
 	
+	PAGE_4_SLIDEVALUE,    //滑动平均数值设置
 	
 	/*五级界面*/
 	PAGE_5_ALARMVALUE,     //报警阈值设置
+	
+	PAGE_5_AUTOLOCKVALUE,  //锁定等级设置
+	
+	PAGE_5_TEMP,           //温度校准
 	
 	PAGE_5_ZERO,           //零点
 	PAGE_5_ONE,            //单点
@@ -95,12 +103,9 @@ typedef enum{
 	PAGE_5_TWOSECOND,      //两点校准第二个点
 	PAGE_5_THREE,          //三点
 	
-	PAGE_5_SENSORCAP
+	PAGE_5_SENSORCAP,      //帽膜设置
 	
 } PAGE_NUM;
-
-
-
 
 /*枚举温度单位*/
 typedef enum
@@ -109,14 +114,9 @@ typedef enum
 	FAHRENHEIT
 }TEMP_UINT;
 
-
-
 typedef uint8_t TCOLOR;
 
-
 struct struct_NanoOption;
-
-
 
 //////////////////////那种大选项的结构体
 typedef struct struct_option{

@@ -11,7 +11,6 @@
 
 STATIC uint16_t log_count = 0; 
 
-STATIC uint8_t flag_NeedSaveData = 0;
 SENSOR_TYPE SaveData_SensorType;
 
 STATIC log_union log_u;
@@ -147,40 +146,40 @@ void log_ReadData(log_union*p ,uint16_t index)
 	W25QXX_Read(p->log_arr, addr, sizeof(log_t));
 }
 	
-void log_PrintfLogOffset(void)
-{
-	printf("type_str\t:%ld\n",&(((log_send_t *)0)->logu.log.type_str));
-	
-	printf("years\t\t:%ld\n",&(((log_send_t *)0)->logu.log.time.years));
-	printf("month\t\t:%ld\n",&(((log_send_t *)0)->logu.log.time.month));
-	printf("day\t\t:%ld\n",&(((log_send_t *)0)->logu.log.time.day));
-	printf("hour\t\t:%ld\n",&(((log_send_t *)0)->logu.log.time.hour));
-	printf("minute\t\t:%ld\n",&(((log_send_t *)0)->logu.log.time.minute));
-	printf("seconds\t\t:%ld\n",&(((log_send_t *)0)->logu.log.time.seconds));
-	
-	printf("sn\t\t:%ld\n",&(((log_send_t *)0)->logu.log.sn));
-	printf("E_W\t\t:%ld\n",&(((log_send_t *)0)->logu.log.E_W));
-	printf("N_S\t\t:%ld\n",&(((log_send_t *)0)->logu.log.N_S));
-	printf("latitude\t:%ld\n",&(((log_send_t *)0)->logu.log.latitude));
-	printf("longitude\t:%ld\n",&(((log_send_t *)0)->logu.log.longitude));
+//void log_PrintfLogOffset(void)
+//{
+//	printf("type_str\t:%ld\n",&(((log_send_t *)0)->logu.log.type_str));
+//	
+//	printf("years\t\t:%ld\n",&(((log_send_t *)0)->logu.log.time.years));
+//	printf("month\t\t:%ld\n",&(((log_send_t *)0)->logu.log.time.month));
+//	printf("day\t\t:%ld\n",&(((log_send_t *)0)->logu.log.time.day));
+//	printf("hour\t\t:%ld\n",&(((log_send_t *)0)->logu.log.time.hour));
+//	printf("minute\t\t:%ld\n",&(((log_send_t *)0)->logu.log.time.minute));
+//	printf("seconds\t\t:%ld\n",&(((log_send_t *)0)->logu.log.time.seconds));
+//	
+//	printf("sn\t\t:%ld\n",&(((log_send_t *)0)->logu.log.sn));
+//	printf("E_W\t\t:%ld\n",&(((log_send_t *)0)->logu.log.E_W));
+//	printf("N_S\t\t:%ld\n",&(((log_send_t *)0)->logu.log.N_S));
+//	printf("latitude\t:%ld\n",&(((log_send_t *)0)->logu.log.latitude));
+//	printf("longitude\t:%ld\n",&(((log_send_t *)0)->logu.log.longitude));
 
-	printf("temperature\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.temperature));
-	printf("pressure\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.pressure));
-	printf("salinity\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.salinity));
-	printf("pH\t\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.pH));
-	printf("DO_mg_L\t\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.DO_mg_L));
-	printf("DO_percent\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.DO_percent));
-	printf("FCL_mg_L\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.FCL_mg_L));
-	printf("EC_us_cm\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.EC_us_cm));
-	printf("Tur_NTU\t\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.Tur_NTU));
-	printf("ORP_mV\t\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.ORP_mV));
-	printf("NH4_mg_L\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.NH4_mg_L));
-	printf("F_mg_L\t\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.F_mg_L));
-	printf("Cl_mg_L\t\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.Cl_mg_L));
-	printf("Chl_ug_L\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.Chl_ug_L));
-	printf("Bga_cells_mL\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.Bga_cells_mL));
-	printf("CODuv_mg_L\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.CODuv_mg_L));
-}
+//	printf("temperature\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.temperature));
+//	printf("pressure\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.pressure));
+//	printf("salinity\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.salinity));
+//	printf("pH\t\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.pH));
+//	printf("DO_mg_L\t\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.DO_mg_L));
+//	printf("DO_percent\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.DO_percent));
+//	printf("FCL_mg_L\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.FCL_mg_L));
+//	printf("EC_us_cm\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.EC_us_cm));
+//	printf("Tur_NTU\t\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.Tur_NTU));
+//	printf("ORP_mV\t\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.ORP_mV));
+//	printf("NH4_mg_L\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.NH4_mg_L));
+//	printf("F_mg_L\t\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.F_mg_L));
+//	printf("Cl_mg_L\t\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.Cl_mg_L));
+//	printf("Chl_ug_L\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.Chl_ug_L));
+//	printf("Bga_cells_mL\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.Bga_cells_mL));
+//	printf("CODuv_mg_L\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.CODuv_mg_L));
+//}
 
 void send_char(char ch)
 {

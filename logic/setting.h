@@ -9,6 +9,9 @@
 ppm = mg/L
 */
 
+/*自动锁定的阈值*/
+extern float AutoLock_value[3];
+
 enum customize_enum
 {
 	LUHENG,
@@ -17,21 +20,43 @@ enum customize_enum
 };
 
 
-
-
 typedef float value_type;
 
 /////////////////////////////////////////////////////////////////////////////////需要加设备编号
 typedef struct struct_setting{
 	uint8_t IsChn;            //是否显示中文
+	uint8_t HaveGps;
 	
-	uint8_t customize;       //定制开机标志
+	uint8_t customize;        //定制开机标志
 	
 	uint8_t KeyPadTone;       //是否有按键音
 	uint8_t AlarmTone;
 	
-	uint8_t AutoLock;         //是否自动锁定
+	uint8_t AutoLock_pH;       //是否自动锁定
+	uint8_t AutoLock_DO;       //是否自动锁定
+	uint8_t AutoLock_FCL;      //是否自动锁定
+	uint8_t AutoLock_EC;       //是否自动锁定
+	uint8_t AutoLock_Tur;      //是否自动锁定
+	uint8_t AutoLock_ORP;      //是否自动锁定
+	uint8_t AutoLock_NH4;      //是否自动锁定
+	uint8_t AutoLock_F;        //是否自动锁定
+	uint8_t AutoLock_CL;       //是否自动锁定
+	uint8_t AutoLock_Chl;      //是否自动锁定
+	uint8_t AutoLock_Bga;      //是否自动锁定
+	uint8_t AutoLock_CODuv;    //是否自动锁定
 	
+	uint8_t AutoLock_level_pH;       //自动锁定等级
+	uint8_t AutoLock_level_DO;       //自动锁定等级
+	uint8_t AutoLock_level_FCL;      //自动锁定等级
+	uint8_t AutoLock_level_EC;       //自动锁定等级
+	uint8_t AutoLock_level_Tur;      //自动锁定等级
+	uint8_t AutoLock_level_ORP;      //自动锁定等级
+	uint8_t AutoLock_level_NH4;      //自动锁定等级
+	uint8_t AutoLock_level_F;        //自动锁定等级
+	uint8_t AutoLock_level_CL;       //自动锁定等级
+	uint8_t AutoLock_level_Chl;      //自动锁定等级
+	uint8_t AutoLock_level_Bga;      //自动锁定等级
+	uint8_t AutoLock_level_CODuv;    //自动锁定等级
 	
 	uint8_t IsAlarm_pH;       //是否报警
 	uint8_t IsAlarm_DO;       //是否报警
@@ -46,8 +71,10 @@ typedef struct struct_setting{
 	uint8_t IsAlarm_Bga;      //是否报警
 	uint8_t IsAlarm_CODuv;    //是否报警
 	
-	
 	uint8_t AutoShut;         //0 5 10 20
+	
+	uint8_t IsOpen_SlideAvg;  //是否开启滑动平均
+	uint8_t SlideAvgTimes;    //滑动平均次数
 	
 	value_type LowThreshold_pH;  //低门限报警阈值
 	value_type HighThreshold_pH; //高门限报警阈值
@@ -88,6 +115,7 @@ typedef struct struct_setting{
 	value_type AirPressure;   //气压补偿
 	value_type Salinity;      //盐度值
 	
+	
 }setting_t;
 
 enum AUTOLOCK_ENUM{
@@ -111,37 +139,19 @@ uint8_t setting_GetKeyPadTone(void);
 void setting_SetAlarmTone(uint8_t AlarmTone);
 uint8_t setting_GetAlarmTone(void);
 
-/*设置和获取自动锁定*/
-uint8_t setting_GetAutoLock(void);
-void setting_SetAutoLock(uint8_t AutoLock);
-
 /*设置报警*/
-void setting_SetIsAlarm_pH(uint8_t IsAlarm);
 void setting_SetIsAlarm_DO(uint8_t IsAlarm);
-void setting_SetIsAlarm_FCL(uint8_t IsAlarm);
-void setting_SetIsAlarm_EC(uint8_t IsAlarm);
-void setting_SetIsAlarm_Tur(uint8_t IsAlarm);
-void setting_SetIsAlarm_ORP(uint8_t IsAlarm);
-void setting_SetIsAlarm_NH4(uint8_t IsAlarm);
-void setting_SetIsAlarm_F(uint8_t IsAlarm);
-void setting_SetIsAlarm_CL(uint8_t IsAlarm);
-void setting_SetIsAlarm_Chl(uint8_t IsAlarm);
-void setting_SetIsAlarm_Bga(uint8_t IsAlarm);
-void setting_SetIsAlarm_CODuv(uint8_t IsAlarm);
 
 /*获取报警设置*/
-uint8_t setting_GetIsAlarm_pH(void);
 uint8_t setting_GetIsAlarm_DO(void);
-uint8_t setting_GetIsAlarm_FCL(void);
-uint8_t setting_GetIsAlarm_EC(void);
-uint8_t setting_GetIsAlarm_Tur(void);
-uint8_t setting_GetIsAlarm_ORP(void);
-uint8_t setting_GetIsAlarm_NH4(void);
-uint8_t setting_GetIsAlarm_F(void);
-uint8_t setting_GetIsAlarm_CL(void);
-uint8_t setting_GetIsAlarm_Chl(void);
-uint8_t setting_GetIsAlarm_Bga(void);
-uint8_t setting_GetIsAlarm_CODuv(void);
+
+
+void setting_SetIsOpen_SlideAvg(uint8_t IsOpen); //设置是否开启滑动平均
+uint8_t setting_GetIsOpen_SlideAvg(void);        //设置滑动平均值
+
+uint8_t setting_GetSlideAvgTimes(void);
+void setting_SetSlideAvgTimes(uint8_t times);
+
 
 /*获取和设置语言设置*/
 void setting_SetIsChn(uint8_t IsChn);
@@ -173,70 +183,24 @@ void first_write(void);
 void init_setting(void);
 
 /*获取和设置高低门限报警阈值*/
-value_type setting_GetHighThreshold_pH(void);
-void setting_SetHighThreshold_pH(value_type value);
-value_type setting_GetLowThreshold_pH(void);
-void setting_SetLowThreshold_pH(value_type value);
-
 value_type setting_GetHighThreshold_DO(void);
 void setting_SetHighThreshold_DO(value_type value);
 value_type setting_GetLowThreshold_DO(void);
 void setting_SetLowThreshold_DO(value_type value);
-
-value_type setting_GetHighThreshold_FCL(void);
-void setting_SetHighThreshold_FCL(value_type value);
-value_type setting_GetLowThreshold_FCL(void);
-void setting_SetLowThreshold_FCL(value_type value);
-
-value_type setting_GetHighThreshold_EC(void);
-void setting_SetHighThreshold_EC(value_type value);
-value_type setting_GetLowThreshold_EC(void);
-void setting_SetLowThreshold_EC(value_type value);
-
-value_type setting_GetHighThreshold_Tur(void);
-void setting_SetHighThreshold_Tur(value_type value);
-value_type setting_GetLowThreshold_Tur(void);
-void setting_SetLowThreshold_Tur(value_type value);
-
-value_type setting_GetHighThreshold_ORP(void);
-void setting_SetHighThreshold_ORP(value_type value);
-value_type setting_GetLowThreshold_ORP(void);
-void setting_SetLowThreshold_ORP(value_type value);
-
-value_type setting_GetHighThreshold_NH4(void);
-void setting_SetHighThreshold_NH4(value_type value);
-value_type setting_GetLowThreshold_NH4(void);
-void setting_SetLowThreshold_NH4(value_type value);
-
-value_type setting_GetHighThreshold_F(void);
-void setting_SetHighThreshold_F(value_type value);
-value_type setting_GetLowThreshold_F(void);
-void setting_SetLowThreshold_F(value_type value);
-
-value_type setting_GetHighThreshold_CL(void);
-void setting_SetHighThreshold_CL(value_type value);
-value_type setting_GetLowThreshold_CL(void);
-void setting_SetLowThreshold_CL(value_type value);
-
-value_type setting_GetHighThreshold_Chl(void);
-void setting_SetHighThreshold_Chl(value_type value);
-value_type setting_GetLowThreshold_Chl(void);
-void setting_SetLowThreshold_Chl(value_type value);
-
-value_type setting_GetHighThreshold_Bga(void);
-void setting_SetHighThreshold_Bga(value_type value);
-value_type setting_GetLowThreshold_Bga(void);
-void setting_SetLowThreshold_Bga(value_type value);
-
-value_type setting_GetHighThreshold_CODuv(void);
-void setting_SetHighThreshold_CODuv(value_type value);
-value_type setting_GetLowThreshold_CODuv(void);
-void setting_SetLowThreshold_CODuv(value_type value);
 
 
 /*获取和设置自动关机时间*/
 uint8_t setting_GetAutoShut(void);
 void setting_SetAutoShut(uint8_t value);
 
+uint8_t setting_GetHaveGps(void);
+void setting_SetHaveGps(uint8_t have);
+
+/*自动锁定设置*/
+
+uint8_t setting_GetAutoLock_DO(void);
+void setting_SetAutoLock_DO(uint8_t AutoLock);
+uint8_t setting_GetAutoLockLevel_DO(void);
+void setting_SetAutoLockLevel_DO(uint8_t level);
 
 #endif
