@@ -73,8 +73,31 @@ typedef struct struct_setting{
 	
 	uint8_t AutoShut;         //0 5 10 20
 	
-	uint8_t IsOpen_SlideAvg;  //是否开启滑动平均
-	uint8_t SlideAvgTimes;    //滑动平均次数
+	uint8_t IsOpen_SlideAvg_pH;  //是否开启滑动平均
+	uint8_t IsOpen_SlideAvg_DO;  //是否开启滑动平均
+	uint8_t IsOpen_SlideAvg_FCL;  //是否开启滑动平均
+	uint8_t IsOpen_SlideAvg_EC;  //是否开启滑动平均
+	uint8_t IsOpen_SlideAvg_Tur;  //是否开启滑动平均
+	uint8_t IsOpen_SlideAvg_ORP;  //是否开启滑动平均
+	uint8_t IsOpen_SlideAvg_NH4;  //是否开启滑动平均
+	uint8_t IsOpen_SlideAvg_F;  //是否开启滑动平均
+	uint8_t IsOpen_SlideAvg_CL;  //是否开启滑动平均
+	uint8_t IsOpen_SlideAvg_Chl;  //是否开启滑动平均
+	uint8_t IsOpen_SlideAvg_Bga;  //是否开启滑动平均
+	uint8_t IsOpen_SlideAvg_CODuv;  //是否开启滑动平均
+	
+	uint8_t SlideAvgTimes_pH;    //滑动平均次数
+	uint8_t SlideAvgTimes_DO;    //滑动平均次数
+	uint8_t SlideAvgTimes_FCL;    //滑动平均次数
+	uint8_t SlideAvgTimes_EC;    //滑动平均次数
+	uint8_t SlideAvgTimes_Tur;    //滑动平均次数
+	uint8_t SlideAvgTimes_ORP;    //滑动平均次数
+	uint8_t SlideAvgTimes_NH4;    //滑动平均次数
+	uint8_t SlideAvgTimes_F;    //滑动平均次数
+	uint8_t SlideAvgTimes_CL;    //滑动平均次数
+	uint8_t SlideAvgTimes_Chl;    //滑动平均次数
+	uint8_t SlideAvgTimes_Bga;    //滑动平均次数
+	uint8_t SlideAvgTimes_CODuv;    //滑动平均次数
 	
 	value_type LowThreshold_pH;  //低门限报警阈值
 	value_type HighThreshold_pH; //高门限报警阈值
@@ -146,11 +169,11 @@ void setting_SetIsAlarm_DO(uint8_t IsAlarm);
 uint8_t setting_GetIsAlarm_DO(void);
 
 
-void setting_SetIsOpen_SlideAvg(uint8_t IsOpen); //设置是否开启滑动平均
-uint8_t setting_GetIsOpen_SlideAvg(void);        //设置滑动平均值
+void setting_SetIsOpen_SlideAvg_DO(uint8_t IsOpen); //设置是否开启滑动平均
+uint8_t setting_GetIsOpen_SlideAvg_DO(void);        //设置滑动平均值
 
-uint8_t setting_GetSlideAvgTimes(void);
-void setting_SetSlideAvgTimes(uint8_t times);
+uint8_t setting_GetSlideAvgTimes_DO(void);
+void setting_SetSlideAvgTimes_DO(uint8_t times);
 
 
 /*获取和设置语言设置*/

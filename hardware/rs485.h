@@ -3,7 +3,7 @@
 
 #include "main.h"
 #include "usart.h"
-#include "calculate.h"
+#include "algorith.h"
 
 #define RS485_USART USART3
 
@@ -16,22 +16,6 @@
 #define RS485_CIRCULAR_TIM 850  //循环发送的话多久发一次
 
 #define RESEND_MAX 4 //最大重发数，超过这个数就认为设备断开连接了
-
-
-//	uint8_t IsAlarm_DO;        //是否报警
-//	uint8_t IsAlarm_pH;        //是否报警
-//	uint8_t IsAlarm_Tur;        //是否报警
-
-//	uint8_t IsAlarm_FCL;        //是否报警
-//	uint8_t IsAlarm_EC;        //是否报警
-
-//	uint8_t IsAlarm_ORP;        //是否报警
-//	uint8_t IsAlarm_NH4;        //是否报警
-//	uint8_t IsAlarm_F;        //是否报警
-//	uint8_t IsAlarm_CL;        //是否报警
-//	uint8_t IsAlarm_Chl;        //是否报警
-//	uint8_t IsAlarm_Bga;        //是否报警
-//	uint8_t IsAlarm_CODuv;        //是否报警
 
 
 /*传感器类型*/
@@ -51,10 +35,6 @@ typedef enum{
 	
 	TYPE_NONE              //未接传感器
 }SENSOR_TYPE;
-
-
-
-
 
 struct DO_struct;
 typedef struct DO_struct{
@@ -90,9 +70,9 @@ typedef struct DO_struct{
 	float_u sal;               //盐度
 	float_u press;             //气压值
 	
-	LiQueue* queue_domgl;      //mg/l 数据队列
-	LiQueue* queue_dopercent;  //%    数据队列
-	LiQueue* queue_temp;       //℃    数据队列
+	filter_t queue_domgl;      //mg/l 数据队列
+	filter_t queue_dopercent;  //%    数据队列
+	filter_t queue_temp;       //℃    数据队列
 	
 	struct DO_struct* next_DO; //下一个溶解氧设备
 	

@@ -28,10 +28,10 @@
 #define MENU_FONT_ENG_MEDIUM_RSIZE 20
 
 
-extern const unsigned char eng_8x16[ENG_FONT_NUM][16];
+extern unsigned char eng_8x16[ENG_FONT_NUM][16];
 extern unsigned char chn_16x16[CHN_FONT_NUM][32];
-extern const unsigned char num_16x32[13][64];
-extern const unsigned char num_10x20[13][40];
+extern unsigned char num_16x32[13][64];
+extern unsigned char num_10x20[13][40];
 
 
 

@@ -167,7 +167,7 @@ void generate_SystemPage(PtrToInterfacial interfacial)
 	OptionList_Add(index++,  (uint8_t *)tishiyinshezhi_cn, sizeof(tishiyinshezhi_cn), (uint8_t *)tishiyinshezhi_en, PAGE_3_BEEP,       OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//按键音设置
 	OptionList_Add(index++,  (uint8_t *)shijianshezhi_cn,  sizeof(shijianshezhi_cn),  (uint8_t *)shijianshezhi_en,  PAGE_3_TIME,       OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head); //时间设置
 	
-	OptionList_Add(index++,  (uint8_t *)lvboshezhi_cn, sizeof(lvboshezhi_cn), (uint8_t *)lvboshezhi_en, PAGE_3_SLIDEAVG,   OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//滑动平均
+	OptionList_Add(index++,  (uint8_t *)lvboshezhi_cn, sizeof(lvboshezhi_cn), (uint8_t *)lvboshezhi_en, PAGE_3_SLIDEAVG_TYPE,   OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//滑动平均
 	
 	OptionList_Add(index++,  (uint8_t *)dushusuoding_cn,   sizeof(dushusuoding_cn),   (uint8_t *)dushusuoding_en,   PAGE_3_AUTOLOCK_TYPE,   OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//读书锁定
 	
@@ -1130,107 +1130,6 @@ void generate_DataLogGPS(PtrToInterfacial interfacial)
 	interfacial->content_eng = (uint8_t *)shujuxianshi_en;
 }
 
-/*滑动平均开关界面*/
-void generate_SlideAverageSwitch(PtrToInterfacial interfacial)
-{
-	set_RowSpacing(ROWSPACING_TWO);//两个
-	CurInterfacial_Destory();           //清空当前界面所有的链表
-	
-	list_option option_head = NULL;     //生成一个临时的选项链表头
-	
-	OptionList_Add(0, (uint8_t *)kaiqi_cn,  sizeof(kaiqi_cn),  (uint8_t *)kaiqi_en,  PAGE_4_SLIDEVALUE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head); //按键音
-	OptionList_Add(1, (uint8_t *)guanbi_cn, sizeof(guanbi_cn), (uint8_t *)guanbi_en, NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//报警音
-	
-	interfacial->page_father = PAGE_2_SYSTEM;//设定父界面
-	
-	interfacial->content_chn = (uint8_t *)lvboshezhi_cn ;
-	interfacial->ChnContent_size = sizeof(lvboshezhi_cn);
-	interfacial->content_eng = (uint8_t *)lvboshezhi_en;
-	
-	interfacial->option_head = option_head;
-}
-
-/*滑动平均数值设置界面*/
-void generate_SlideAverageValue(PtrToInterfacial interfacial)
-{
-	uint8_t other_y;
-	
-	uint8_t temp;
-	
-	set_RowSpacing(ROWSPACING_TWO);
-	
-	other_y = get_RowSpacing() + OPTION_STARTY;
-	
-	temp = setting_GetSlideAvgTimes();
-	
-	CurInterfacial_Destory();
-	
-	list_option option_head  = NULL;//标签 次数 保存
-	list_NanoOption NanoTimes  = NULL;//就次数设置
-	list_label label_head = NULL;
-	
-	
-	NanoOptionList_Add( 88, other_y, NULL, 0, NULL, NANOOPTION_NUMBER, temp/10, 0, 4, IS_SINGLE, &NanoTimes);//低门限
-	NanoOptionList_Add( 96, other_y, NULL, 0, NULL, NANOOPTION_NUMBER, temp%10, 0, 9, IS_SINGLE, &NanoTimes);
-	
-	LabelList_Add( 112, other_y, NULL, 0, (uint8_t *)cishuxianzhi_slideavg,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//(2-40)
-	
-	OptionList_Add(0, (uint8_t *)canshu_cn,  sizeof(canshu_cn),  (uint8_t *)canshu_en,  NONE_PAGE, OPTION_SMALL, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NanoTimes, &option_head);	//报警音
-	OptionList_Add(1, (uint8_t *)baocun_cn, sizeof(baocun_cn), (uint8_t *)baocun_en, NONE_PAGE, OPTION_SMALL, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL,      &option_head);//保存
-	
-	
-	
-	interfacial->label_head = label_head;
-	
-	interfacial->page_father = PAGE_3_SLIDEAVG;//设定父界面
-	
-	interfacial->content_chn = (uint8_t *)lvboshezhi_cn;
-	interfacial->ChnContent_size = sizeof(lvboshezhi_cn);
-	interfacial->content_eng = (uint8_t *)lvboshezhi_en;
-	
-	interfacial->option_head = option_head;
-}
-
-/*
-set_RowSpacing(44);
-CurInterfacial_Destory();
-
-list_option option_head = NULL;
-list_NanoOption NanoPercent = NULL;
-
-list_label label_head = NULL;
-
-switch (sensor_type)
-{
-	case TYPE_DO:
-		LabelList_Add( 0, 36, (uint8_t *)diyidian_cn, sizeof(diyidian_cn), (uint8_t *)diyidian_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head); //第一点
-		LabelList_Add(100, 56, NULL, 0, (uint8_t *)BAIFENGHAO,  LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
-		LabelList_Add(76, 56, NULL, 0, (uint8_t *)XIAOSHUDIAN,  LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
-	
-		NanoOptionList_Add(52, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent); //数值
-		NanoOptionList_Add(60, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
-		NanoOptionList_Add(68, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
-		NanoOptionList_Add(84, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
-	
-		OptionList_Add(0, (uint8_t *)jinrujiaozhunmoshi_cn, sizeof(jinrujiaozhunmoshi_cn), (uint8_t *)jinrujiaozhunmoshi_en, NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NanoPercent, &option_head);
-	
-		break;
-	default:
-		break;
-}
-
-interfacial->option_head = option_head;
-interfacial->label_head = label_head;
-
-interfacial->page_father = PAGE_4_CAL;//设定父界面
-
-interfacial->content_chn = (uint8_t *)liangdian_cn;
-interfacial->ChnContent_size = sizeof(liangdian_cn);
-interfacial->content_eng = (uint8_t *)liangdian_en;
-
-*/
-
-
 /*生成温度校准界面*/
 void generate_Cal_temp(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type)
 {
@@ -1296,24 +1195,6 @@ void generate_Cal_temp(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type)
 /*自动锁定*/
 void generate_AutoLock_type(PtrToInterfacial interfacial)
 {
-//	set_RowSpacing(ROWSPACING_THREE);
-//	CurInterfacial_Destory();           //清空当前界面所有的链表
-//	
-//	list_option option_head = NULL;     //生成一个临时的选项链表头
-//	
-//	OptionList_Add(0, (uint8_t *)guanbi_cn,   sizeof(guanbi_cn),   (uint8_t *)guanbi_en,   NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
-//	OptionList_Add(1, (uint8_t *)zidong_cn,   sizeof(zidong_cn),   (uint8_t *)zidong_en,   PAGE_4_LOCKLEVEL, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
-//	OptionList_Add(2, (uint8_t *)shoudong_cn, sizeof(shoudong_cn), (uint8_t *)shoudong_en, NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
-//	
-//	
-//	interfacial->page_father = PAGE_2_SYSTEM;//设定父界面
-//	
-//	interfacial->content_chn = (uint8_t *)dushusuoding_cn ;
-//	interfacial->ChnContent_size = sizeof(dushusuoding_cn);
-//	interfacial->content_eng = (uint8_t *)dushusuoding_en;
-//	
-//	interfacial->option_head = option_head;
-	
 	uint8_t option_index = 0;
 	list_option option_head = NULL;     //生成一个临时的选项链表头
 	
@@ -1354,9 +1235,9 @@ void generate_AutoLock(PtrToInterfacial interfacial)
 	interfacial->option_head = option_head;
 }
 
-/*自动锁定 档位设置 快 中等 慢*/
+
 void generate_AutoLock_value(PtrToInterfacial interfacial)//PAGE_4_LOCKLEVEL
-{
+{//自动锁定 档位设置 快 中等 慢
 	set_RowSpacing(ROWSPACING_THREE);
 	
 	CurInterfacial_Destory();           //清空当前界面所有的链表
@@ -1375,5 +1256,87 @@ void generate_AutoLock_value(PtrToInterfacial interfacial)//PAGE_4_LOCKLEVEL
 	
 	interfacial->option_head = option_head;
 }
+
+
+/*滑动平均*/
+void generate_SlideAverage_type(PtrToInterfacial interfacial)
+{
+	uint8_t option_index = 0;
+	list_option option_head = NULL;     //生成一个临时的选项链表头
+	
+	set_RowSpacing(ROWSPACING_TWO);
+	CurInterfacial_Destory();           //清空当前界面所有的链表
+	if(*(rs485_GetDoList())!=NULL)         //如果do设备列表中有设备的话添加DO设备
+	{
+		OptionList_Add(option_index++, (uint8_t *)rongjieyang_cn, sizeof(rongjieyang_cn), (uint8_t *)rongjieyang_en_quan, PAGE_4_SLIDEAVG, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
+	}
+	
+	interfacial->page_father = PAGE_2_SYSTEM;//设定父界面
+	
+	interfacial->content_chn = (uint8_t *)lvboshezhi_cn ;
+	interfacial->ChnContent_size = sizeof(lvboshezhi_cn);
+	interfacial->content_eng = (uint8_t *)lvboshezhi_en;
+	
+	interfacial->option_head = option_head;
+}
+void generate_SlideAverage_Switch(PtrToInterfacial interfacial)
+{
+	set_RowSpacing(ROWSPACING_TWO);//两个
+	CurInterfacial_Destory();           //清空当前界面所有的链表
+	
+	list_option option_head = NULL;     //生成一个临时的选项链表头
+	
+	OptionList_Add(0, (uint8_t *)kaiqi_cn,  sizeof(kaiqi_cn),  (uint8_t *)kaiqi_en,  PAGE_5_SLIDEVALUE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head); //按键音
+	OptionList_Add(1, (uint8_t *)guanbi_cn, sizeof(guanbi_cn), (uint8_t *)guanbi_en, NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//报警音
+	
+	interfacial->page_father = PAGE_3_SLIDEAVG_TYPE;//设定父界面
+	
+	interfacial->content_chn = (uint8_t *)lvboshezhi_cn ;
+	interfacial->ChnContent_size = sizeof(lvboshezhi_cn);
+	interfacial->content_eng = (uint8_t *)lvboshezhi_en;
+	
+	interfacial->option_head = option_head;
+}
+void generate_SlideAverage_Value(PtrToInterfacial interfacial, uint8_t temp)
+{
+	uint8_t other_y;
+	
+	set_RowSpacing(ROWSPACING_TWO);
+	
+	other_y = get_RowSpacing() + OPTION_STARTY;
+	
+	CurInterfacial_Destory();
+	
+	list_option option_head  = NULL;//标签 次数 保存
+	list_NanoOption NanoTimes  = NULL;//就次数设置
+	list_label label_head = NULL;
+	
+	
+	NanoOptionList_Add( 88, other_y, NULL, 0, NULL, NANOOPTION_NUMBER, temp/10, 0, 4, IS_SINGLE, &NanoTimes);//低门限
+	NanoOptionList_Add( 96, other_y, NULL, 0, NULL, NANOOPTION_NUMBER, temp%10, 0, 9, IS_SINGLE, &NanoTimes);
+	
+	LabelList_Add( 112, other_y, NULL, 0, (uint8_t *)cishuxianzhi_slideavg,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//(2-40)
+	
+	OptionList_Add(0, (uint8_t *)canshu_cn,  sizeof(canshu_cn),  (uint8_t *)canshu_en,  NONE_PAGE, OPTION_SMALL, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NanoTimes, &option_head);	//报警音
+	OptionList_Add(1, (uint8_t *)baocun_cn, sizeof(baocun_cn), (uint8_t *)baocun_en, NONE_PAGE, OPTION_SMALL, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL,      &option_head);//保存
+	
+	
+	
+	interfacial->label_head = label_head;
+	
+	interfacial->page_father = PAGE_4_SLIDEAVG;//设定父界面
+	
+	interfacial->content_chn = (uint8_t *)lvboshezhi_cn;
+	interfacial->ChnContent_size = sizeof(lvboshezhi_cn);
+	interfacial->content_eng = (uint8_t *)lvboshezhi_en;
+	
+	interfacial->option_head = option_head;
+}
+
+
+
+
+
+
 
 

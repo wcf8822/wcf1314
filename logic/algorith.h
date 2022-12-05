@@ -18,9 +18,11 @@ float filter_get_avg(filter_t* p2filter);
 /*添加数据到结构体中*/
 void filter_inset2arr(filter_t* p2filter, float value);
 /*初始化结构体*/
-filter_t* filter_init(uint16_t max_size);
+void filter_init(filter_t* p2filter, uint16_t max_size);
 /*清除数据载体*/
 void filter_destroy(filter_t* p2filter);
+/*清除数据*/
+void filter_clear(filter_t* p2filter);
 
 #endif
 

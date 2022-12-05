@@ -59,27 +59,18 @@ void rs485_DataHandle(void)
 				case DO_SendType_GetModbusId:   //溶解氧获取modbus id
 					if(rs485_usart.rx_buf[0] == 0xFF && rs485_usart.rx_buf[1] == 0x03)
 					{
-						close_circle();
+						close_circle();//关闭循环发送
 						
 						uint8_t DO_ID = rs485_usart.rx_buf[3];
 						
-						DO_AddProbe(DO_ID, &connected_probe.DO_list);
+						DO_AddProbe(DO_ID, &connected_probe.DO_list);//在所有设备树中添加溶解氧节点
 						
-						rs485_SetSensorType(TYPE_DO);
+						rs485_SetSensorType(TYPE_DO);//设置当前传感器类型为溶解氧
 						
-						
-//						if(get_CurPage() == PAGE_3_SENSORSSEARCH) //搜索设备界面上添加设备
-//						{
-//							//这里添加节点
-//							LabelList_Add(0, 32 + LabelList_count(interfacial_ReturnCurrent()->label_head) * 16, NULL, 0, (uint8_t *)rs485_GetDeviceName(rs485_GetDeviceCount()), NOT_NUMBER, IS_STR, &(interfacial_ReturnCurrent()->label_head));
-//						}
+						rs485_DevicePlus();//添加下设备树上的设备个数
 						
 						
-						
-						rs485_DevicePlus();
-						
-						
-						if(!DO_GetIsInit(get_CurDo()))
+						if(!DO_GetIsInit(get_CurDo()))//如果连接的这个仪表没有初始化的话取得下他的sn码
 						{
 							DO_rs485_GetSN(get_CurDo());
 						}
@@ -177,10 +168,6 @@ void rs485_DataHandle(void)
 						close_circle();
 						switch(interfacial_GetCurPage())
 						{
-//								interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
-//								interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
-//								interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
-//								break;
 							case PAGE_1_RESETCAL:
 							case PAGE_5_ONE:
 							case PAGE_5_TWOSECOND:

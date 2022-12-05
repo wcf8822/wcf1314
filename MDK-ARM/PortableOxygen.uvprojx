@@ -14,7 +14,7 @@
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
-          <Device>STM32L152V8TxA</Device>
+          <Device>STM32L152V8xxA</Device>
           <Vendor>STMicroelectronics</Vendor>
           <PackID>Keil.STM32L1xx_DFP.1.4.1</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
@@ -110,11 +110,11 @@
         </CommonProperty>
         <DllOption>
           <SimDllName>SARMCM3.DLL</SimDllName>
-          <SimDllArguments> -REMAP -MPU</SimDllArguments>
+          <SimDllArguments>-MPU -REMAP</SimDllArguments>
           <SimDlgDll>DCM.DLL</SimDlgDll>
           <SimDlgDllArguments>-pCM3</SimDlgDllArguments>
           <TargetDllName>SARMCM3.DLL</TargetDllName>
-          <TargetDllArguments> -MPU</TargetDllArguments>
+          <TargetDllArguments>-MPU</TargetDllArguments>
           <TargetDlgDll>TCM.DLL</TargetDlgDll>
           <TargetDlgDllArguments>-pCM3</TargetDlgDllArguments>
         </DllOption>
@@ -852,9 +852,9 @@
               <FilePath>..\logic\log.c</FilePath>
             </File>
             <File>
-              <FileName>calculate.c</FileName>
+              <FileName>algorith.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\logic\calculate.c</FilePath>
+              <FilePath>..\logic\algorith.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -89,13 +89,13 @@ uint8_t setting_GetIsAlarm_DO(void)
 }
 
 /*是否开启滑动平均设置*/
-void setting_SetIsOpen_SlideAvg(uint8_t IsOpen)
+void setting_SetIsOpen_SlideAvg_DO(uint8_t IsOpen)
 {
-	setting.setting_struct.IsOpen_SlideAvg = IsOpen;
+	setting.setting_struct.IsOpen_SlideAvg_DO = IsOpen;
 }
-uint8_t setting_GetIsOpen_SlideAvg(void)
+uint8_t setting_GetIsOpen_SlideAvg_DO(void)
 {
-	return setting.setting_struct.IsOpen_SlideAvg;
+	return setting.setting_struct.IsOpen_SlideAvg_DO;
 }
 
 /*
@@ -182,8 +182,33 @@ void init_setting(void)
 	setting.setting_struct.AutoLock_level_Bga = 0;
 	setting.setting_struct.AutoLock_level_CODuv = 0;
 	
-	setting.setting_struct.IsOpen_SlideAvg = 0; //是否开启滑动平均功能
-	setting.setting_struct.SlideAvgTimes = 2;   //滑动平均次数
+	/*是否开启滑动平均功能*/
+	setting.setting_struct.IsOpen_SlideAvg_pH = 0;
+	setting.setting_struct.IsOpen_SlideAvg_DO = 0;
+	setting.setting_struct.IsOpen_SlideAvg_FCL = 0;
+	setting.setting_struct.IsOpen_SlideAvg_EC = 0;
+	setting.setting_struct.IsOpen_SlideAvg_Tur = 0;
+	setting.setting_struct.IsOpen_SlideAvg_ORP = 0;
+	setting.setting_struct.IsOpen_SlideAvg_NH4 = 0;
+	setting.setting_struct.IsOpen_SlideAvg_F = 0;
+	setting.setting_struct.IsOpen_SlideAvg_CL = 0;
+	setting.setting_struct.IsOpen_SlideAvg_Chl = 0;
+	setting.setting_struct.IsOpen_SlideAvg_Bga = 0;
+	setting.setting_struct.IsOpen_SlideAvg_CODuv = 0;
+	
+	/*滑动平均次数*/
+	setting.setting_struct.SlideAvgTimes_pH = 2;
+	setting.setting_struct.SlideAvgTimes_DO = 2;
+	setting.setting_struct.SlideAvgTimes_FCL = 2;
+	setting.setting_struct.SlideAvgTimes_EC = 2;
+	setting.setting_struct.SlideAvgTimes_Tur = 2;
+	setting.setting_struct.SlideAvgTimes_ORP = 2;
+	setting.setting_struct.SlideAvgTimes_NH4 = 2;
+	setting.setting_struct.SlideAvgTimes_F = 2;
+	setting.setting_struct.SlideAvgTimes_CL = 2;
+	setting.setting_struct.SlideAvgTimes_Chl = 2;
+	setting.setting_struct.SlideAvgTimes_Bga = 2;
+	setting.setting_struct.SlideAvgTimes_CODuv = 2;
 	
 	setting.setting_struct.IsAlarm_pH = 0;
 	setting.setting_struct.IsAlarm_DO = 0;
@@ -329,13 +354,13 @@ void setting_SetLowThreshold_DO(value_type value)
 }
 
 
-uint8_t setting_GetSlideAvgTimes(void)
+uint8_t setting_GetSlideAvgTimes_DO(void)
 {
-	return setting.setting_struct.SlideAvgTimes;
+	return setting.setting_struct.SlideAvgTimes_DO;
 }
-void setting_SetSlideAvgTimes(uint8_t times)
+void setting_SetSlideAvgTimes_DO(uint8_t times)
 {
-	setting.setting_struct.SlideAvgTimes = times;
+	setting.setting_struct.SlideAvgTimes_DO = times;
 }
 
 

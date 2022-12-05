@@ -26,7 +26,7 @@ void HYM8563_UpdateTime(void);
 void RTC_UpdateShutDownTime(uint8_t autoshut);
 
 
-//获取时间相关参数
+//鑾峰彇鏃堕棿鐩稿叧鍙傛暟
 uint8_t RTC_GetYear(void);
 uint8_t RTC_GetMonth(void);
 uint8_t RTC_GetDay(void);

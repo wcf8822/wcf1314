@@ -121,10 +121,16 @@ void DO_AddProbe(uint8_t ModbusId, PtrToDOProbe *DO_head)//这里得添加名字
 	
 	p->modbus_id = ModbusId;
 	
-	p->queue_domgl = Queue_init();      //初始化一下mg/l 数值指针
-	p->queue_dopercent = Queue_init();  //初始化一下%    数值指针
-	p->queue_temp = Queue_init();       //初始化一下℃    数值指针
+	memset(&(p->queue_domgl), 0, sizeof(filter_t));
+	memset(&(p->queue_dopercent), 0, sizeof(filter_t));
+	memset(&(p->queue_temp), 0, sizeof(filter_t));
 	
+	if(setting_GetIsOpen_SlideAvg_DO())
+	{//如果开启了滑动平均就直接添加下 没开的话就等开的时候再初始化
+		filter_init(&(p->queue_domgl), setting_GetSlideAvgTimes_DO());      //初始化一下mg/l 数值指针
+		filter_init(&(p->queue_dopercent), setting_GetSlideAvgTimes_DO());  //初始化一下%    数值指针
+		filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_DO());       //初始化一下℃    数值指针
+	}
 	//传感器的值初始化一下都成0
 	p->DOmgl.value_f = 0.0;
 	p->DOpercent.value_f = 0.0;
@@ -177,17 +183,17 @@ void DO_DelProbe(uint8_t ModbusId, PtrToDOProbe *DO_head) //好像要对头指�
 	if(cur->modbus_id == ModbusId)//如果头指针指的就是
 	{
 		*DO_head = (*DO_head)->next_DO;
-		Queue_Destroy(&(cur->queue_domgl));
-		Queue_Destroy(&(cur->queue_dopercent));
-		Queue_Destroy(&(cur->queue_temp));
+		filter_destroy(&(cur->queue_domgl));
+		filter_destroy(&(cur->queue_dopercent));
+		filter_destroy(&(cur->queue_temp));
 		free(cur);
 	}
 	if(cur->next_DO->modbus_id == ModbusId)//如果第二个节点是
 	{
 		(*DO_head)->next_DO = (*DO_head)->next_DO->next_DO;
-		Queue_Destroy(&(cur->next_DO->queue_domgl));
-		Queue_Destroy(&(cur->next_DO->queue_dopercent));
-		Queue_Destroy(&(cur->next_DO->queue_temp));
+		filter_destroy(&(cur->next_DO->queue_domgl));
+		filter_destroy(&(cur->next_DO->queue_dopercent));
+		filter_destroy(&(cur->next_DO->queue_temp));
 		free(cur->next_DO);
 	}
 }
@@ -951,23 +957,24 @@ void DO_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)//要添加数字滤波
 			
 			
 			
-			if(setting_GetIsOpen_SlideAvg() && setting_GetSlideAvgTimes()>=2)//开启并且次数最起码为2次
+			if(setting_GetIsOpen_SlideAvg_DO() && setting_GetSlideAvgTimes_DO()>=2)//开启并且次数最起码为2次
 			{
 				if(is_FirstFilter)
 				{
 					is_FirstFilter = 0;
 					
-					Queue_Clear(ptd->queue_domgl);
-					Queue_Clear(ptd->queue_dopercent);
-					Queue_Clear(ptd->queue_temp);
+					filter_clear(&(ptd->queue_domgl));
+					filter_clear(&(ptd->queue_dopercent));
+					filter_clear(&(ptd->queue_temp));
 				}
-				Queue_insert(ptd->queue_domgl,     DO_mgl_temp,      setting_GetSlideAvgTimes());
-				Queue_insert(ptd->queue_dopercent, DO_Percent_temp,  setting_GetSlideAvgTimes());
-				Queue_insert(ptd->queue_temp,      temperature_temp, setting_GetSlideAvgTimes());
 				
-				Queue_GetAvg(ptd->queue_temp,      &temperature_temp);
-				Queue_GetAvg(ptd->queue_dopercent, &DO_Percent_temp);
-				Queue_GetAvg(ptd->queue_domgl,     &DO_mgl_temp);
+				filter_inset2arr(&(ptd->queue_domgl), DO_mgl_temp);
+				filter_inset2arr(&(ptd->queue_dopercent), DO_Percent_temp);
+				filter_inset2arr(&(ptd->queue_temp), temperature_temp);
+				
+				temperature_temp  = filter_get_avg(&(ptd->queue_temp)); 
+				DO_mgl_temp  = filter_get_avg(&(ptd->queue_domgl)); 
+				DO_Percent_temp  = filter_get_avg(&(ptd->queue_dopercent));
 			}
 			else
 			{

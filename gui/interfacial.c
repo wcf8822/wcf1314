@@ -60,7 +60,8 @@ STATIC float STD_value = 0.0;               //校准时候要用到的标准值
 
 STATIC SENSOR_TYPE temp_SensorType;         //当前需要修改的设备类型
 STATIC SENSOR_TYPE alarm_SensorType;        //报警设置选择的设备类型
-STATIC SENSOR_TYPE autolock_SensorType;     //自动锁定选的的设备类型
+STATIC SENSOR_TYPE autolock_SensorType;     //自动锁定选择的设备类型
+STATIC SENSOR_TYPE slideavg_SensorType;     //滑动平均选择的设备类型
 
 MESSAGE_TYPE cur_MsgType = MESSAGE_SETTING; //弹窗的类型
 
@@ -74,7 +75,7 @@ STATIC uint8_t AncestorPage_OptionIndex = 0;//阿太界面所选的标签下标
 STATIC uint8_t flag_NeedWarning = 0;
 
 HARDWARE_VERSION hardware_version; //硬件版本
-const uint8_t software_version[] = "v1.3";  //软件版本
+const uint8_t software_version[] = "v1.3.1";  //软件版本
 
 void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack);//通过枚举变量设置显示的界面
 
@@ -773,6 +774,72 @@ void btn_UpDownMode_ChangeOption(void)
 	window_change(cur_option, cur_interfacial.option_head);  //滑动一下窗口
 }
 
+SENSOR_TYPE get_OptionSelectedSensorType(void)
+{
+	SENSOR_TYPE temp_type = TYPE_NONE;
+	switch(cur_option->content_eng[0])
+	{
+		case 'B':
+			temp_type = TYPE_Bga;
+			break;
+		
+		case 'C':
+			switch(cur_option->content_eng[1])
+			{
+				case 'L':
+					temp_type = TYPE_CL;
+					break;
+				
+				case 'h':
+					temp_type = TYPE_Chl;
+					break;
+				
+				case 'O':
+					temp_type = TYPE_CODuv;
+					break;
+			}
+			
+			break;
+		
+		case 'D':
+			temp_type = TYPE_DO;
+			break;
+		
+		case 'E':
+			temp_type = TYPE_EC;
+			break;
+		
+		case 'F':
+			if(cur_option->content_eng[1] == 'C')
+			{
+				temp_type = TYPE_FCL;
+			}
+			else
+			{
+				temp_type = TYPE_F;
+			}
+			break;
+		
+		case 'N':
+			temp_type = TYPE_NH4;
+			break;
+		
+		case 'O':
+			temp_type = TYPE_ORP;
+			break;
+		
+		case 'p':
+			temp_type = TYPE_pH;
+			break;
+		
+		case 'T':
+			temp_type = TYPE_Tur;
+			break;
+	}
+	return temp_type;
+}
+
+
 //ok esc切换界面的逻辑
 void btn_OkEscMode_ChangePage(void)
 {
@@ -817,133 +884,24 @@ void btn_OkEscMode_ChangePage(void)
 				}
 			}
 			
-			/*如果当前界面是自动锁定类型选择界面,根据选择的标签英文字符来判断修改设备类型*/
-			if(interfacial_GetCurPage() == PAGE_3_AUTOLOCK_TYPE)
+			switch(interfacial_GetCurPage())
 			{
-				switch(cur_option->content_eng[0])
-				{
-					case 'B':
-						autolock_SensorType = TYPE_Bga;
-						break;
-					
-					case 'C':
-						switch(cur_option->content_eng[1])
-						{
-							case 'L':
-								autolock_SensorType = TYPE_CL;
-								break;
-							
-							case 'h':
-								autolock_SensorType = TYPE_Chl;
-								break;
-							
-							case 'O':
-								autolock_SensorType = TYPE_CODuv;
-								break;
-						}
-						
-						break;
-					
-					case 'D':
-						autolock_SensorType = TYPE_DO;
-						break;
-					
-					case 'E':
-						autolock_SensorType = TYPE_EC;
-						break;
-					
-					case 'F':
-						if(cur_option->content_eng[1] == 'C')
-						{
-							autolock_SensorType = TYPE_FCL;
-						}
-						else
-						{
-							autolock_SensorType = TYPE_F;
-						}
-						break;
-					
-					case 'N':
-						autolock_SensorType = TYPE_NH4;
-						break;
-					
-					case 'O':
-						autolock_SensorType = TYPE_ORP;
-						break;
-					
-					case 'p':
-						autolock_SensorType = TYPE_pH;
-						break;
-					
-					case 'T':
-						autolock_SensorType = TYPE_Tur;
-						break;
-				}
+				case PAGE_3_AUTOLOCK_TYPE:/*如果当前界面是自动锁定类型选择界面,根据选择的标签英文字符来判断修改设备类型*/
+					autolock_SensorType = get_OptionSelectedSensorType();
+					break;
+				
+				case PAGE_3_ALARM_TYPE:/*如果是报警类型选择界面的话 根据选择的标签来判断当前修改的是哪种设备*/
+					alarm_SensorType = get_OptionSelectedSensorType();
+					break;
+				
+				case PAGE_3_SLIDEAVG_TYPE:/*如果是滑动平均类型选择界面的话 根据选择的标签来判断当前修改的是哪种设备*/
+					slideavg_SensorType = get_OptionSelectedSensorType();
+					break;
+				
+				default:
+					break;
 			}
 			
-			/*如果是报警类型选择界面的话 根据选择的标签来判断当前修改的是哪种设备*/
-			if(interfacial_GetCurPage() == PAGE_3_ALARM_TYPE)
-			{
-				switch(cur_option->content_eng[0])
-				{
-					case 'B':
-						alarm_SensorType = TYPE_Bga;
-						break;
-					
-					case 'C':
-						switch(cur_option->content_eng[1])
-						{
-							case 'L':
-								alarm_SensorType = TYPE_CL;
-								break;
-							
-							case 'h':
-								alarm_SensorType = TYPE_Chl;
-								break;
-							
-							case 'O':
-								alarm_SensorType = TYPE_CODuv;
-								break;
-						}
-						
-						break;
-					
-					case 'D':
-						alarm_SensorType = TYPE_DO;
-						break;
-					
-					case 'E':
-						alarm_SensorType = TYPE_EC;
-						break;
-					
-					case 'F':
-						if(cur_option->content_eng[1] == 'C')
-						{
-							alarm_SensorType = TYPE_FCL;
-						}
-						else
-						{
-							alarm_SensorType = TYPE_F;
-						}
-						break;
-					
-					case 'N':
-						alarm_SensorType = TYPE_NH4;
-						break;
-					
-					case 'O':
-						alarm_SensorType = TYPE_ORP;
-						break;
-					
-					case 'p':
-						alarm_SensorType = TYPE_pH;
-						break;
-					
-					case 'T':
-						alarm_SensorType = TYPE_Tur;
-						break;
-				}
-			}
 			
 			/*保存标签下标方便返回界面时候能够跳到哪个选项*/
 			if(interfacial_GetCurPage() == PAGE_1_MENU)
@@ -1180,32 +1138,37 @@ void update_TimeValue(void)
 	check_TimeValue();
 }
 
-///*滑动平均*/
-//void update_SlideValue(void)
-//{
-//	uint8_t value;
-//	if(cur_NanoOption == cur_interfacial.option_head->son_option)//当前选中的标签是10位的话
-//	{
-//		value = cur_NanoOption->value;
-//		switch(value)
-//		{
-//			case 0:
-//				cur_interfacial.option_head->son_option->next_option->min_value = 2;
-//				cur_interfacial.option_head->son_option->next_option->max_value = 9;
-//				break;
-//			case 4:
-//				cur_interfacial.option_head->son_option->next_option->min_value = 0;
-//				cur_interfacial.option_head->son_option->next_option->max_value = 0;
-//				break;
-//			
-//			default:
-//				cur_interfacial.option_head->son_option->next_option->min_value = 0;
-//				cur_interfacial.option_head->son_option->next_option->max_value = 9;
-//				break;
-//		}
-//		
-//	}
-//}
+/*滑动平均*/
+void update_SlideValue(void)
+{
+	if(cur_NanoOption == cur_interfacial.option_head->son_option)//
+	{
+		switch(cur_NanoOption->value)
+		{
+			case 0:
+				cur_interfacial.option_head->son_option->next_option->min_value = 2;
+				cur_interfacial.option_head->son_option->next_option->max_value = 9;
+				if(cur_NanoOption->next_option->value < 2)
+				{
+					cur_NanoOption->next_option->value = 2;
+				}
+				break;
+			case 4:
+				cur_interfacial.option_head->son_option->next_option->min_value = 0;
+				cur_interfacial.option_head->son_option->next_option->max_value = 0;
+				if(cur_NanoOption->next_option->value != 0)
+				{
+					cur_NanoOption->next_option->value = 0;
+				}
+				break;
+			
+			default:
+				cur_interfacial.option_head->son_option->next_option->min_value = 0;
+				cur_interfacial.option_head->son_option->next_option->max_value = 9;
+				break;
+		}
+	}
+}
 
 //上下键切换数值的逻辑
 void btn_UpDownMode_ChangeValue(void)
@@ -1226,11 +1189,6 @@ void btn_UpDownMode_ChangeValue(void)
 			case PAGE_3_TIME://时间界面
 				value_PlusPlus(&(cur_NanoOption->value), cur_NanoOption->min_value, cur_NanoOption->max_value);
 				update_TimeValue();
-				break;
-			
-			case PAGE_4_SLIDEVALUE://设置滑动平均值界面
-				value_PlusPlus(&(cur_NanoOption->value), cur_NanoOption->min_value, cur_NanoOption->max_value);
-//				update_SlideValue();
 				break;
 
 			default:
@@ -1291,34 +1249,35 @@ void btn_OkEscMode_ChangeOption(void)
 				}
 				break;
 				
-			case PAGE_4_SLIDEVALUE:
-				if(cur_NanoOption == cur_interfacial.option_head->son_option)//
-				{
-					switch(cur_NanoOption->value)
-					{
-						case 0:
-							cur_interfacial.option_head->son_option->next_option->min_value = 2;
-							cur_interfacial.option_head->son_option->next_option->max_value = 9;
-							if(cur_NanoOption->next_option->value < 2)
-							{
-								cur_NanoOption->next_option->value = 2;
-							}
-							break;
-						case 4:
-							cur_interfacial.option_head->son_option->next_option->min_value = 0;
-							cur_interfacial.option_head->son_option->next_option->max_value = 0;
-							if(cur_NanoOption->next_option->value != 0)
-							{
-								cur_NanoOption->next_option->value = 0;
-							}
-							break;
-						
-						default:
-							cur_interfacial.option_head->son_option->next_option->min_value = 0;
-							cur_interfacial.option_head->son_option->next_option->max_value = 9;
-							break;
-					}
-				}
+			case PAGE_5_SLIDEVALUE:
+//				if(cur_NanoOption == cur_interfacial.option_head->son_option)//
+//				{
+//					switch(cur_NanoOption->value)
+//					{
+//						case 0:
+//							cur_interfacial.option_head->son_option->next_option->min_value = 2;
+//							cur_interfacial.option_head->son_option->next_option->max_value = 9;
+//							if(cur_NanoOption->next_option->value < 2)
+//							{
+//								cur_NanoOption->next_option->value = 2;
+//							}
+//							break;
+//						case 4:
+//							cur_interfacial.option_head->son_option->next_option->min_value = 0;
+//							cur_interfacial.option_head->son_option->next_option->max_value = 0;
+//							if(cur_NanoOption->next_option->value != 0)
+//							{
+//								cur_NanoOption->next_option->value = 0;
+//							}
+//							break;
+//						
+//						default:
+//							cur_interfacial.option_head->son_option->next_option->min_value = 0;
+//							cur_interfacial.option_head->son_option->next_option->max_value = 9;
+//							break;
+//					}
+//				}
+				update_SlideValue();
 				break;
 			
 			default:
@@ -1345,34 +1304,35 @@ void btn_OkEscMode_ChangeOption(void)
 		
 		switch(interfacial_GetCurPage())
 		{
-			case PAGE_4_SLIDEVALUE:
-				if(cur_NanoOption == cur_interfacial.option_head->son_option)//
-				{
-					switch(cur_NanoOption->value)
-					{
-						case 0:
-							cur_interfacial.option_head->son_option->next_option->min_value = 2;
-							cur_interfacial.option_head->son_option->next_option->max_value = 9;
-							if(cur_NanoOption->next_option->value < 2)
-							{
-								cur_NanoOption->next_option->value = 2;
-							}
-							break;
-						case 4:
-							cur_interfacial.option_head->son_option->next_option->min_value = 0;
-							cur_interfacial.option_head->son_option->next_option->max_value = 0;
-							if(cur_NanoOption->next_option->value != 0)
-							{
-								cur_NanoOption->next_option->value = 0;
-							}
-							break;
-						
-						default:
-							cur_interfacial.option_head->son_option->next_option->min_value = 0;
-							cur_interfacial.option_head->son_option->next_option->max_value = 9;
-							break;
-					}
-				}
+			case PAGE_5_SLIDEVALUE:
+//				if(cur_NanoOption == cur_interfacial.option_head->son_option)//
+//				{
+//					switch(cur_NanoOption->value)
+//					{
+//						case 0:
+//							cur_interfacial.option_head->son_option->next_option->min_value = 2;
+//							cur_interfacial.option_head->son_option->next_option->max_value = 9;
+//							if(cur_NanoOption->next_option->value < 2)
+//							{
+//								cur_NanoOption->next_option->value = 2;
+//							}
+//							break;
+//						case 4:
+//							cur_interfacial.option_head->son_option->next_option->min_value = 0;
+//							cur_interfacial.option_head->son_option->next_option->max_value = 0;
+//							if(cur_NanoOption->next_option->value != 0)
+//							{
+//								cur_NanoOption->next_option->value = 0;
+//							}
+//							break;
+//						
+//						default:
+//							cur_interfacial.option_head->son_option->next_option->min_value = 0;
+//							cur_interfacial.option_head->son_option->next_option->max_value = 9;
+//							break;
+//					}
+//				}
+				update_SlideValue();
 				break;
 			
 			default:
@@ -1596,8 +1556,6 @@ void save_setting(void)
 		  
 			break;
 		
-		
-		
 		case PAGE_3_RESERT:
 			if(cur_option == cur_interfacial.option_head)
 			{
@@ -1624,11 +1582,6 @@ void save_setting(void)
 			log_SetLogCount(0);
 			break;
 		
-		case PAGE_3_SLIDEAVG:
-			setting_SetIsOpen_SlideAvg(0);
-			SettingToFlash();//保存一波设置
-			break;
-		
 		case PAGE_4_KEYPADTONE://设置按键音
 			setting_SetKeyPadTone(((cur_option == cur_interfacial.option_head) ? 1 : 0));
 			SettingToFlash();//保存一波设置
@@ -1644,49 +1597,13 @@ void save_setting(void)
 			{
 				case TYPE_DO:
 					setting_SetIsAlarm_DO(0);
-					SettingToFlash();//保存一波设置
-					break;
-				
-				case TYPE_Bga:
-					break;
-				
-				case TYPE_Chl:
-					break;
-				
-				case TYPE_CL:
-					break;
-				
-				case TYPE_CODuv:
-					break;
-				
-				case TYPE_EC:
-					break;
-				
-				case TYPE_F:
-					break;
-				
-				case TYPE_FCL:
-					break;
-				
-				case TYPE_NH4:
-					break;
-				
-				case TYPE_ORP:
-					break;
-				
-				case TYPE_pH:
-					break;
-				
-				case TYPE_Tur:
 					break;
 				
 				default:
 					break;
 			}
-			
+			SettingToFlash();//保存一波设置
 			break;
-		
-
 		
 		case PAGE_4_SENSORINFO://设备信息  设置modbus id
 			destory_MessageBox();
@@ -1698,14 +1615,6 @@ void save_setting(void)
 			DO_rs485_SetAddr(p, temp_value);
 			
 			break;
-		
-		case PAGE_4_SLIDEVALUE:
-			setting_SetIsOpen_SlideAvg(1);
-			temp_value = NanoOptionList_GetValue(cur_interfacial.option_head->son_option, 10);//低门限
-			setting_SetSlideAvgTimes(temp_value);
-			SettingToFlash();//保存一波设置
-			break;
-		
 		
 		case PAGE_4_AUTOLOCK:
 			switch(alarm_SensorType)
@@ -1732,46 +1641,9 @@ void save_setting(void)
 					}
 					break;
 				
-				case TYPE_Bga:
-					break;
-				
-				case TYPE_Chl:
-					break;
-				
-				case TYPE_CL:
-					break;
-				
-				case TYPE_CODuv:
-					break;
-				
-				case TYPE_EC:
-					break;
-				
-				case TYPE_F:
-					break;
-				
-				case TYPE_FCL:
-					break;
-				
-				case TYPE_NH4:
-					break;
-				
-				case TYPE_ORP:
-					break;
-				
-				case TYPE_pH:
-					break;
-				
-				case TYPE_Tur:
-					break;
-				
 				default:
 					break;
 			}
-		
-		
-		
-			
 			break;
 		
 		case PAGE_5_AUTOLOCKVALUE:
@@ -1780,48 +1652,12 @@ void save_setting(void)
 				case TYPE_DO:
 					setting_SetAutoLock_DO(AUTOLOCK_AUTO);//设置成自动锁定
 					setting_SetAutoLockLevel_DO(cur_option->option_index);
-				
-					break;
-				
-				case TYPE_Bga:
-					break;
-				
-				case TYPE_Chl:
-					break;
-				
-				case TYPE_CL:
-					break;
-				
-				case TYPE_CODuv:
-					break;
-				
-				case TYPE_EC:
-					break;
-				
-				case TYPE_F:
-					break;
-				
-				case TYPE_FCL:
-					break;
-				
-				case TYPE_NH4:
-					break;
-				
-				case TYPE_ORP:
-					break;
-				
-				case TYPE_pH:
-					break;
-				
-				case TYPE_Tur:
 					break;
 				
 				default:
 					break;
 			}
-		
 			
-		
 			SettingToFlash();//保存一波设置
 			break;
 		
@@ -1837,46 +1673,14 @@ void save_setting(void)
 
 						temp_value = NanoOptionList_GetValue(cur_interfacial.option_head->next_option->son_option, 10);//高门限制
 						setting_SetHighThreshold_DO((value_type)temp_value/100.0);
-						SettingToFlash();//保存一波设置
+						
 					}
 					break;
-				
-				case TYPE_Bga:
-					break;
-				
-				case TYPE_Chl:
-					break;
-				
-				case TYPE_CL:
-					break;
-				
-				case TYPE_CODuv:
-					break;
-				
-				case TYPE_EC:
-					break;
-				
-				case TYPE_F:
-					break;
-				
-				case TYPE_FCL:
-					break;
-				
-				case TYPE_NH4:
-					break;
-				
-				case TYPE_ORP:
-					break;
-				
-				case TYPE_pH:
-					break;
-				
-				case TYPE_Tur:
-					break;
-				
+					
 				default:
 					break;
 			}
+			SettingToFlash();//保存一波设置
 			break;
 		
 		case PAGE_5_TEMP:
@@ -1898,9 +1702,6 @@ void save_setting(void)
 					
 					temp_value = NanoOptionList_GetValue(cur_interfacial.option_head->next_option->son_option, 10);
 					DO_SetTempOffset(((float)temp_value/100.0) - p->temperature.value_f);
-					
-					
-					
 					break;
 					
 				
@@ -2050,8 +1851,63 @@ void save_setting(void)
 					break;
 			}
 			break;
+			/*滤波设置相关设置*/
+		case PAGE_4_SLIDEAVG:
+			switch(slideavg_SensorType)
+			{
+				case TYPE_DO:
+					setting_SetIsOpen_SlideAvg_DO(0);
+				
+					p = *(rs485_GetDoList());
+					if(p == NULL) //安全性判断
+					{
+						return;
+					}
+					while(p != NULL)//遍历更新所有已连接的溶解氧   可以通过判断是否在循环写入去写入  写一个然后直接return
+					{
+						filter_destroy(&(p->queue_domgl));
+						filter_destroy(&(p->queue_dopercent));
+						filter_destroy(&(p->queue_temp));
+						p = p->next_DO;
+					}
+					break;
+				
+				default:
+					break;
+			}
 			
-			
+			SettingToFlash();//保存一波设置
+			break;
+		
+		case PAGE_5_SLIDEVALUE:
+			switch(slideavg_SensorType)
+			{
+				case TYPE_DO:
+					temp_value = NanoOptionList_GetValue(cur_interfacial.option_head->son_option, 10);
+					setting_SetSlideAvgTimes_DO(temp_value);
+				
+					p = *(rs485_GetDoList());
+					if(p == NULL) //安全性判断
+					{
+						setting_SetIsOpen_SlideAvg_DO(1);
+						return;
+					}
+					while(p != NULL)//遍历更新所有已连接的溶解氧   可以通过判断是否在循环写入去写入  写一个然后直接return
+					{
+						filter_init(&(p->queue_domgl), setting_GetSlideAvgTimes_DO());      //初始化一下mg/l 数值指针
+						filter_init(&(p->queue_dopercent), setting_GetSlideAvgTimes_DO());  //初始化一下%    数值指针
+						filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_DO());       //初始化一下℃    数值指针
+						p = p->next_DO;
+					}
+					setting_SetIsOpen_SlideAvg_DO(1);
+					
+					break;
+				
+				default:
+					break;
+			}
+			SettingToFlash();//保存一波设置
+			break;
 			
 			
 			
@@ -2250,12 +2106,7 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 		
 
 		
-		case PAGE_3_SLIDEAVG://滑动平均
-			generate_SlideAverageSwitch(&cur_interfacial);
-			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
-			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
-			BinaryOption_init(setting_GetIsOpen_SlideAvg());
-			break;
+		
 		
 		case PAGE_3_DATASAVE:
 			generate_DataStore(&cur_interfacial);
@@ -2333,8 +2184,6 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 					break;
 				
 			}
-		
-			//
 			break;
 		
 		case PAGE_4_CAL://校准界面
@@ -2381,16 +2230,6 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
 			CurOption_init();
 			break;
-		
-		case PAGE_4_SLIDEVALUE:
-			generate_SlideAverageValue(&cur_interfacial);
-			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
-			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
-			CurOption_init();
-			
-			break;
-
-		
 		
 		case PAGE_5_ALARMVALUE://高低门限报警值
 			generate_AlarmValueSetting(&cur_interfacial);
@@ -2477,7 +2316,8 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
 			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
 			CurOption_init();
-			break;		
+			break;
+		
 		case PAGE_4_AUTOLOCK:
 			generate_AutoLock(&cur_interfacial);
 			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
@@ -2513,7 +2353,8 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 				default:
 					break;
 			}
-			break;		
+			break;
+			
 		case PAGE_5_AUTOLOCKVALUE:
 			generate_AutoLock_value(&cur_interfacial);
 			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
@@ -2549,9 +2390,89 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 				default:
 					break;
 			}
-			
 			break;
 			
+			/*滑动平均相关界面*/
+			case PAGE_3_SLIDEAVG_TYPE://滑动平均
+				generate_SlideAverage_type(&cur_interfacial);
+				btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
+				btnOkEscFunc_register(btn_OkEscMode_ChangePage);
+				CurOption_init();
+			break;
+			
+			case PAGE_4_SLIDEAVG:
+				generate_SlideAverage_Switch(&cur_interfacial);
+				btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
+				btnOkEscFunc_register(btn_OkEscMode_ChangePage);
+				switch(slideavg_SensorType)
+				{
+					case TYPE_DO:
+						BinaryOption_init(setting_GetIsOpen_SlideAvg_DO());	
+					break;
+					case TYPE_pH:
+						break;
+					case TYPE_Tur:
+						break;
+					case TYPE_FCL:
+						break;
+					case TYPE_EC:
+						break;
+					case TYPE_ORP:
+						break;
+					case TYPE_NH4:
+						break;
+					case TYPE_F:
+						break;
+					case TYPE_CL:
+						break;
+					case TYPE_Chl:
+						break;
+					case TYPE_Bga:
+						break;
+					case TYPE_CODuv:
+						break;
+					
+					default:
+						break;
+				}
+			break;
+			
+			case PAGE_5_SLIDEVALUE:
+				switch(slideavg_SensorType)
+				{
+					case TYPE_DO:
+						generate_SlideAverage_Value(&cur_interfacial, setting_GetSlideAvgTimes_DO());
+					break;
+					case TYPE_pH:
+						break;
+					case TYPE_Tur:
+						break;
+					case TYPE_FCL:
+						break;
+					case TYPE_EC:
+						break;
+					case TYPE_ORP:
+						break;
+					case TYPE_NH4:
+						break;
+					case TYPE_F:
+						break;
+					case TYPE_CL:
+						break;
+					case TYPE_Chl:
+						break;
+					case TYPE_Bga:
+						break;
+					case TYPE_CODuv:
+						break;
+					
+					default:
+						break;
+				}
+				btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
+				btnOkEscFunc_register(btn_OkEscMode_ChangePage);
+				CurOption_init();				
+				break;
 			
 		default:
 			break;

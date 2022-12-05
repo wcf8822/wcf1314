@@ -64,14 +64,14 @@ typedef enum{
 	PAGE_3_GPS,            //gps
 	PAGE_3_INFO,           //仪表信息
 	PAGE_3_RESERT,         //恢复出厂设置
-	PAGE_3_AUTOLOCK_TYPE,
+	PAGE_3_AUTOLOCK_TYPE,  //显示需要自动锁定的传感器类型
 	
 	PAGE_3_DATASAVE,       //数据保存
 	PAGE_3_DATASHOW,       //数据显示
 	PAGE_3_DATADELETE,     //数据删除
 	PAGE_3_LOG,            //日志
 	
-	PAGE_3_SLIDEAVG,       //滑动平均
+	PAGE_3_SLIDEAVG_TYPE,  //显示需要滑动平均的传感器类型
 	
 	
 	/*四级界面*/
@@ -88,12 +88,14 @@ typedef enum{
 	PAGE_4_CAL,           //校准
 	PAGE_4_PARASET,       //参数设置
 	
-	PAGE_4_SLIDEVALUE,    //滑动平均数值设置
+	PAGE_4_SLIDEAVG,     //滑动平均开启关闭设置
 	
 	/*五级界面*/
 	PAGE_5_ALARMVALUE,     //报警阈值设置
 	
 	PAGE_5_AUTOLOCKVALUE,  //锁定等级设置
+	
+	PAGE_5_SLIDEVALUE,     //滑动平均数值设置
 	
 	PAGE_5_TEMP,           //温度校准
 	

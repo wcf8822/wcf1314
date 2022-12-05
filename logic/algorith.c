@@ -42,24 +42,39 @@ void filter_inset2arr(filter_t* p2filter, float value)
 }
 
 /*初始化结构体*/
-filter_t* filter_init(uint16_t max_size)
+void filter_init(filter_t* p2filter, uint16_t max_size)
 {
-	filter_t* p2filter;
-	p2filter = (filter_t*)malloc(sizeof(filter_t));
-	
 	p2filter->max_len = max_size;
-	p2filter->arr = (float*)malloc(sizeof(float)*p2filter->max_len);
+	
+	p2filter->index = 0;
+	p2filter->is_fulled = 0;
+	
+	if(p2filter->arr != NULL)
+	{//如果之前有指向数组的话重新变更下大小
+		p2filter->arr = (float*)realloc(p2filter->arr, sizeof(float) * p2filter->max_len);
+	}
+	else
+	{
+		p2filter->arr = (float*)calloc(p2filter->max_len, sizeof(float));
+	}
 }
 
 /*清除结构体*/
 void filter_destroy(filter_t* p2filter)
 {
-	p2filter->max_len = 0;
-	free(p2filter->arr);
+	if(p2filter->arr != NULL)
+	{
+		free(p2filter->arr);
+	}
+	p2filter->arr = NULL;
+	p2filter->index = 0;
+	p2filter->is_fulled = 0;
 }
 
-
+/*将结构体全置0*/
 void filter_clear(filter_t* p2filter)
 {
-	memset(p2filter->arr, 0, p2filter->max_len);
+	memset(p2filter->arr, 0, sizeof(float) * p2filter->max_len);
+	p2filter->index = 0;//让下标从0开始
+	p2filter->is_fulled = 0;//清除当前是满的状态
 }
