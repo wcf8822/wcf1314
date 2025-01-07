@@ -19,14 +19,23 @@ typedef struct{
 	uint8_t k7[4];
 }SensorCap_t;
 
+
+#define SHAKE_TIMES 3//8
+#define SAME_TIMES 3
+
+extern uint8_t is_FirstFilter ;
 /*当前设备相关*/
-void DO_SetCurDO(uint8_t ModbusId, PtrToDOProbe DO_head);
+
 PtrToDOProbe get_CurDo(void);
-void DO_ClearCueDO(void);
+PtrToDOProbe get_COMADo(void);
+PtrToDOProbe get_COMBDo(void);
+
+void DO_ClearCurDO(void);
+void DO_ClearCOMADO(void);
+void DO_ClearCOMBDO(void);
 
 /*设备链表相关*/
-void DO_AddProbe(uint8_t ModbusId, PtrToDOProbe *DO_head);   //添加溶解氧设备
-void DO_DelProbe(uint8_t ModbusId, PtrToDOProbe *DO_head);   //删除设备
+void DO_AddProbe(uint8_t ModbusId);
 PtrToDOProbe DO_FindByName(uint8_t* name, PtrToDOProbe *DO_head);
 uint8_t DO_GetIsInit(PtrToDOProbe ptd);
 void DO_SetIsInit(PtrToDOProbe ptd);
@@ -45,20 +54,19 @@ void DO_rs485_GetPressure(PtrToDOProbe ptd);//获取气压数据
 
 
 /*测量获取数据*/
-void DO_rs485_Start(PtrToDOProbe ptd);
-void DO_rs485_Stop(PtrToDOProbe ptd);
 void DO_rs485_GetTempTwoDO(PtrToDOProbe ptd);
 void DO_rs485_GetTemperature(PtrToDOProbe ptd);
 void DO_rs485_GetDOPercent(PtrToDOProbe ptd);
 void DO_rs485_GetDOmgL(PtrToDOProbe ptd);
 
-/*测量设置数据*/
+/*设置测量数据*/
 void DO_rs485_SetKB(PtrToDOProbe ptd, float k, float b);
 void DO_rs485_SetK(PtrToDOProbe ptd, float k);
 void DO_rs485_SetB(PtrToDOProbe ptd, float b);
 void DO_rs485_SetSalinity(PtrToDOProbe ptd, float sal);
 void DO_rs485_SetPressure(PtrToDOProbe ptd, float press);
 void DO_rs485_SetAddr(PtrToDOProbe ptd, uint8_t NewId);
+void DO_rs485_SetTemp(PtrToDOProbe ptd, float temp);
 
 /*获取do值*/
 float DO_GetKFloat(PtrToDOProbe ptd);
@@ -79,18 +87,22 @@ void DO_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat);
 
 /*额外功能*/
 uint8_t DO_ValueCheckFirst(PtrToDOProbe ptd, float data);
-void DO_SetTempZero(void);
+
 uint8_t DO_GetValueLocked(PtrToDOProbe ptd); //获取do是否被锁住
 void DO_SetValueLocked(PtrToDOProbe ptd);    //直接锁住
 void DO_SetValueUnlocked(PtrToDOProbe ptd);  //解锁
 void clear_DOShakeCount(void);
 
-void DO_zero_buf_mgl(PtrToDOProbe p);
+void DO_zero_buf_mgl(PtrToDOProbe p,uint8_t modbus_Id);
 void DO_zero_buf_percent(PtrToDOProbe p);
 
+void DO_ClearCalPara(PtrToDOProbe ptd);//清除溶解氧的校准参数
+void CheckValueLock(PtrToDOProbe ptd);
 
-void DO_SetTempOffset(float value);
-float Do_GetTempOffset(void);
+
+extern connected_probe_t cur_DO;
+extern connected_probe_t comA_DO;
+extern connected_probe_t comB_DO;
 #endif
 
 

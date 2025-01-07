@@ -25,10 +25,16 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
-
+#include "key.h"
+#include "logic.h"
+#include "heart.h"
+#include "lcd_drive.h"
+#include "setting.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "logic.h"
+#include "ch340e.h"
+#include "rtc.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -117,6 +123,51 @@ void SystemClock_Config(void)
   HAL_RCC_EnableCSS();
 }
 
+
+
+static uint8_t USB_Vol_Flag = 0;//上电的USB充电口状态
+void USB_Battery_Show(void)
+{
+	GUI_ClearSCR(0x00);       // 初始化缓冲区为0x00，并输出屏幕(清屏)
+	for(uint8_t i=0; i<200;i++)GUI_UpdateDisplay();//刷新下屏幕	
+	if(!HAL_GPIO_ReadPin(USB_JOIN_GPIO_Port, USB_JOIN_Pin))
+	{
+	  USB_Vol_Flag=1;
+	}
+	while(!HAL_GPIO_ReadPin(USB_JOIN_GPIO_Port, USB_JOIN_Pin) && Key_Off_Flag == 0 && (!setting_GetBattertType()) )
+	{
+		key_scan();        //先扫描按键再刷屏幕就有更快的响应
+		
+		if(get_RtcFlag())
+		{
+			clear_RtcFlag();
+			logic_BatteryAD_Big(); //获取ad值	
+		}
+		if(get_LcdFlag()) //将显存中的内容刷到屏幕上去
+		{
+			clear_LcdFlag();
+			GUI_UpdateDisplay();
+		}	
+	  ch340_DataHandle();			
+		if(get_RtcFlag())
+		{
+			clear_RtcFlag();
+			HYM8563_UpdateTime();
+		}
+		
+	}
+	GUI_ClearSCR(0x00);       // 初始化缓冲区为0x00，并输出屏幕(清屏)
+	for(uint8_t i=0; i<200;i++)GUI_UpdateDisplay();//刷新下屏幕		
+
+	
+	if(USB_Vol_Flag ==1  && Key_Off_Flag == 0)
+	{
+    HAL_GPIO_WritePin(LCD_BLC_GPIO_Port, LCD_BLC_Pin, GPIO_PIN_RESET);  //关闭背光
+		SHUTDOWN();		//关闭电源		
+	}
+	software_init();	
+}
+
 /* USER CODE BEGIN 4 */
 int main(void)
 {
@@ -130,11 +181,12 @@ int main(void)
   MX_IWDG_Init();
 	
 	hardware_init();
-	
+
+  USB_Battery_Show();  //增加的USB充电未开机显示正在充电图标
+
   while (1)
-  {
-		
-		main_loop();
+  { 
+		main_loop();		 
   }
 }
 /* USER CODE END 4 */

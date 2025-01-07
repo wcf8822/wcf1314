@@ -1,6 +1,7 @@
 #include "rtc.h"
 #include "setting.h"
-
+#include "lcd_drive.h"
+#include "key.h"
 STATIC datetime_t machine_time;//保护起来不让别的地方可以改只能调用接口来改动时间
 STATIC uint8_t minute_ShutDown = 60;//设成61先防止开机直接拉闸
 
@@ -127,7 +128,9 @@ uint8_t RTC_GetWeek(void)
 {
 	return machine_time.week;
 }
-
+datetime_t RTC_GetTime(void){
+	return machine_time;
+}
 void RTC_UpdateShutDownTime(uint8_t autoshut)
 {
 	uint8_t tim = autoshut + RTC_GetMinute();//现在的时间加上自动关机的时间
@@ -139,12 +142,90 @@ void RTC_AutoShut(void)
 {
 	if(setting_GetAutoShut() && minute_ShutDown == machine_time.minute)
 	{
-		SHUTDOWN();
+    HAL_GPIO_WritePin(LCD_BLC_GPIO_Port, LCD_BLC_Pin, GPIO_PIN_RESET);  //关闭背光
+		GUI_ClearSCR(0x00);       // 初始化缓冲区为0x00，并输出屏幕(清屏)
+		for(uint8_t i=0; i<200;i++)GUI_UpdateDisplay();//刷新下屏幕
+		
+		if(!HAL_GPIO_ReadPin(USB_JOIN_GPIO_Port, USB_JOIN_Pin)) //充电过程中 关机了 软件复位再次进入充电显示状态
+    { 
+			if(KEY_OFF_STATUS != KEY_BURSTMODE)
+			{
+			  HAL_NVIC_SystemReset();
+			}
+		}
+    else
+    {
+			SHUTDOWN();		//关闭电源
+			while(1)
+			{
+			} 		
+		}	
 	}
 }
 
 
+ uint16_t month_days_table[13] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+/**
+* @brief        判断是否为闰年
+* @param        [in] year 年
+* @retval       1 为闰年
+* @retval       0 为平年
+*/
+uint16_t fml_leap_year(uint16_t year)
+{
+    return (((year % 4 == 0)&&(year % 100 != 0)) || (year % 400 == 0));
+}
+/**
+* @brief        日期转时间戳
+* @param        [in] date 日期值
+* @retval       return:返回时间戳
+*/
 
+uint32_t fml_time_to_stamp(datetime_t date)
+{
+    uint16_t i;
+
+	uint16_t yearZKX = 0;
+	uint16_t leap_year_count = 0;
+	uint32_t day_count = 0;
+	uint32_t dax = 0; 
+	
+	yearZKX = date.years+2000;
+    // 计算闰年数
+    for (i = 1970; i < yearZKX; i++)
+    {
+        if (fml_leap_year(i))
+        {
+            leap_year_count++;
+        }
+    }
+ 
+    // 计算年的总天数
+    day_count = leap_year_count * 366 + (yearZKX - 1970 - leap_year_count) * 365;//zkx闰年天数+平年天数
+ 
+    // 累加计算当年所有月的天数
+    for (i = 1; i < date.month; i++)
+    {
+        if ((2 == i) && (fml_leap_year(yearZKX)))
+        {
+            day_count += 29;
+        }
+        else
+        {
+            day_count += month_days_table[i];
+        }
+    }
+ 
+    // 累加计算当月的天数
+    day_count += (date.day - 1);
+ 
+    dax = (uint32_t)(day_count * 86400) + (uint32_t)((uint32_t)date.hour * 3600) + (uint32_t)((uint32_t)date.minute * 60) + (uint32_t)date.seconds;
+ 
+    /* 北京时间补偿 */
+    dax = dax - 8*60*60;
+ 
+    return dax;
+}
 
 
 

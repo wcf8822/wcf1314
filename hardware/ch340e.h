@@ -8,20 +8,20 @@
 
 #define CH340E_USART USART1
 
-#define CH340E_RXBUFFSIZE 20   //ch340eµÄ¶ÁÈ¡»º´æbuf×î´óÖµ
-#define CH340E_TXBUFFSIZE     //ch340eµÄĞ´Èë»º´æbuf×î´óÖµ
+#define CH340E_RXBUFFSIZE 20   //ch340eçš„è¯»å–ç¼“å­˜bufæœ€å¤§å€¼
+#define CH340E_TXBUFFSIZE     //ch340eçš„å†™å…¥ç¼“å­˜bufæœ€å¤§å€¼
 
-//´®¿ÚÊı¾İ½á¹¹
+//ä¸²å£æ•°æ®ç»“æ„
 typedef struct
 {
-	uint8_t receive_flag : 1;                   //ch340e½ÓÊÕµ½Êı¾İ±êÖ¾
+	uint8_t receive_flag : 1;                   //ch340eæ¥æ”¶åˆ°æ•°æ®æ ‡å¿—
 	
-	uint8_t rx_size;                          //½ÓÊÕbuf´óĞ¡
+	uint8_t rx_size;                          //æ¥æ”¶bufå¤§å°
 	
-	uint8_t rx_buf[CH340E_RXBUFFSIZE];          //ch340¶ÁÈ¡Êı¾İbuf
+	uint8_t rx_buf[CH340E_RXBUFFSIZE];          //ch340è¯»å–æ•°æ®buf
 	
-	void (*init)(UART_HandleTypeDef *huart);    //ch340³õÊ¼»¯º¯ÊıÖ¸Õë
-	UART_HandleTypeDef *huart;                  //ch340Ê¹ÓÃµÄÊÇÄÄ¸ö´®¿Ú
+	void (*init)(UART_HandleTypeDef *huart);    //ch340åˆå§‹åŒ–å‡½æ•°æŒ‡é’ˆ
+	UART_HandleTypeDef *huart;                  //ch340ä½¿ç”¨çš„æ˜¯å“ªä¸ªä¸²å£
 	
 	
 }ch340e_t;

@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "orp_dr31.h": "c",
+        "spi_flash.h": "c"
+    }
+}

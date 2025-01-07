@@ -40,6 +40,21 @@ typedef union{
 	float   value_f;
 	uint8_t value_arr[4];
 }float_u;
+
+typedef union{
+	uint32_t   value_f;
+	uint8_t value_arr[4];
+}uint32_u;
+
+typedef union{
+	uint16_t   value_f;
+	uint8_t value_arr[2];
+}uint16_u;
+
+typedef union{
+	int16_t   value_f;
+	int8_t value_arr[2];
+}int16_u;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -60,14 +75,23 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define USB_JOIN_Pin GPIO_PIN_4    //判断USB供电
+#define USB_JOIN_GPIO_Port GPIOC
+
+#define GPS_EN_PIN  GPIO_PIN_11  //GPS供电使能引脚
+#define GPS_EN_PORT GPIOA
+
 #define LED_Pin GPIO_PIN_2
 #define LED_GPIO_Port GPIOA
 #define BUZZER_Pin GPIO_PIN_6
 #define BUZZER_GPIO_Port GPIOA
+
 #define BAT_OFF_Pin GPIO_PIN_7
 #define BAT_OFF_GPIO_Port GPIOE
+
 #define BAT_AD_Pin GPIO_PIN_8
 #define BAT_AD_GPIO_Port GPIOE
+
 #define KEY_BLU_Pin GPIO_PIN_9
 #define KEY_BLU_GPIO_Port GPIOE
 #define KEY_UP_Pin GPIO_PIN_10
@@ -82,6 +106,10 @@ void Error_Handler(void);
 #define KEY_ESC_GPIO_Port GPIOE
 #define KEY_MENU_Pin GPIO_PIN_15
 #define KEY_MENU_GPIO_Port GPIOE
+
+#define KEY_OFF_Pin GPIO_PIN_7
+#define KEY_OFF_GPIO_Port GPIOA
+
 #define GPIO_Ver_0_Pin GPIO_PIN_12
 #define GPIO_Ver_0_GPIO_Port GPIOB
 #define GPIO_Ver_1_Pin GPIO_PIN_13
@@ -122,8 +150,12 @@ void Error_Handler(void);
 #define RS485_TX_GPIO_Port GPIOC
 #define RS485_RX_Pin GPIO_PIN_11
 #define RS485_RX_GPIO_Port GPIOC
+
 #define RS485_DE_Pin GPIO_PIN_12
 #define RS485_DE_GPIO_Port GPIOC
+// #define RS485_DE_Pin GPIO_PIN_4
+// #define RS485_DE_GPIO_Port GPIOD
+
 #define GPS_TX_Pin GPIO_PIN_5
 #define GPS_TX_GPIO_Port GPIOD
 #define GPS_RX_Pin GPIO_PIN_6
@@ -150,15 +182,35 @@ void Error_Handler(void);
 
 
 
-#define SETTING_FIRSTRUN_JUDGE 0x66     //第一次开机判断的数�??
+#define SETTING_FIRSTRUN_JUDGE 0x67     //判断是否是第一次上电的判断对比数值
 
-#define SETTING_FIRSTRUN_ADDR  0x000000 //第一次开机的存放位置
-#define SETTING_CNORENG_ADDR   0x000100 //恢复出厂的存放位�?
-#define LOG_COUNT_ADDR         0x000200 //记录条数的存放位�?
-#define SETTING_START_ADDR     0x000300 //设置起始的存放位�?
-#define SETTING_LOGO_ADDR    	 0x000400 //设置�?机界面的存放位置
-#define SETTING_HAVEGPS_ADDR   0x000500 //设置是否有gps的存放位�?
-#define LOG_FIRST_ADDR         0x3CB000 //第一条记录的存放位置
+#define SETTING_FIRSTRUN_ADDR  0x000000 //判断是否是第一次上电的判断对比位 地址
+#define SETTING_CNORENG_ADDR   0x000100 //判断恢复出厂设置是英文还是中文的数据位 地址
+
+#define SETTING_START_ADDR     0x000300 //配置信息存储地址
+#define SETTING_LOGO_ADDR    	 0x000400 //开机动画选择位 地址
+#define SETTING_HAVEGPS_ADDR   0x000500 //是否有gps功能位 地址
+#define SETTING_CONTRAST_ADDR  0x000600 //屏幕初始化对比度数据存储地址
+#define BATTERT_TYPE_ADDR  	   0x000700 //电池类型（干电池和锂电池）数据存储地址   0：锂电池    1：干电池   默认：0
+#define B580_D702_TYPE_ADDR  	 0x000800 //设备类型 702 还是580             0: 702 1:580
+
+
+#define LOG_MAX_COUNT        10000//最大存储个数
+#define LOG_FIRST_ADDR         0x3CB000 //DO 第一条记录的存储地址
+#define LOG_FIRST_pH_ADDR         0x3CB000+1*LOG_MAX_COUNT*sizeof(log_t)   //pH 第一条记录的存储地址
+#define LOG_FIRST_Tur_ADDR         0x3CB000+2*LOG_MAX_COUNT*sizeof(log_t)   //Tur 第一条记录的存储地址
+#define LOG_FIRST_FCL_ADDR         0x3CB000+3*LOG_MAX_COUNT*sizeof(log_t)   //FCL 第一条记录的存储地址
+#define LOG_FIRST_EC_ADDR         0x3CB000+4*LOG_MAX_COUNT*sizeof(log_t)   //EC 第一条记录的存储地址
+#define LOG_FIRST_ORP_ADDR         0x3CB000+5*LOG_MAX_COUNT*sizeof(log_t)   //ORP 第一条记录的存储地址	
+#define LOG_FIRST_NH4_ADDR         0x3CB000+6*LOG_MAX_COUNT*sizeof(log_t)   //NH4 第一条记录的存储地址	
+#define LOG_FIRST_F_ADDR         0x3CB000+7*LOG_MAX_COUNT*sizeof(log_t)   //F 第一条记录的存储地址
+#define LOG_FIRST_CL_ADDR         0x3CB000+8*LOG_MAX_COUNT*sizeof(log_t)   //CL 第一条记录的存储地址
+#define LOG_FIRST_Chl_ADDR         0x3CB000+9*LOG_MAX_COUNT*sizeof(log_t)   //Chl 第一条记录的存储地址
+#define LOG_FIRST_Bga_ADDR         0x3CB000+10*LOG_MAX_COUNT*sizeof(log_t)   //Bga 第一条记录的存储地址
+#define LOG_FIRST_COD_ADDR         0x3CB000+11*LOG_MAX_COUNT*sizeof(log_t)   //COD 第一条记录的存储地址
+#define LOG_FIRST_PPM_ADDR         0x3CB000+12*LOG_MAX_COUNT*sizeof(log_t)   //水中油 第一条记录的存储地址
+
+#define LOG_COUNT_ADDR         0x000200 //记录条数储存位起始地址  
 
 
 //#define MIN_K 0.5

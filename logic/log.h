@@ -7,47 +7,60 @@
 #include "rs485.h"
 
 typedef struct{
-	float temperature;                        //ÎÂ¶È
-	float pressure;                           //ÆøÑ¹
-	float salinity;                           //ÑÎ¶È
+	float temperature;                        //æ¸©åº¦
+	float pressure;                             //æ°”å‹
+	float salinity;                               //ç›åº¦
+
+	float DO_mg_L;                          //æº¶è§£æ°§mgl
+	float DO_percent;                       //æº¶è§£æ°§%
 	
-	float pH;                                 //ph
+	float pH;                                    //phå€¼
+
+	float pH_mv;                              //PHmvå€¼
 	
-	float DO_mg_L;                            //ÈÜ½âÑõmgl
-	float DO_percent;                         //ÈÜ½âÑõ%
+	float ORP_mV;                          //æ°§åŒ–è¿˜åŸç”µä½
 	
-	float FCL_mg_L;                           //ÓàÂÈ
+	float EC_us_cm;                        //ç”µå¯¼ç‡
 	
-	float EC_us_cm;                           //µçµ¼ÂÊ
+	float EC_TDS;                            //TDSå€¼
+
+	float EC_salinity;                        //ç”µå¯¼ç‡ç›åº¦
 	
-	float Tur_NTU;                            //×Ç¶È
+	float Tur_NTU;                            //æµŠåº¦
+
+	float NH4_mg_L;                         //é“µç¦»å­
 	
-	float ORP_mV;                             //Ñõ»¯»¹Ô­µçÎ»
+	float F_mg_L;                             //æ°Ÿç¦»å­
 	
-	float NH4_mg_L;                           //ï§Àë×Ó
+	float Cl_mg_L;                            //æ°¯ç¦»å­
+
+	float FCL_mg_L;                         //ä½™æ°¯
 	
-	float F_mg_L;                             //·úÀë×Ó
+	float Chl_ug_L;                           //å¶ç»¿ç´ 
 	
-	float Cl_mg_L;                            //ÂÈÀë×Ó
+	float Bga_cells_mL;                   //è“ç»¿è—»
 	
-	float Chl_ug_L;                           //Ò¶ÂÌËØ
+	float CODuv_mg_L;                    //åŒ–å­¦éœ€æ°§é‡
+
+	float CODuv_toc_mg_l;				 //CODçš„tocå€¼
 	
-	float Bga_cells_mL;                       //À¶ÂÌÔå
+	float ppm;                         		     //æ°´ä¸­æ²¹
 	
-	float CODuv_mg_L;                         //»¯Ñ§ĞèÑõÁ¿
+	float NO3_mg_L;                      //ç¡é…¸æ ¹ç¦»å­	
+	
 }log_FloatData_t;
 
 typedef struct{
-	char type_str[6];                         //Éè±¸ÀàĞÍ
+	char type_str[6];                         //è®¾å¤‡ç±»å‹
 	
-	datetime_t time;                          //ÈÕÆÚÊ±¼ä
+	datetime_t time;                          //æ—¥æœŸæ—¶é—´
 	
-	char sn[13];                              //Ì½Í·sn
+	char sn[13];                              //æ¢å¤´sn
 	
 	char E_W[E_W_Length];		                  //2   E/W
 	char N_S[N_S_Length];		                  //2   N/S
-	char latitude[latitude_Length];		        //12  Î³¶È
-	char longitude[longitude_Length];		      //12  ¾­¶È
+	char latitude[latitude_Length];		        //12  çº¬åº¦
+	char longitude[longitude_Length];		      //12  ç»åº¦
 	
 	log_FloatData_t log_data;
 }log_t;
@@ -75,16 +88,20 @@ void log_ReadLogCount(void);
 
 uint8_t log_SaveData(SENSOR_TYPE sensor_type);
 
-void log_SetLogCount(uint16_t count);
+void log_SetLogCount(uint16_t count,SENSOR_TYPE type);
+void log_ReadData(log_union*p ,uint16_t index,SENSOR_TYPE type);
 
-void log_ReadData(log_union*p ,uint16_t index);
 
-uint16_t log_GetLogCount(void);
+
+uint16_t log_GetLogCount(SENSOR_TYPE type);
 
 void log_PrintfLogOffset(void);
 
-void log_SendBytes(uint16_t index);
+void log_SendBytes();
 void log_SendCount(void);
+
+
+extern uint16_t DO_Send_Count ,pH_Send_Count ,Tur_Send_Count,FCL_Send_Count ,EC_Send_Count ,ORP_Send_Count ,NH4_Send_Count ,F_Send_Count,CL_Send_Count,Chl_Send_Count ,Bga_Send_Count ,COD_Send_Count ;
 
 #endif
 

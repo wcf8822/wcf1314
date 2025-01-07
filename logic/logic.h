@@ -20,12 +20,11 @@
 void hardware_init(void);
 
 void main_loop(void);
+void clear_SAVEDATACount(void);
 
-
-
-
-
-
+void Save_Data(void);
+void logic_BatteryAD_Big(void);
+void software_init(void);
 
 
 

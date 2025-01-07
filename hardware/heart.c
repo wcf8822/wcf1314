@@ -5,7 +5,7 @@
 #include "rs485.h"
 
 #include "lcd_drive.h"
-
+#include "setting.h"
 #include "interfacial.h"
 
 ///////////////////////////////////////////////////////////得整一个时间冒号闪烁的功能
@@ -23,8 +23,8 @@ typedef struct{
 	uint8_t flag_RefreshGPS : 1; //更新gps信息
 	uint8_t flag_interfacial: 1; //将界面刷到缓存中
 	uint8_t flag_warning    : 1; //报警图标闪烁
-	
 	uint8_t flag_Test       : 1; //测试用定时器
+	uint8_t flag_SinMes     : 1; //单次测试用定时器
 	
 }flag_t;
 
@@ -38,6 +38,7 @@ typedef struct{//按键消抖计时器
 	
 	uint16_t count_cal;
 	uint16_t count_ok;
+	uint16_t count_off;
 }KeyCount_t;
 
 typedef struct{
@@ -72,6 +73,7 @@ static volatile KeyCount_t key_count={
 	.count_menu = 0,
 	.count_cal = 0,
 	.count_blu = 0,
+	.count_off = 0,
 };
 
 //按键开始计数标志
@@ -83,6 +85,8 @@ static volatile KeyFlag_t key_CountFlag={
 	.flag_KeyMenu = 0,
 	.flag_KeyCal = 0,
 	.flag_KeyBlu = 0,
+	.flag_KeyOFF = 0,
+	.flag_KeyOFFLong = 0,	
 };
 
 //按键是否被按过标志
@@ -94,6 +98,8 @@ static volatile KeyFlag_t key_ClickedFlag={
 	.flag_KeyMenu = 0,
 	.flag_KeyCal = 0,
 	.flag_KeyBlu = 0,
+	.flag_KeyOFF = 0,
+	.flag_KeyOFFLong = 0,	
 };
 
 
@@ -113,6 +119,8 @@ static volatile KeyFlag_t key_ClickedFlag={
 #define SET_INTERFACIALFLAG()   MainFlags.flag_interfacial = 1
 #define SET_TESTFLAG()          MainFlags.flag_Test = 1
 #define SET_WARNINGFLAG()       MainFlags.flag_warning = 1
+// #define SET_SinMesFLAG()        MainFlags.flag_SinMes = 1
+
 
 #define CLEAR_LCDFLAG()         MainFlags.flag_RefreshLcd = 0
 #define CLEAR_RTCFLAG()         MainFlags.flag_RefreshRtc = 0
@@ -122,8 +130,11 @@ static volatile KeyFlag_t key_ClickedFlag={
 #define CLEAR_INTERFACIALFLAG() MainFlags.flag_interfacial = 0
 #define CLEAR_TESTFLAG()        MainFlags.flag_Test = 0
 #define CLEAR_WARNINGFLAG()     MainFlags.flag_warning = 0
+// #define CLEAR_SinMesFLAG()      MainFlags.flag_SinMes = 0
 
 
+uint16_t TimeValue = 0;
+uint8_t MesRun = 0;
 
 //main接口
 uint8_t get_RtcFlag(void)
@@ -159,6 +170,11 @@ uint8_t get_WarningFlag(void)
 	return MainFlags.flag_warning;
 }
 
+uint16_t get_SinMesFlag(void)
+{
+	return TimeValue;
+}
+
 
 void clear_RtcFlag(void)
 {
@@ -192,7 +208,10 @@ void clear_WarningFlag(void)
 {
 	CLEAR_WARNINGFLAG();
 }
-
+void clear_SinMesTimeFlag(void)
+{
+	// CLEAR_SinMesFLAG();
+}
 
 //按键计时开始结束读取状态
 void set_KeyUpCountFlag(void)//开始计时
@@ -222,6 +241,14 @@ void set_KeyMenuCountFlag(void)
 void set_KeyBluCountFlag(void)
 {
 	key_CountFlag.flag_KeyBlu = 1;
+}	
+void set_KeyOffCountFlag(void)
+{
+	key_CountFlag.flag_KeyOFF = 1;
+}
+void set_KeyOffLongCountFlag(void)
+{
+	key_CountFlag.flag_KeyOFFLong = 1;
 }	
 
 
@@ -254,7 +281,14 @@ uint8_t get_KeyBluCountFlag(void)
 {
 	return key_CountFlag.flag_KeyBlu;
 }	
-
+uint8_t get_KeyOffCountFlag(void)
+{
+	return key_CountFlag.flag_KeyOFF;
+}
+uint8_t get_KeyOffLongCountFlag(void)
+{
+	return key_CountFlag.flag_KeyOFFLong;
+}	
 
 
 
@@ -286,7 +320,14 @@ void clear_KeyBluCountFlag(void)
 {
 	key_CountFlag.flag_KeyBlu = 0;
 }	
-
+void clear_KeyOffCountFlag(void)
+{
+	key_CountFlag.flag_KeyOFF = 0;
+}
+void clear_KeyOffLongCountFlag(void)
+{
+	key_CountFlag.flag_KeyOFFLong = 0;
+}	
 
 
 //清除按键定时器计数
@@ -318,6 +359,11 @@ void clear_KeyBluCount(void)
 {
 	key_count.count_blu = 0;
 }
+void clear_KeyOffCount(void)
+{
+	key_count.count_off = 0;
+}
+
 
 //用于cal长按判断
 uint16_t get_KeyCalCount(void)
@@ -328,6 +374,11 @@ uint16_t get_KeyOkCount(void)
 {
 	return key_count.count_ok;
 }
+uint16_t get_KeyOffCount(void)
+{
+	return key_count.count_off;
+}
+
 
 //获取按键是否被按过标志
 uint8_t get_KeyUpClickedFlag(void)//获取
@@ -358,6 +409,15 @@ uint8_t get_KeyBluClickedFlag(void)
 {
 	return key_ClickedFlag.flag_KeyBlu;
 }	
+uint8_t get_KeyOffClickedFlag(void)
+{
+	return key_ClickedFlag.flag_KeyOFF;
+}
+uint8_t get_KeyOffLongClickedFlag(void)
+{
+	return key_ClickedFlag.flag_KeyOFFLong;
+}	
+
 
 void clear_KeyUpClickedFlag(void)//清除
 {
@@ -388,6 +448,15 @@ void clear_KeyBluClickedFlag(void)
 	key_ClickedFlag.flag_KeyBlu = 0;
 }
 
+void clear_KeyOffClickedFlag(void)
+{
+	key_ClickedFlag.flag_KeyOFF = 0;
+}
+void clear_KeyOffLongClickedFlag(void)
+{
+	key_ClickedFlag.flag_KeyOFFLong = 0;
+}
+
 
 void set_SuccessfulTimStartFlag(void)
 {
@@ -412,6 +481,18 @@ void clear_WarningCount(void)
 	count_warning = 0;
 }
 
+
+static uint16_t count_data = 0;
+
+void clear_DATACount(void)
+{
+	count_data = 0;
+}
+
+
+
+
+
 //#define TIM_REFRESHBAT  3000  //电池电量更新时间
 //#define TIM_REFRESHGPS  5000  //gps更新时间
 //#define TIM_INTERFACIAL 200   //显存更新时间
@@ -424,6 +505,7 @@ void main_tim(void)
 	static uint16_t count_gps = 0;
 	static uint16_t count_bat = 0;
 	static uint16_t count_interfacial = 0;
+	static uint16_t count_danciceliang = 0;
 
 	
 	if(++count_lcd >= TIM_REFRESHLCD)
@@ -466,7 +548,19 @@ void main_tim(void)
 	{
 		count_warning = 0;
 		SET_WARNINGFLAG();
+		if(Auto_Search_Count <= Auto_Search_Time) Auto_Search_Count++;
+	}	
+	if (++count_danciceliang >= 1000 )
+	{
+		count_danciceliang = 0;
+		TimeValue++;
+		if(TimeValue == 256)
+		{
+			TimeValue = setting_Getdanciceliangtime() + 5;
+		}
 	}
+	
+
 }
 
 
@@ -515,7 +609,11 @@ void key_tim(void)
 	if((key_CountFlag.flag_KeyCal) && ++key_count.count_cal >= KEY_TIM)
 	{
 		key_ClickedFlag.flag_KeyCal = 1;
-		if(key_count.count_cal >= KEY_TIM_LONG)
+		if(key_count.count_cal >= KEY_TIM_LONG_LONG)
+		{
+			set_KeyCalLongLongFlag();
+		}
+		else if(key_count.count_cal >= KEY_TIM_LONG)
 		{
 			set_KeyCalLongFlag();              //设置长按标志
 		}
@@ -531,6 +629,15 @@ void key_tim(void)
 	if((key_CountFlag.flag_KeyBlu) && ++key_count.count_blu >= KEY_TIM)
 	{
 		key_ClickedFlag.flag_KeyBlu = 1;
+	}
+	
+	if((key_CountFlag.flag_KeyOFF) && ++key_count.count_off >= KEY_TIM)
+	{
+		key_ClickedFlag.flag_KeyOFF = 1;
+		if(key_count.count_off >= KEY_TIM_LONG)
+		{
+			set_KeyOffLongFlag();              //设置长按标志
+		}
 	}
 }
 

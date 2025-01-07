@@ -1,5 +1,6 @@
 #include "rs485.h"
-
+#include "dissolved_oxygen.h"
+#include "interfacial.h"
 //STATIC uint8_t rs485_circular_sent = 0;
 //STATIC uint8_t rs485_need_sent = 0;
 
@@ -10,10 +11,6 @@
 
 STATIC uint8_t is_change_senesor = 0;
 
-connected_probe_t connected_probe = {
-	.DO_list = NULL,
-	.current_sensor_type = TYPE_NONE
-};
 
 
 void rs485_SetIsChangeSenesor(void)
@@ -29,16 +26,39 @@ void rs485_ClearIsChangeSenesor(void)
 	is_change_senesor = 0;
 }
 
-/*当前连接的设备类型*/
+
+
+/*当前显示的设备类型*/
 void rs485_SetSensorType(SENSOR_TYPE st)//设置当前传感器类型
 {
-	connected_probe.current_sensor_type = st;
+	cur_DO.current_sensor_type = st;
 }
 SENSOR_TYPE rs485_GetSensorType(void)//获取当前传感器类型
 {
-	return connected_probe.current_sensor_type;
+	return cur_DO.current_sensor_type;
 }
 
+
+/*当前COMA连接的设备类型*/
+void COMA_rs485_SetSensorType(SENSOR_TYPE st)//设置当前传感器类型
+{
+	//comA_DO.current_sensor_type = st;
+	return;
+}
+SENSOR_TYPE COMA_rs485_GetSensorType(void)//获取当前传感器类型
+{
+	return comA_DO.current_sensor_type;
+}
+
+/*当前COMB连接的设备类型*/
+void COMB_rs485_SetSensorType(SENSOR_TYPE st)//设置当前传感器类型
+{
+	comB_DO.current_sensor_type = st;
+}
+SENSOR_TYPE COMB_rs485_GetSensorType(void)//获取当前传感器类型
+{
+	return comB_DO.current_sensor_type;
+}
 
 
 
@@ -58,6 +78,17 @@ void rs485_DevicePlus(void)
 void rs485_DeviceReduce(void)
 {
 	rs485_usart.device_count--;
+}
+
+
+
+void rs485_SetSentType_COMB(rs485_sent_type rst)
+{
+	rs485_usart.sent_type = rst;
+}
+rs485_sent_type rs485_GetSentType_COMB(void)
+{
+	return rs485_usart.sent_type;
 }
 
 void rs485_SetSentType(rs485_sent_type rst)
@@ -127,12 +158,28 @@ uint8_t rs485_GetIsDisconnect(void)
 
 PtrToDOProbe* rs485_GetDoList(void) //获取已连接设备的do设备列表
 {
-	return &(connected_probe.DO_list);
+	return &(cur_DO.DO_list);
 }
 
 void rs485_UartInit(UART_HandleTypeDef *huart);
 
+
+//COMA的串口  USART3
  rs485_t rs485_usart = {
+	.init = rs485_UartInit,
+	.tx_flag = 0,
+	.rx_flag = 0,
+	.rs485_circular_sent = 0,
+	.rs485_need_sent = 0,
+	.sent_type = DO_SendType_None,
+	.device_count = 0, //已连接设备计数
+	.resend_count = 0,  //重发计数
+	.rs485_is_disconnect = 0
+	 
+};
+ 
+ //COMB的串口  USART
+rs485_t rs485_usart_COMB = {
 	.init = rs485_UartInit,
 	.tx_flag = 0,
 	.rx_flag = 0,
@@ -210,16 +257,23 @@ void rs485_send(void)
 /*将发送buf发送出去*/
 void rs485_SendBuf(void)//这个也是在main函数里面运行的
 {
-	if(rs485_GetSentType() != DO_SendType_GetModbusId && ++rs485_usart.resend_count >= RESEND_MAX)//当不是搜索设备的时候发送次数超过设定值 就放弃这个设备
+	if(rs485_GetSentType() != DO_SendType_GetModbusId )//当不是搜索设备的时候发送次数超过设定值 就放弃这个设备
 	{
-		rs485_ClearCircularSentStatus(); //关闭循环发送
-		rs485_ClearResendCount();    //清计数
-		rs485_SetIsDisconnect();
-		return;//不让它再发了
+		if( ++rs485_usart.resend_count >= RESEND_MAX){
+			rs485_ClearCircularSentStatus(); //关闭循环发送
+			rs485_ClearResendCount();    //清计数
+			
+			rs485_SetIsDisconnect();
+			return;//不让它再发了
+		}
 	}
-	
+	if(!rs485_GetCircularSentStatus() && rs485_usart.resend_count  == 1 )
+	{	
+		rs485_Search_Sensor();	
+	}
 	rs485_send();
-	
+
+
 }
 
 
@@ -232,7 +286,7 @@ void rs485_ClearRs485Tim(void)
 
 void rs485_TimHandle(void)
 {
-	if(rs485_GetCircularSentStatus() && ++rs485_tim_count >= RS485_CIRCULAR_TIM)
+	if(++rs485_tim_count >= RS485_CIRCULAR_TIM)
 	{
 		rs485_ClearRs485Tim(); //清定时器计数
 		rs485_SetNeedSendStatus();//设置需要有东西发送

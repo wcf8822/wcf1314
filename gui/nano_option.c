@@ -119,6 +119,10 @@ void NanoOptionList_Print(list_NanoOption nanooptionlist, uint8_t IsChn)
 						break;
 				}
 				break;
+				
+			case NANOOPTION_STRING://中文类型
+					GUI_PutChnStr(p->x, p->y, p->content_chn+p->value, p->ChnContent_size, MENU_FONT_CHN_LSIZE, MENU_FONT_CHN_RSIZE, p->IsSelected);
+				break;
 		}
 
 		

@@ -27,6 +27,7 @@ typedef enum{
 	UINT_NONE,
 	UINT_PERCENT,
 	UINT_CELSIUS,
+	UINT_FAHRENHEIT,
 	UINT_MGL,
 	UINT_USCM,
 	UINT_NTU,
@@ -34,7 +35,11 @@ typedef enum{
 	UINT_KPA,
 	UINT_UGL,
 	UINT_PPT,
-	
+	UINT_Cont,
+	UINT_Sing,
+	UINT_Cells_mL,//¿∂¬Ã‘Â
+	UINT_Kcells_mL,//¿∂¬Ã‘Â
+	UINT_mSCM,
 }LABEL_UINT_TYPE;
 
 //±Í«©Ω⁄µ„

@@ -34,9 +34,9 @@ uint8_t RTC_GetHour(void);
 uint8_t RTC_GetMinute(void);
 uint8_t RTC_GetSecond(void);
 uint8_t RTC_GetWeek(void);
-
+datetime_t RTC_GetTime(void);
 void RTC_AutoShut(void);
-
+uint32_t fml_time_to_stamp(datetime_t date);
 #endif
 
 

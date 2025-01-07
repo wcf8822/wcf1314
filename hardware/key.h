@@ -8,7 +8,7 @@
 #define KEY_NORMAL   0
 #define KEY_CLICKED  1
 
-#define KEY_BURSTMODE GPIO_PIN_SET
+#define KEY_BURSTMODE GPIO_PIN_SET //è§¦å‘æ¨¡å¼
 
 #define KEY_UP_STATUS HAL_GPIO_ReadPin(KEY_UP_GPIO_Port, KEY_UP_Pin)
 #define KEY_DOWN_STATUS HAL_GPIO_ReadPin(KEY_DOWN_GPIO_Port, KEY_DOWN_Pin)
@@ -17,9 +17,9 @@
 #define KEY_CAL_STATUS HAL_GPIO_ReadPin(KEY_CAL_GPIO_Port, KEY_CAL_Pin)
 #define KEY_BLU_STATUS HAL_GPIO_ReadPin(KEY_BLU_GPIO_Port, KEY_BLU_Pin)
 #define KEY_MENU_STATUS HAL_GPIO_ReadPin(KEY_MENU_GPIO_Port, KEY_MENU_Pin)
+#define KEY_OFF_STATUS HAL_GPIO_ReadPin(KEY_OFF_GPIO_Port, KEY_OFF_Pin)
 
-
-//ËùÓĞ°´¼ü×´Ì¬µÄ½á¹¹ÌåÉùÃ÷
+//æ‰€æœ‰æŒ‰é”®çŠ¶æ€çš„ç»“æ„ä½“å£°æ˜
 typedef struct{
 	uint8_t flag_KeyUp     :1;
 	uint8_t flag_KeyDown   :1;
@@ -32,12 +32,16 @@ typedef struct{
 	
 	uint8_t flag_KeyCalLong :1;
 	uint8_t flag_KeyOkLong :1;
+	
+	uint8_t flag_KeyOFF :1;
+	uint8_t flag_KeyOFFLong :1;
+	uint8_t flag_KeyCalLongLong :1;
 }KeyFlag_t;
 
 
 
 
-//»ñÈ¡±êÖ¾×´Ì¬£¨¼È»ñÈ¡°´¼üÊÇ·ñ°´ÏÂ£©
+//è·å–æ ‡å¿—çŠ¶æ€ï¼ˆæ—¢è·å–æŒ‰é”®æ˜¯å¦æŒ‰ä¸‹ï¼‰
 uint8_t get_KeyUpFlag(void);
 uint8_t get_KeyDownFlag(void);
 uint8_t get_KeyOkFlag(void);
@@ -48,8 +52,11 @@ uint8_t get_KeyCalFlag(void);
 uint8_t get_KeyCalLongFlag(void);
 uint8_t get_KeyBluFlag(void);
 uint8_t get_KeyClickedFlag(void);
+uint8_t get_KeyOffFlag(void);
+uint8_t get_KeyOffLongFlag(void);
+uint8_t get_KeyCalLongLongFlag(void);
 
-//Çå¿Õ±êÖ¾
+//æ¸…ç©ºæ ‡å¿—
 void clear_KeyUpFlag(void);
 void clear_KeyDownFlag(void);
 void clear_KeyOkFlag(void);
@@ -59,10 +66,12 @@ void clear_KeyCalFlag(void);
 void clear_KeyCalLongFlag(void);
 void clear_KeyBluFlag(void);
 void clear_KeyClickedFlag(void);
-
+void clear_KeyOffFlag(void);
+void clear_KeyOffLongFlag(void);
+void clear_KeyCalLongLongFlag(void);
 void clear_KeyAllFlag(void);
 
-//ÉèÖÃ±êÖ¾
+//è®¾ç½®æ ‡å¿—
 //void set_KeyUpFlag(void);
 //void set_KeyDownFlag(void);
 //void set_KeyOkFlag(void);
@@ -71,13 +80,15 @@ void clear_KeyAllFlag(void);
 //void set_KeyCalFlag(void);
 void set_KeyCalLongFlag(void);
 void set_KeyOkLongFlag(void);
+void set_KeyOffLongFlag(void);
+void set_KeyCalLongLongFlag(void);
 //void set_KeyBluFlag(void);
 //void set_KeyClickedFlag(void);
 
 
 void key_scan(void);
 
-
+extern  uint8_t Key_Off_Flag;
 #endif
 
 

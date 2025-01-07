@@ -23,7 +23,7 @@
 #define BMP280_TEMPERATURE_LSB_REG           0xFB  /*Temperature LSB Reg */
 #define BMP280_TEMPERATURE_XLSB_REG          0xFC  /*Temperature XLSB Reg */
 
-//×´Ì¬¼Ä´æÆ÷×ª»»±êÖ¾
+//çŠ¶æ€å¯„å­˜å™¨è½¬æ¢æ ‡å¿—
 #define	BMP280_MEASURING					           0x01
 #define	BMP280_IM_UPDATE					           0x08
 
@@ -56,12 +56,12 @@
 #define BMP280_DIG_P9_MSB_REG                0x9F
 
 
-typedef			long signed int				BMP280_S32_t;	//ÓĞ·ûºÅ 64Î»£¡
-typedef			long unsigned int			BMP280_U32_t;	//ÎŞ·ûºÅ 32Î»£¡
+typedef			long signed int				BMP280_S32_t;	//æœ‰ç¬¦å· 64ä½ï¼
+typedef			long unsigned int			BMP280_U32_t;	//æ— ç¬¦å· 32ä½ï¼
 typedef			long long signed int	BMP280_S64_t;
 
 
-//BMPÎÂ¶È¹ı²ÉÑùÒò×Ó
+//BMPæ¸©åº¦è¿‡é‡‡æ ·å› å­
 typedef enum {
 	BMP280_T_MODE_SKIP = 0x0,	/*skipped*/
 	BMP280_T_MODE_1,			/*x1*/
@@ -73,11 +73,11 @@ typedef enum {
 
 typedef enum {
 	BMP280_SLEEP_MODE  = 0x00,
-	BMP280_FORCED_MODE = 0x01,	//¿ÉÒÔËµ0x2
+	BMP280_FORCED_MODE = 0x01,	//å¯ä»¥è¯´0x2
 	BMP280_NORMAL_MODE = 0x03
 } BMP280_WORK_MODE;
 
-//BMPÑ¹Á¦¹ı²ÉÑùÒò×Ó
+//BMPå‹åŠ›è¿‡é‡‡æ ·å› å­
 typedef enum 
 {
 	BMP280_P_MODE_SKIP = 0x0,	/*skipped*/
@@ -90,7 +90,7 @@ typedef enum
 
 
 									
-//IIRÂË²¨Æ÷Ê±¼ä³£Êı
+//IIRæ»¤æ³¢å™¨æ—¶é—´å¸¸æ•°
 typedef enum {
 	BMP280_FILTER_OFF = 0x0,	/*filter off*/
 	BMP280_FILTER_MODE_1,		/*0.223*ODR*/	/*x2*/
@@ -99,7 +99,7 @@ typedef enum {
 	BMP280_FILTER_MODE_4		/*0.021*ODR*/	/*x16*/
 } BMP280_FILTER_COEFFICIENT;
 
-//±£³ÖÊ±¼ä
+//ä¿æŒæ—¶é—´
 typedef enum {
 	BMP280_T_SB1 = 0x0,	    /*0.5ms*/
 	BMP280_T_SB2,			/*62.5ms*/
@@ -114,7 +114,7 @@ typedef enum {
 
 typedef struct  
 {
-	/* T1~P9 Îª²¹³¥ÏµÊı */
+	/* T1~P9 ä¸ºè¡¥å¿ç³»æ•° */
 	uint16_t T1;
 	int16_t	 T2;
 	int16_t	 T3;
@@ -148,7 +148,7 @@ typedef struct
 
 
 typedef struct{
-	SPI_HandleTypeDef *hspi;//½ÓµÄÊÇÄÄ¸öspi¿Ú
+	SPI_HandleTypeDef *hspi;//æ¥çš„æ˜¯å“ªä¸ªspiå£
 	
 	void (*init)(SPI_HandleTypeDef *hspi);
 	
@@ -159,9 +159,9 @@ typedef struct{
 }bmp280_t;
 
 
-extern bmp280_t bmp280; //Íâ²¿µ÷ÓÃ½á¹¹Ìå
+extern bmp280_t bmp280; //å¤–éƒ¨è°ƒç”¨ç»“æ„ä½“
 
-uint8_t bmp280_readId(void); //²âÊÔÓÃ ÓÃÓÚ¶ÁÈ¡id
+uint8_t bmp280_readId(void); //æµ‹è¯•ç”¨ ç”¨äºè¯»å–id
 
 void bmp280_UpdateValue(void);
 

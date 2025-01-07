@@ -43,11 +43,11 @@
 /****************************************************************************
 * 名称：GUI_Initialize()
 * 功能：初始化GUI，包括初始化显示缓冲区，初始化LCM并清屏。
-* 入口参数：无
+* 入口参数：ContrastIsLight 对比度是否是淡的对比度
 * 出口参数：无
 * 说明：用户根据LCM的实际情况编写此函数。
 ****************************************************************************/
-void  GUI_Initialize(void);
+void  GUI_Initialize(uint8_t ContrastIsIntense);
 
 
 /****************************************************************************
@@ -153,7 +153,7 @@ void  GUI_RLine(uint32_t x0, uint32_t y0, uint32_t y1, TCOLOR color);
 void GUI_UpdateDisplay(void);//更新显示
 
 void LCD_GPIO_Config(void);
-void LCD_Initialize(void);
+void LCD_Initialize(uint8_t ContrastIsIntense);
 void Write8DotsUC1698U(uint8_t Data);
 void WriteDataUC1698U(uint8_t Data);
 void WriteCommandUC1698U(uint8_t CmdData);
@@ -184,6 +184,10 @@ void gui_DrawWarining(uint8_t* arr);
 void gui_DrawLock(uint8_t* arr);
 void gui_ClearLock(void);
 
+void gui_DrawMes(uint8_t* arr);
+
+void gui_ClearMes();
+
 void gui_SetRefreshON(void);
 void gui_SetRefreshOFF(void);
 uint8_t gui_GetRefreshStatus(void);
@@ -193,6 +197,9 @@ uint8_t gui_GetRefreshStatus(void);
 void gui_ClearChuchangshezhi(void);
 
 void gui_DrawLogo(uint8_t row, uint8_t height, uint8_t *dat);
+
+void gui_DrawUpDownPage(uint8_t* arr);
+void gui_ClearUpDownPage(void);
 #endif
 
 

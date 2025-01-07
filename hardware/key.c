@@ -3,6 +3,8 @@
 
 #include "interfacial.h"
 
+uint8_t Key_Off_Flag=0;
+
 //实例化按键flag
 static volatile KeyFlag_t key_flag={
 	.flag_KeyUp = 0,
@@ -14,7 +16,11 @@ static volatile KeyFlag_t key_flag={
 	.flag_KeyBlu = 0,
 	.flag_KeyClicked = 0,
 	
-	.flag_KeyCalLong = 0
+	.flag_KeyCalLong = 0,
+	
+	.flag_KeyOFF =0,
+	.flag_KeyOFFLong=0,
+	.flag_KeyCalLongLong = 0
 };
 
 //获取按键标志
@@ -57,6 +63,20 @@ uint8_t get_KeyBluFlag(void)
 uint8_t get_KeyClickedFlag(void)
 {
 	return key_flag.flag_KeyClicked;
+}
+
+uint8_t get_KeyOffFlag(void)
+{
+	return key_flag.flag_KeyOFF;
+}
+uint8_t get_KeyOffLongFlag(void)
+{
+	return key_flag.flag_KeyOFFLong;
+}
+
+uint8_t get_KeyCalLongLongFlag(void)
+{
+	return key_flag.flag_KeyCalLongLong;
 }
 
 
@@ -103,6 +123,20 @@ void clear_KeyClickedFlag(void)
 	key_flag.flag_KeyClicked = KEY_NORMAL;
 }
 
+void clear_KeyOffFlag(void)
+{
+	key_flag.flag_KeyOFF = KEY_NORMAL;
+}
+void clear_KeyOffLongFlag(void)
+{
+	key_flag.flag_KeyOFFLong = KEY_NORMAL;
+}
+
+void clear_KeyCalLongLongFlag(void)
+{
+	key_flag.flag_KeyCalLongLong = KEY_NORMAL;
+}
+
 void clear_KeyAllFlag(void)
 {
 	key_flag.flag_KeyBlu     = KEY_NORMAL;
@@ -114,6 +148,9 @@ void clear_KeyAllFlag(void)
 	key_flag.flag_KeyMenu    = KEY_NORMAL;
 	key_flag.flag_KeyOk      = KEY_NORMAL;
 	key_flag.flag_KeyUp      = KEY_NORMAL;
+	key_flag.flag_KeyOFF      = KEY_NORMAL;
+	key_flag.flag_KeyOFFLong      = KEY_NORMAL;
+	key_flag.flag_KeyCalLongLong = KEY_NORMAL;
 }
 
 //设置按键接口
@@ -157,9 +194,19 @@ void set_KeyClickedFlag(void)
 {
 	key_flag.flag_KeyClicked = KEY_CLICKED;
 }
+void set_KeyOffFlag(void)
+{
+	key_flag.flag_KeyOFF = KEY_CLICKED;
+}
+void set_KeyOffLongFlag(void)
+{
+	key_flag.flag_KeyOFFLong = KEY_CLICKED;
+}
 
-
-
+void set_KeyCalLongLongFlag(void)
+{
+	key_flag.flag_KeyCalLongLong = KEY_CLICKED;
+}
 
 
 void key_scan(void)
@@ -278,6 +325,7 @@ void key_scan(void)
 			set_KeyClickedFlag();
 		}
 		clear_KeyCalLongFlag();//清除校准长按标志
+		clear_KeyCalLongLongFlag();
 		clear_KeyCalClickedFlag();
 		clear_KeyCalCountFlag();
 		clear_KeyCalCount();
@@ -318,6 +366,27 @@ void key_scan(void)
 		clear_KeyMenuCountFlag();
 		clear_KeyMenuCount();
 	}
+	
+	if(KEY_OFF_STATUS 	== KEY_BURSTMODE)
+	{
+		if(!get_KeyOffCountFlag()) 
+			set_KeyOffCountFlag();
+		Key_Off_Flag=1;
+	}
+	else
+	{
+		if(get_KeyOffClickedFlag()) 
+		{
+			set_KeyOffFlag();
+			set_KeyClickedFlag();
+		}
+		clear_KeyOffLongFlag();//清除校准长按标志
+		clear_KeyOffClickedFlag();
+		clear_KeyOffCountFlag();
+		clear_KeyOffCount();
+	}
+	
+
 }
 
 

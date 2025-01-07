@@ -61,6 +61,7 @@ void GUI_PutChar(uint8_t x, uint8_t y, char c, uint8_t hno, uint8_t lno, uint8_t
 
 void GUI_PutEngStr(uint8_t x, uint8_t y, uint8_t *dat, uint8_t hno, uint8_t lno, uint8_t IsInverse);
 void GUI_PutChnStr(uint8_t x, uint8_t y, uint8_t *dat, uint8_t str_len, uint8_t hno, uint8_t lno, uint8_t IsInverse);
+void GUI_PutChnStr_xin(uint8_t x, uint8_t y, uint8_t *dat, uint8_t str_len, uint8_t hno, uint8_t lno, uint8_t IsInverse);
 
 void GUI_PutLargeStr(uint8_t x, uint8_t y, uint8_t *dat, uint8_t hno, uint8_t lno, uint8_t IsInverse);
 void GUI_PutMediumStr(uint8_t x, uint8_t y, uint8_t *dat, uint8_t hno, uint8_t lno, uint8_t IsInverse);

@@ -1,7 +1,7 @@
 ;********************* (C) COPYRIGHT 2017 STMicroelectronics ********************
-;* File Name          : startup_stm32l152xba.s
+;* File Name          : startup_stm32l152xe.s
 ;* Author             : MCD Application Team
-;* Description        : STM32L152XBA Devices vector for MDK-ARM toolchain.
+;* Description        : STM32L152XE Devices vector for MDK-ARM toolchain.
 ;*                      This module performs:
 ;*                      - Set the initial SP
 ;*                      - Set the initial PC == Reset_Handler
@@ -30,7 +30,7 @@
 ;   <o> Stack Size (in Bytes) <0x0-0xFFFFFFFF:8>
 ; </h>
 
-Stack_Size		EQU     0x800
+Stack_Size      EQU     0x00001000
 
                 AREA    STACK, NOINIT, READWRITE, ALIGN=3
 Stack_Mem       SPACE   Stack_Size
@@ -41,7 +41,7 @@ __initial_sp
 ;   <o>  Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
 ; </h>
 
-Heap_Size      EQU     0x1000
+Heap_Size       EQU     0x00001000
 
                 AREA    HEAP, NOINIT, READWRITE, ALIGN=3
 __heap_base
@@ -121,6 +121,18 @@ __Vectors       DCD     __initial_sp              ; Top of Stack
                 DCD     USB_FS_WKUP_IRQHandler    ; USB FS Wakeup from suspend
                 DCD     TIM6_IRQHandler           ; TIM6
                 DCD     TIM7_IRQHandler           ; TIM7
+                DCD     0                         ; Reserved
+                DCD     TIM5_IRQHandler           ; TIM5
+                DCD     SPI3_IRQHandler           ; SPI3
+                DCD     UART4_IRQHandler          ; UART4
+                DCD     UART5_IRQHandler          ; UART5
+                DCD     DMA2_Channel1_IRQHandler  ; DMA2 Channel 1
+                DCD     DMA2_Channel2_IRQHandler  ; DMA2 Channel 2
+                DCD     DMA2_Channel3_IRQHandler  ; DMA2 Channel 3
+                DCD     DMA2_Channel4_IRQHandler  ; DMA2 Channel 4
+                DCD     DMA2_Channel5_IRQHandler  ; DMA2 Channel 5
+                DCD     0                         ; Reserved
+                DCD     COMP_ACQ_IRQHandler       ; Comparator Channel Acquisition
                 
 __Vectors_End
 
@@ -230,6 +242,16 @@ Default_Handler PROC
                 EXPORT  USB_FS_WKUP_IRQHandler     [WEAK]
                 EXPORT  TIM6_IRQHandler            [WEAK]
                 EXPORT  TIM7_IRQHandler            [WEAK]
+                EXPORT  TIM5_IRQHandler            [WEAK]                                
+                EXPORT  SPI3_IRQHandler            [WEAK]
+                EXPORT  UART4_IRQHandler           [WEAK]
+                EXPORT  UART5_IRQHandler           [WEAK]
+                EXPORT  DMA2_Channel1_IRQHandler   [WEAK]
+                EXPORT  DMA2_Channel2_IRQHandler   [WEAK]
+                EXPORT  DMA2_Channel3_IRQHandler   [WEAK]
+                EXPORT  DMA2_Channel4_IRQHandler   [WEAK]
+                EXPORT  DMA2_Channel5_IRQHandler   [WEAK]
+                EXPORT  COMP_ACQ_IRQHandler        [WEAK]
 
 WWDG_IRQHandler
 PVD_IRQHandler
@@ -276,6 +298,16 @@ RTC_Alarm_IRQHandler
 USB_FS_WKUP_IRQHandler
 TIM6_IRQHandler
 TIM7_IRQHandler
+TIM5_IRQHandler
+SPI3_IRQHandler
+UART4_IRQHandler
+UART5_IRQHandler
+DMA2_Channel1_IRQHandler
+DMA2_Channel2_IRQHandler
+DMA2_Channel3_IRQHandler
+DMA2_Channel4_IRQHandler
+DMA2_Channel5_IRQHandler
+COMP_ACQ_IRQHandler
 
                 B       .
 

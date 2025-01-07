@@ -26,8 +26,10 @@ typedef struct struct_interfacial{
 	PAGE_NUM page_father;           //这个界面的父界面是哪个界面
 	
 	list_NanoOption NanoOption_msg; //弹窗是否两个选项
+	
 	list_label label_head;          //这个界面上的标签的头指针
-	list_option option_head;        //这个界面上的一级选项的头指针       
+	list_option option_head;        //这个界面上的一级选项的头指针  
+	
 	uint8_t* content_chn;           //中文标签
 	uint8_t* content_eng;           //英文标签
 	
@@ -37,7 +39,8 @@ typedef enum {
 	MESSAGE_SETTING,                //设置弹窗
 	MESSAGE_SAVELOG,                //保存数据弹窗
 	MESSAGE_SUCCESSFUL,             //成功弹窗
-	MESSAGE_DELETE                  //删除数据弹窗
+	MESSAGE_DELETE,		            //删除数据弹窗
+	MESSAGE_tixing,					//提醒信息弹窗
 }MESSAGE_TYPE;
 
 typedef enum{
@@ -74,7 +77,7 @@ void  set_SalArr(float sal);
 char* get_SalArr(void);
 uint8_t *interfacial_GetCurLogIndexArr(void);
 void interfacial_UpdateCurLogIndexArr(uint16_t data_index);
-SENSOR_TYPE interfacial_GetAlarmSensorType(void);
+
 
 
 void interfacial_InitMsg(void);
@@ -107,6 +110,16 @@ void generate_MessageBox(MESSAGE_TYPE msg_type, uint8_t is_successful);
 void StatusBar_Update(void);
 
 MESSAGE_TYPE interfacial_GetCurMsgType(void);
+
+extern uint8_t GetCircularSent_Flag;
+
+void rs485_Search_Sensor(void);
+
+extern SENSOR_TYPE datashow_SensorType;
+
+
+#define Auto_Search_Time 10
+extern uint16_t Auto_Search_Count;
 #endif
 
 

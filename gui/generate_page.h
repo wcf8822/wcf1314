@@ -28,9 +28,12 @@ void generate_MenuPage(PtrToInterfacial interfacial);                           
 void generate_SensorManage(PtrToInterfacial interfacial);                            //生成设备管理界面
 void generate_SystemPage(PtrToInterfacial interfacial);                              //生成系统设置界面
 void generate_Histor(PtrToInterfacial interfacial);                                  //生成历史数据界面
-
+void generate_Histor_Option(PtrToInterfacial interfacial);                   //生产历史数据选择界面
+void generate_Histor_ShowOption(PtrToInterfacial interfacial);
+void generate_Histor_DeleteOption(PtrToInterfacial interfacial);
 void generate_SetTimePage(PtrToInterfacial interfacial);                             //生成时间设置界面
 void generate_AutoShut(PtrToInterfacial interfacial);                                //生成自动关机界面
+void generate_AutoSave(PtrToInterfacial interfacial);
 void generate_SetPressure(PtrToInterfacial interfacial);                             //生成气压设置界面
 void generate_SetSalinity(PtrToInterfacial interfacial);                             //生成盐度设置界面
 void generate_GpsInfo(PtrToInterfacial interfacial);                                 //生成gps查询界面
@@ -47,6 +50,8 @@ void generate_DataView(PtrToInterfacial interfacial, uint16_t data_index);      
 
 void generate_AlarmTone(PtrToInterfacial interfacial);                               //生成报警音设置界面
 void generate_KeypadTone(PtrToInterfacial interfacial);                              //生成按键音设置界面
+void generate_Set_Mes_mode(PtrToInterfacial interfacial);                            //生成测量模式设置界面
+void generate_Set_Mes_Time(PtrToInterfacial interfacial);                            //生成单次测量模式测量间隔
 void generate_BeepSeting(PtrToInterfacial interfacial);                              //生成提示音设置界面
 void generate_AlarmSetting(PtrToInterfacial interfacial);                            //生成开关报警界面
 
@@ -69,7 +74,7 @@ void generate_OnePoint(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);  
 void generate_TwoPointFirst(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);  //生成两点校准 第一点界面
 void generate_TwoPointSecond(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type); //生成两点校准 第二点界面
 
-void update_LogTitle(log_union* log , uint8_t index);
+void update_LogTitle(log_union* log , uint16_t index);
 
 void generate_Cal_temp(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
 
@@ -80,7 +85,49 @@ void generate_AutoLock_value(PtrToInterfacial interfacial);                     
 void generate_SlideAverage_type(PtrToInterfacial interfacial);                       //生成滑动平均选择传感器类型界面
 void generate_SlideAverage_Switch(PtrToInterfacial interfacial);                     //生成滑动平均界面
 void generate_SlideAverage_Value(PtrToInterfacial interfacial, uint8_t temp);        //生成滑动平均次数设置界面
-	
+
+void generate_IntervaSave(PtrToInterfacial interfacial,uint16_t num, uint8_t is_chn);
+void generate_LockSave(PtrToInterfacial interfacial);
+
+
+void generate_NH3N_ONE(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+void generate_NH3N_TWO(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+void generate_NH3N_pH_ONE(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+void generate_NH3N_pH_TWO(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+void generate_NH3N_pH_THREE(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+
+void generate_COD_shenghui_Zero(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+void generate_COD_shenghui_Tur_ONE(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+void generate_COD_shenghui_Tur_TWO(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+void generate_COD_shenghui_ONE(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+void generate_COD_shenghui_TWO(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+void generate_COD_shenghui_THREE(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+void generate_COD_Cleanse(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+void generate_COD_DC18_Tur_Zero(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type,PAGE_NUM page_num);
+void generate_COD_DC18_Tur_Slope(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+void generate_COD_DC18_Zero(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type,PAGE_NUM page_num);
+void generate_COD_DC18_Slope(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+void generate_COD_DC18_Coefficient(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+
+void generate_shenghui_Tur_ONE(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+void generate_shenghui_Tur_TWO(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+void generate_shenghui_Tur_THREE(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+
+void generate_shenghui_EC_ONE(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+void generate_shenghui_BGA_TWO(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+
+void generate_pH_Standard_liquid_management(PtrToInterfacial interfacial);
+void generate_Chl_Measure_Switch(PtrToInterfacial interfacial);
+void generate_shenghui_COD_Current_absorbance(PtrToInterfacial interfacial);
+
+void generate_DE26_EC_Zero(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+
+void generate_Unit(PtrToInterfacial interfacial, uint8_t Unit);
+
+void generate_FACTORY(PtrToInterfacial interfacial);//工厂模式
+void generate_DC18_Set(PtrToInterfacial interfacial);//DC18
+void generate_INCAL(PtrToInterfacial interfacial);//DC18内部校准
+void generate_Model_selection(PtrToInterfacial interfacial);//
 #endif
 
 

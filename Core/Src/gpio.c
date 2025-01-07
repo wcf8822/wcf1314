@@ -72,6 +72,8 @@ void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, LCD_A0_Pin|RS485_DE_Pin, GPIO_PIN_RESET);
+  // HAL_GPIO_WritePin(GPIOC, LCD_A0_Pin, GPIO_PIN_RESET);
+  // HAL_GPIO_WritePin(GPIOD, RS485_DE_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
@@ -91,8 +93,7 @@ void MX_GPIO_Init(void)
                            PC1 PC2 PC3 PC4
                            PC5 */
   GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15|GPIO_PIN_0
-                          |GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4
-                          |GPIO_PIN_5;
+                          |GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_5;
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
@@ -100,7 +101,7 @@ void MX_GPIO_Init(void)
   /*Configure GPIO pins : PA0 PA1 PA3 PA4
                            PA5 PA7 PA11 PA12 */
   GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_3|GPIO_PIN_4
-                          |GPIO_PIN_5|GPIO_PIN_7|GPIO_PIN_11|GPIO_PIN_12;
+                          |GPIO_PIN_5|GPIO_PIN_12;
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -111,6 +112,15 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PtPin */
+  GPIO_InitStruct.Pin = GPS_EN_PIN;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(GPS_EN_PORT, &GPIO_InitStruct);
+	
+  HAL_GPIO_WritePin(GPS_EN_PORT, GPS_EN_PIN, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PtPin */
   GPIO_InitStruct.Pin = BUZZER_Pin;
@@ -142,6 +152,18 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : PA7 */
+  GPIO_InitStruct.Pin = KEY_OFF_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(KEY_OFF_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PC4 */
+  GPIO_InitStruct.Pin = USB_JOIN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(USB_JOIN_GPIO_Port, &GPIO_InitStruct);
+	
   /*Configure GPIO pins : PBPin PBPin */
   GPIO_InitStruct.Pin = GPIO_Ver_0_Pin|GPIO_Ver_1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
@@ -165,12 +187,20 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(LCD_RST_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PCPin PCPin PCPin PCPin */
+  // GPIO_InitStruct.Pin = LCD_WR_Pin|LCD_RD_Pin|LCD_A0_Pin;
   GPIO_InitStruct.Pin = LCD_WR_Pin|LCD_RD_Pin|LCD_A0_Pin|RS485_DE_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : PCPin PCPin PCPin PCPin */
+  GPIO_InitStruct.Pin = RS485_DE_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(RS485_DE_GPIO_Port, &GPIO_InitStruct);
+  
   /*Configure GPIO pin : PtPin */
   GPIO_InitStruct.Pin = LCD_CS0_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -195,6 +225,7 @@ void MX_GPIO_Init(void)
                            PD4 */
   GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3
                           |GPIO_PIN_4;
+  // GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3;    
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);

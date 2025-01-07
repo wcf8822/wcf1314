@@ -173,6 +173,31 @@ void ch340_DataHandle(void)
 								setting_callback[3] = ((check_byte == ch340e_usart.rx_buf[3]) ? 1 : 0);
 								break;
 							
+							case 0x08:  //设置屏幕对比度的
+								W25QXX_Write(&(ch340e_usart.rx_buf[3]), SETTING_CONTRAST_ADDR, 1);
+								
+								setting_reset();
+								
+								setting_callback[0] = 0xFF;
+								setting_callback[1] = 0x02;
+								setting_callback[2] = 0x08;
+								W25QXX_Read(&check_byte, SETTING_CONTRAST_ADDR, 1);
+								setting_callback[3] = ((check_byte == ch340e_usart.rx_buf[3]) ? 1 : 0);
+								break;
+
+								case 0x09://写电池类型
+									W25QXX_Write(&(ch340e_usart.rx_buf[3]), BATTERT_TYPE_ADDR, 1);
+								
+									setting_reset();
+									
+									setting_callback[0] = 0xFF;
+									setting_callback[1] = 0x02;
+									setting_callback[2] = 0x09;
+									W25QXX_Read(&check_byte, BATTERT_TYPE_ADDR, 1);
+									setting_callback[3] = ((check_byte == ch340e_usart.rx_buf[3]) ? 1 : 0);
+
+									break;	
+							
 							default:
 								break;							
 						}
@@ -184,13 +209,25 @@ void ch340_DataHandle(void)
 					case 0x03://查数据
 						switch(ch340e_usart.rx_buf[2])
 						{
-							case 0x01://查记录条数
-								log_SendCount();
+							case 0x01://查总共记录条数
+							  log_SendCount();
+							  DO_Send_Count = 0;
+							  pH_Send_Count = 0;
+							  Tur_Send_Count = 0;
+							  FCL_Send_Count = 0;
+							  EC_Send_Count = 0;
+							  ORP_Send_Count = 0;
+							  NH4_Send_Count = 0;
+							  F_Send_Count = 0;
+							  CL_Send_Count = 0;
+							  Chl_Send_Count = 0;
+							  Bga_Send_Count = 0;
+							  COD_Send_Count = 0;							
 								break;
 							
 							case 0x02://查第几条记录
 								temp_index = (ch340e_usart.rx_buf[3]<<8) | ch340e_usart.rx_buf[4];
-								log_SendBytes(temp_index);
+								log_SendBytes();
 								break;
 							
 							default:

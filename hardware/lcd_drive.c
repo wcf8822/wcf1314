@@ -20,7 +20,7 @@ void Delay_ms(unsigned short count)
 
 //============================================================================= 
 //函 数 名:  ReverseBin()
-//功 能：	按位反转二进制
+//功 能：	按位反转二进制   uint8_t的高四位和低四位中间线对称或
 //入口参数： Data:需要转换的数值
 //出口参数： 无
 //返 回 值： 转换完成的数值
@@ -98,17 +98,17 @@ void WriteDataUC1698U(uint8_t Data)
 /***********************************************************************
 * 名称：LCD_Initialize()
 * 功能：LCM初始化，将LCM初始化为纯图形模式，显示起始地址为0x0000，。
-* 入口参数：无
+* 入口参数：ContrastIsLight 是否用淡的对比度
 * 出口参数：无
 * 说明：函数会设置LCM数据总线为输出方式
 ***********************************************************************/
-void  LCD_Initialize(void)
+void LCD_Initialize(uint8_t ContrastIsIntense)
 {
 #define BR		  0X01	   	//Set LCD Bias Ratio:1/10 bias	  
 #define PC1     0X03      //power control set as internal power
 
 #define TC      0x00      //set temperate compensation as 0%
-#define PM      178       //Set Vbias Potentiometer  192    178
+//#define PM      192       //Set Vbias Potentiometer  192    178
 #define LC_210  0X05      //set LCD Control
 #define LC_43   0x03
 #define LC_5    0X01
@@ -167,7 +167,7 @@ void  LCD_Initialize(void)
 
 
 	WriteCommandUC1698U(0x81);	                //对比电压 81H + 0-255   这是设置对比值就是暗淡
-	WriteCommandUC1698U(PM );
+	WriteCommandUC1698U(ContrastIsIntense ? 192 : 178);
 	
 	WriteCommandUC1698U(0x84|(LC_8   & 0X01) );
 	
@@ -381,10 +381,10 @@ void  GUI_FillSCR(uint8_t dat)
 * 入口参数：无
 * 出口参数：无
 ****************************************************************************/
-void  GUI_Initialize(void)
+void  GUI_Initialize(uint8_t ContrastIsIntense)
 {  
 	gui_SetRefreshOFF();
-	LCD_Initialize();					// 初始化LCM模块工作模式，纯图形模式
+	LCD_Initialize(ContrastIsIntense);					// 初始化LCM模块工作模式，纯图形模式
 	GUI_ClearSCR(0x00);       // 初始化缓冲区为0x00，并输出屏幕(清屏)
 	gui_SetRefreshON();	      //开显示刷新
 	for(uint8_t i=0; i<200;i++)GUI_UpdateDisplay();//刷新下屏幕
@@ -677,7 +677,7 @@ uint8_t gui_GetRefreshStatus(void)
 //}
 
 #define LOCK_SIZE 16
-#define LOCK_Y 32
+#define LOCK_Y 28
 
 const uint8_t lock_width = LOCK_SIZE/8;
 const uint8_t lock_height = LOCK_SIZE;
@@ -687,7 +687,7 @@ void gui_DrawLock(uint8_t* arr)
 	uint8_t *p = arr;
 	for(uint8_t i = LOCK_Y; i < LOCK_Y+lock_height; i++)//y轴
 	{
-		for(uint8_t j = 0; j < lock_width; j++)//x轴
+		for(uint8_t j = 1; j < 3; j++)//x轴
 		{
 			gui_disp_buf[i][j] = *p++;
 		}
@@ -698,7 +698,7 @@ void gui_ClearLock(void)
 {
 	for(uint8_t i = LOCK_Y; i < LOCK_Y+lock_height; i++)//y轴
 	{
-		for(uint8_t j = 0; j < lock_width; j++)//x轴
+		for(uint8_t j = 1; j < 3; j++)//x轴
 		{
 			gui_disp_buf[i][j] = 0x00;
 		}
@@ -708,7 +708,7 @@ void gui_ClearLock(void)
 
 void gui_ClearWarining(void)
 {
-	for(uint8_t i = 83; i < 109; i++)//y轴
+	for(uint8_t i = 132; i < 158; i++)//y轴
 	{
 		for(uint8_t j = 0; j < 4; j++)//x轴
 		{
@@ -720,7 +720,7 @@ void gui_ClearWarining(void)
 void gui_DrawWarining(uint8_t* arr)
 {
 	uint8_t *p = arr;
-	for(uint8_t i = 83; i < 109; i++)//y轴
+	for(uint8_t i = 132; i < 158; i++)//y轴
 	{
 		for(uint8_t j = 0; j < 4; j++)//x轴
 		{
@@ -728,6 +728,54 @@ void gui_DrawWarining(uint8_t* arr)
 		}
 	}
 }
+
+void gui_DrawMes(uint8_t* arr)
+{
+	uint8_t *p = arr;
+	for(uint8_t i = 26; i < 42; i++)//y轴
+	{
+		for(uint8_t j = 16; j < 19; j++)//x轴
+		{
+			gui_disp_buf[i][j] = *p++;
+		}
+	}
+}
+
+void gui_ClearMes()
+{
+	for(uint8_t i = 26; i < 42; i++)//y轴
+	{
+		for(uint8_t j = 16; j < 19; j++)//x轴
+		{
+			gui_disp_buf[i][j] = 0x00;
+		}
+	}
+}
+
+void gui_DrawUpDownPage(uint8_t* arr)
+{
+	uint8_t *p = arr;
+	for(uint8_t i = 142; i < 158; i++)//y轴
+	{
+		for(uint8_t j = 9; j < 11; j++)//x轴
+		{
+			gui_disp_buf[i][j] = *p++;
+		}
+	}	
+}
+
+void gui_ClearUpDownPage(void)
+{
+	for(uint8_t i = 142; i < 158; i++)//y轴
+	{
+		for(uint8_t j = 9; j < 11; j++)//x轴
+		{
+			gui_disp_buf[i][j] = 0x00;
+		}
+	}	
+}
+
+
 void gui_ClearNoSignal(uint8_t is_cn, uint8_t start_y)
 {
 	uint8_t start_x = 0, end_x = 0;

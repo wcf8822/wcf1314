@@ -1,18 +1,18 @@
-//gui±êÇ©½á¹¹
+//guiæ ‡ç­¾ç»“æž„
 #include "label.h"
 #include "loadbit.h"
 
-//±êÇ©ÊÇµ¥Á´±í
+//æ ‡ç­¾æ˜¯å•é“¾è¡¨
 
 
 /***********************************************************************
-* Ãû³Æ£ºLabelList_NodeGenerate()
-* ¹¦ÄÜ£º´´½¨ÐÂµÄ½Úµã²¢·µ»ØÖ¸Ïò½ÚµãµÄÖ¸Õë
-* Èë¿Ú²ÎÊý£ºx            ±êÇ©µÄxÖµ
-*          y            ±êÇ©µÄyÖµ
-*          content_chn  ±êÇ©ËùÒªÏÔÊ¾µÄÖÐÎÄÄÚÈÝ
-*          content_eng  ±êÇ©ËùÒªÏÖÊµµÄÓ¢ÎÄÄÚÈÝ
-* ³ö¿Ú²ÎÊý£ºÖ¸Ïò½ÚµãµÄÖ¸Õë
+* åç§°ï¼šLabelList_NodeGenerate()
+* åŠŸèƒ½ï¼šåˆ›å»ºæ–°çš„èŠ‚ç‚¹å¹¶è¿”å›žæŒ‡å‘èŠ‚ç‚¹çš„æŒ‡é’ˆ
+* å…¥å£å‚æ•°ï¼šx            æ ‡ç­¾çš„xå€¼
+*          y            æ ‡ç­¾çš„yå€¼
+*          content_chn  æ ‡ç­¾æ‰€è¦æ˜¾ç¤ºçš„ä¸­æ–‡å†…å®¹
+*          content_eng  æ ‡ç­¾æ‰€è¦çŽ°å®žçš„è‹±æ–‡å†…å®¹
+* å‡ºå£å‚æ•°ï¼šæŒ‡å‘èŠ‚ç‚¹çš„æŒ‡é’ˆ
 ***********************************************************************/
 PtrToLabelNode LabelList_NodeGenerate(uint8_t x, uint8_t y, uint8_t* ContentChn, uint8_t ChnLen, uint8_t* ContentEng, LABEL_SIZE lbl_size, LABEL_TYPE lbl_type, LABEL_UINT_TYPE uint_type, uint8_t have_parenthesis)
 {
@@ -39,15 +39,15 @@ PtrToLabelNode LabelList_NodeGenerate(uint8_t x, uint8_t y, uint8_t* ContentChn,
 }
 
 /***********************************************************************
-* Ãû³Æ£ºLabelList_Delete()
-* ¹¦ÄÜ£º±éÀú²¢Çå¿ÕÁ´±í¡£
-* Èë¿Ú²ÎÊý£ºlbllist   Á´±íÍ·Ö¸ÕëµÄÖ¸Õë£¨ÒòÎªÒªÈÃÖ¸ÕëÖ¸ÏòNULLËùÒÔÒªÓÃÖ¸ÕëµÄÖ¸Õë£©
-* ³ö¿Ú²ÎÊý£ºÎÞ
+* åç§°ï¼šLabelList_Delete()
+* åŠŸèƒ½ï¼šéåŽ†å¹¶æ¸…ç©ºé“¾è¡¨ã€‚
+* å…¥å£å‚æ•°ï¼šlbllist   é“¾è¡¨å¤´æŒ‡é’ˆçš„æŒ‡é’ˆï¼ˆå› ä¸ºè¦è®©æŒ‡é’ˆæŒ‡å‘NULLæ‰€ä»¥è¦ç”¨æŒ‡é’ˆçš„æŒ‡é’ˆï¼‰
+* å‡ºå£å‚æ•°ï¼šæ— 
 ***********************************************************************/
-void LabelList_Destory(list_label *lbllist)//Çå¿ÕÁ´±í Èë¿Ú²ÎÊý Í·Ö¸Õë ÕâÀï²»Ê¹ÓÃÉÚ±ø
+void LabelList_Destory(list_label *lbllist)//æ¸…ç©ºé“¾è¡¨ å…¥å£å‚æ•° å¤´æŒ‡é’ˆ è¿™é‡Œä¸ä½¿ç”¨å“¨å…µ
 {
 	PtrToLabelNode p = NULL, temp = NULL;
-	p = *lbllist;                          //Ö¸ÏòÍ·Ö¸Õë
+	p = *lbllist;                          //æŒ‡å‘å¤´æŒ‡é’ˆ
 	*lbllist = NULL;	
 	while(p != NULL)
 	{
@@ -58,14 +58,14 @@ void LabelList_Destory(list_label *lbllist)//Çå¿ÕÁ´±í Èë¿Ú²ÎÊý Í·Ö¸Õë ÕâÀï²»Ê¹ÓÃ
 }
 
 /***********************************************************************
-* Ãû³Æ£ºLabelList_Add()
-* ¹¦ÄÜ£ºÌí¼Ó½Úµãµ½±êÇ©Á´±íÖÐ¡£
-* Èë¿Ú²ÎÊý£ºx            ±êÇ©µÄxÖµ
-*          y            ±êÇ©µÄyÖµ
-*          content_chn  ±êÇ©ËùÒªÏÔÊ¾µÄÖÐÎÄÄÚÈÝ
-*          content_eng  ±êÇ©ËùÒªÏÖÊµµÄÓ¢ÎÄÄÚÈÝ
-*          lbllist      Á´±íÍ·Ö¸ÕëµÄÖ¸Õë£¨ÒòÎªÒªÐÞ¸ÄÖ¸ÕëËùÒÔÒªµ÷ÓÃÖ¸ÕëµÄÖ¸Õë£©
-* ³ö¿Ú²ÎÊý£ºÎÞ
+* åç§°ï¼šLabelList_Add()
+* åŠŸèƒ½ï¼šæ·»åŠ èŠ‚ç‚¹åˆ°æ ‡ç­¾é“¾è¡¨ä¸­ã€‚
+* å…¥å£å‚æ•°ï¼šx            æ ‡ç­¾çš„xå€¼
+*          y            æ ‡ç­¾çš„yå€¼
+*          content_chn  æ ‡ç­¾æ‰€è¦æ˜¾ç¤ºçš„ä¸­æ–‡å†…å®¹
+*          content_eng  æ ‡ç­¾æ‰€è¦çŽ°å®žçš„è‹±æ–‡å†…å®¹
+*          lbllist      é“¾è¡¨å¤´æŒ‡é’ˆçš„æŒ‡é’ˆï¼ˆå› ä¸ºè¦ä¿®æ”¹æŒ‡é’ˆæ‰€ä»¥è¦è°ƒç”¨æŒ‡é’ˆçš„æŒ‡é’ˆï¼‰
+* å‡ºå£å‚æ•°ï¼šæ— 
 ***********************************************************************/
 void LabelList_Add(uint8_t x, uint8_t y, uint8_t* ContentChn, uint8_t ChnLen, uint8_t* ContentEng, LABEL_SIZE lbl_size, LABEL_TYPE lbl_type, LABEL_UINT_TYPE uint_type, uint8_t have_parenthesis, list_label* lbllist)
 {
@@ -80,7 +80,7 @@ void LabelList_Add(uint8_t x, uint8_t y, uint8_t* ContentChn, uint8_t ChnLen, ui
 }
 
 
-//»ñÈ¡Á´±í³¤¶È
+//èŽ·å–é“¾è¡¨é•¿åº¦
 uint8_t LabelList_count(list_label lbllist)
 {
 	PtrToLabelNode p = lbllist;
@@ -101,18 +101,18 @@ uint8_t LabelList_count(list_label lbllist)
 
 
 /***********************************************************************
-* Ãû³Æ£ºLabelList_Print()
-* ¹¦ÄÜ£º±éÀú±êÇ©ÁÐ±íÈ»ºó½«ÄÚÈÝÏÔÊ¾ÔÚÆÁÄ»ÉÏ¡£
-* Èë¿Ú²ÎÊý£ºlbllist  ±êÇ©Á´±íµÄÍ·Ö¸Õë
-*          IsChn    ´òÓ¡µÄ¶«Î÷ 0Îª´òÓ¡±êÇ©µÄÓ¢ÎÄ 1Îª´òÓ¡±êÇ©µÄÖÐÎÄ
-* ³ö¿Ú²ÎÊý£ºÎÞ
+* åç§°ï¼šLabelList_Print()
+* åŠŸèƒ½ï¼šéåŽ†æ ‡ç­¾åˆ—è¡¨ç„¶åŽå°†å†…å®¹æ˜¾ç¤ºåœ¨å±å¹•ä¸Šã€‚
+* å…¥å£å‚æ•°ï¼šlbllist  æ ‡ç­¾é“¾è¡¨çš„å¤´æŒ‡é’ˆ
+*          IsChn    æ‰“å°çš„ä¸œè¥¿ 0ä¸ºæ‰“å°æ ‡ç­¾çš„è‹±æ–‡ 1ä¸ºæ‰“å°æ ‡ç­¾çš„ä¸­æ–‡
+* å‡ºå£å‚æ•°ï¼šæ— 
 ***********************************************************************/
 void LabelList_Print(list_label lbllist , uint8_t IsChn)
 {
 	PtrToLabelNode p = lbllist;
 	uint8_t temp_x;
 	
-	if(p == NULL)//Èç¹ûÊÇ¿ÕÁ´±íµÄ»°
+	if(p == NULL)//å¦‚æžœæ˜¯ç©ºé“¾è¡¨çš„è¯
 	{
 		return;
 	}
@@ -170,7 +170,12 @@ void LabelList_Print(list_label lbllist , uint8_t IsChn)
 					case UINT_CELSIUS:
 						GUI_PutCharArr(temp_x, p->y, (uint8_t *)(SHESHIDU), MENU_FONT_CHN_LSIZE, MENU_FONT_CHN_LSIZE, LOADBIT_NORMAL);
 						temp_x+=16;
+						break;			
+					case UINT_FAHRENHEIT:
+						GUI_PutCharArr(temp_x, p->y, (uint8_t *)(HUASHIDU), MENU_FONT_CHN_LSIZE, MENU_FONT_CHN_LSIZE, LOADBIT_NORMAL);
+						temp_x+=16;
 						break;
+					
 					case UINT_MGL:
 						GUI_PutChar(temp_x, p->y, 'm', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
 						temp_x+=8;
@@ -182,10 +187,36 @@ void LabelList_Print(list_label lbllist , uint8_t IsChn)
 						temp_x+=8;
 						break;
 					case UINT_USCM:
+						GUI_PutChar(temp_x, p->y, '@', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'S', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, '/', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'c', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'm', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						break;
+					case UINT_mSCM:
+						GUI_PutChar(temp_x, p->y, 'm', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'S', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, '/', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'c', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'm', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
 						break;
 					case UINT_NTU:
 						break;
 					case UINT_MV:
+						GUI_PutChar(temp_x, p->y, 'm', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'V', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
 						break;
 					case UINT_KPA:
 						GUI_PutChar(temp_x, p->y, 'k', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
@@ -204,8 +235,45 @@ void LabelList_Print(list_label lbllist , uint8_t IsChn)
 						temp_x+=8;
 						GUI_PutChar(temp_x, p->y, 't', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
 						temp_x+=8;
+						break;	
+					case UINT_Cells_mL:
+						GUI_PutChar(temp_x, p->y, 'C', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'e', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'l', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'l', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 's', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, '/', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'm', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'L', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
 						break;
-					
+					case UINT_Kcells_mL:
+						GUI_PutChar(temp_x, p->y, 'K', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'c', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'e', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'l', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'l', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 's', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, '/', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'm', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'L', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						break;
 					default:
 						break;
 				}

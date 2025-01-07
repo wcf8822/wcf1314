@@ -5,7 +5,6 @@
 #include "main.h"
 
 
-/*·äÃùÆ÷Ïì¶à¾Ã*/
 #define BEE_TIM 50
 
 #define ALARM_TIMES 4

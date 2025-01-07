@@ -25,7 +25,8 @@
 
 
 #define KEY_TIM 10            //短按消抖时间
-#define KEY_TIM_LONG 2000     //长按判断时间
+#define KEY_TIM_LONG 3000     //长按判断时间
+#define KEY_TIM_LONG_LONG 6000     //长按判断时间
 
 #define TIM_SUCCEFFUL 1500    //成功弹窗停留时间
 
@@ -33,7 +34,7 @@
 
 #define BATTERY_TIM 1000      //没电了闪的时间
 
-#define ALARM_TIM 1000        //报警标志
+
 
 
 //main函数相关的flag标志接口
@@ -45,6 +46,8 @@ uint8_t get_BatFlag(void);
 uint8_t get_GPSFlag(void);
 uint8_t get_InterfacialFlag(void);
 uint8_t get_WarningFlag(void);
+uint16_t get_SinMesFlag(void);
+
 
 void clear_RtcFlag(void);
 void clear_BmpFlag(void);
@@ -54,7 +57,8 @@ void clear_BatFlag(void);
 void clear_InterfacialFlag(void);
 void clear_GPSFlag(void);
 void clear_WarningFlag(void);
-
+void clear_SinMesTimeFlag(void);
+void clear_DataFlag(void);
 //按键按下开始计时的相关接口                     计时的标志都是CountFlag结尾
 void set_KeyUpCountFlag(void);
 void set_KeyDownCountFlag(void);
@@ -63,6 +67,9 @@ void set_KeyEscCountFlag(void);
 void set_KeyCalCountFlag(void);
 void set_KeyMenuCountFlag(void);
 void set_KeyBluCountFlag(void);
+void set_KeyOffCountFlag(void);
+void set_KeyOffLongCountFlag(void);
+
 
 uint8_t get_KeyUpCountFlag(void);
 uint8_t get_KeyDownCountFlag(void);
@@ -71,9 +78,14 @@ uint8_t get_KeyEscCountFlag(void);
 uint8_t get_KeyCalCountFlag(void);
 uint8_t get_KeyMenuCountFlag(void);
 uint8_t get_KeyBluCountFlag(void);
+uint8_t get_KeyOffCountFlag(void);
+uint8_t get_KeyOffLongCountFlag(void);
 
 uint16_t get_KeyCalCount(void);
 uint16_t get_KeyOkCount(void);
+uint16_t get_KeyOffCount(void);
+
+
 
 void clear_KeyUpCountFlag(void);
 void clear_KeyDownCountFlag(void);
@@ -82,7 +94,8 @@ void clear_KeyEscCountFlag(void);
 void clear_KeyCalCountFlag(void);
 void clear_KeyMenuCountFlag(void);
 void clear_KeyBluCountFlag(void);
-
+void clear_KeyOffCountFlag(void);
+void clear_KeyOffLongCountFlag(void);
 
 
 
@@ -98,6 +111,8 @@ uint8_t get_KeyEscClickedFlag(void);
 uint8_t get_KeyCalClickedFlag(void);
 uint8_t get_KeyMenuClickedFlag(void);
 uint8_t get_KeyBluClickedFlag(void);
+uint8_t get_KeyOffClickedFlag(void);
+uint8_t get_KeyOffLongClickedFlag(void);
 
 void clear_KeyUpClickedFlag(void);
 void clear_KeyDownClickedFlag(void);
@@ -106,7 +121,8 @@ void clear_KeyEscClickedFlag(void);
 void clear_KeyCalClickedFlag(void);
 void clear_KeyMenuClickedFlag(void);
 void clear_KeyBluClickedFlag(void);
-
+void clear_KeyOffClickedFlag(void);
+void clear_KeyOffLongClickedFlag(void);
 
 
 
@@ -120,12 +136,16 @@ void clear_KeyOkCount(void);
 void clear_KeyCalCount(void);
 void clear_KeyMenuCount(void);
 void clear_KeyBluCount(void);
+void clear_KeyOffCount(void);
 
 
 void set_SuccessfulTimStartFlag(void);
 
 void clear_WarningCount(void);
 
+
+extern uint16_t TimeValue;
+extern uint8_t MesRun;
 #endif
 
 

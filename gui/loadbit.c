@@ -149,6 +149,11 @@ void GUI_PutChar(uint8_t x, uint8_t y, char c, uint8_t hno, uint8_t lno, uint8_t
 		case '!':
 			GUI_PutCharArr(x, y, (uint8_t *)(FONT_ENG_MENU[70]), hno, lno, IsInverse);
 			break;
+		
+		case '@'://μ
+			GUI_PutCharArr(x, y, (uint8_t *)(FONT_ENG_MENU[73]), hno, lno, IsInverse);
+			break;
+		
 		case '(':
 			GUI_PutCharArr(x, y, (uint8_t *)(ZUOKUOHAO), hno, lno, IsInverse);
 			break;
@@ -267,3 +272,16 @@ void GUI_PutChnStr(uint8_t x, uint8_t y, uint8_t *dat, uint8_t str_len, uint8_t 
 	
 }
 
+
+void GUI_PutChnStr_xin(uint8_t x, uint8_t y, uint8_t *dat, uint8_t str_len, uint8_t hno, uint8_t lno, uint8_t IsInverse)
+{
+	if(dat == NULL)
+	{
+		return;
+	}
+	for(uint8_t i = 0; i < str_len; i++)
+	{
+		GUI_PutCharArr(x+i*16, y, (uint8_t *)(FONT_CHN_MENU_xin[dat[i]]), hno, lno, IsInverse);
+	}
+	
+}

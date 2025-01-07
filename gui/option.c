@@ -145,11 +145,24 @@ void OptionList_Print(list_option OptionList , uint8_t IsChn, float RowSpacing) 
 		{
 			GUI_PutChnStr(0, option_y, p->content_chn, p->ChnContent_size, MENU_FONT_CHN_LSIZE, MENU_FONT_CHN_RSIZE, p->IsSelected);
 		}
-		if(p->IsEngOnly)
+
+		if(p->IsEngOnly == DisplayWord_xin)
+		{
+			if(IsChn)
+			{
+				GUI_PutChnStr_xin(0, option_y, p->content_chn, p->ChnContent_size, MENU_FONT_CHN_LSIZE, MENU_FONT_CHN_RSIZE, p->IsSelected);
+			}
+			else
+			{
+				GUI_PutEngStr(0, option_y, p->content_eng, MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, p->IsSelected);
+			}
+		}
+		else if(p->IsEngOnly == IS_ENG_ONLY)
 		{
 			GUI_PutEngStr(0, option_y, p->content_eng, MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, p->IsSelected);
 		}
 		else
+
 		{
 			if(IsChn)
 			{
