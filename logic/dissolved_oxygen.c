@@ -10,6 +10,8 @@
 #include <math.h>
 #include "log.h"
 #include "logic.h"
+#include "DO_HaiFa_DY12.h"
+
 /////////////////////////////////////////////////////////////////////////////////////////////好像可以直接在485指令里直接改对应设备的值就不用改结构体里的值
 
 const float press_error = 0.3;    //气压差值
@@ -98,14 +100,6 @@ void DO_SetValueLocked(PtrToDOProbe ptd)
 
 void DO_zero_buf_mgl(PtrToDOProbe p,uint8_t modbus_Id)
 {
-//	p->DOmgl_arr[0] = ' ';
-//	p->DOmgl_arr[1] = ' ';
-//	p->DOmgl_arr[2] = ' ';
-//	p->DOmgl_arr[3] = '0';
-//	p->DOmgl_arr[4] = '.';
-//	p->DOmgl_arr[5] = '0';
-//	p->DOmgl_arr[6] = '0';
-//	p->DOmgl_arr[7] = '\0';
 	p->tocmgl_Vol_arr[0] = ' ';
 	p->tocmgl_Vol_arr[1] = ' ';
 	p->tocmgl_Vol_arr[2] = '0';
@@ -132,6 +126,27 @@ void DO_zero_buf_mgl(PtrToDOProbe p,uint8_t modbus_Id)
 		p->DOmgl_arr[4] = '0';
 		p->DOmgl_arr[5] = '0';
 		p->DOmgl_arr[6] = '\0';
+	}
+	if(modbus_Id == ORP_DR31_ModbusID)
+	{
+		p->DOmgl_arr[0] = ' ';
+		p->DOmgl_arr[1] = ' ';
+		p->DOmgl_arr[2] = ' ';
+		p->DOmgl_arr[3] = ' ';
+		p->DOmgl_arr[4] = '0';
+		p->DOmgl_arr[5] = '\0';
+		p->DOmgl_arr[6] = '\0';
+	}
+	if(modbus_Id == MLSS_Tianjian_ModbusID)
+	{
+		p->DOpercent_Vol_arr[0] = ' ';
+		p->DOpercent_Vol_arr[1] = ' ';
+		p->DOpercent_Vol_arr[2] = ' ';
+		p->DOpercent_Vol_arr[3] = '0';
+		p->DOpercent_Vol_arr[4] = '\0';
+		p->DOpercent_Vol_arr[5] = '\0';
+		p->DOpercent_Vol_arr[6] = '\0';
+		p->DOpercent_Vol_arr[7] = '\0';
 	}
 }
 
@@ -163,12 +178,9 @@ void DO_AddProbe(uint8_t ModbusId)//这里得添加名字
 	memset(&(p->queue_temp), 0, sizeof(filter_t));
 	switch(ModbusId)
 	{
-		case DO_DO56_ModbusID:
-		case DO_DY06_ModbusID:
-		case DO_D900_ModbusID:
-		case DO_DY12_ModbusID:
 		case DO_shenghui_ModbusID:
 		case DO_HF1012_ModbusID:
+		case DO_HF_DY12_ModbusID:
 			snprintf(p->name, 6, "DO %02d", ModbusId); //生成名字
 		  add_Type=TYPE_DO;
 			if(setting_GetIsOpen_SlideAvg_DO())
@@ -180,7 +192,6 @@ void DO_AddProbe(uint8_t ModbusId)//这里得添加名字
 			break;
 		
 		case pH_DpH07_ModbusID :
-		case pH_P900_ModbusID :
 		case pH_shenghui_ModbusID :
 			snprintf(p->name, 6, "pH %02d", ModbusId); //生成名字
 		  add_Type=TYPE_pH;
@@ -192,8 +203,6 @@ void DO_AddProbe(uint8_t ModbusId)//这里得添加名字
 			}
 			break;
 		
-		case Tur_TUR01_ModbusID :
-		case Tur_DX01_ModbusID :
 		case Tur_shenghui_ModbusID:
 			snprintf(p->name, 7, "Tur %02d", ModbusId); //生成名字
 		  add_Type=TYPE_Tur;
@@ -205,21 +214,6 @@ void DO_AddProbe(uint8_t ModbusId)//这里得添加名字
 			}
 			break;
 
-
-		case FCL_DL06_ModbusID:
-		case FCL_F900_ModbusID:
-			snprintf(p->name, 6, "FCL %02d", ModbusId); //生成名字				
-		  add_Type=TYPE_FCL;		
-			if(setting_GetIsOpen_SlideAvg_FCL())
-			{//如果开启了滑动平均就直接添加下 没开的话就等开的时候再初始化
-				filter_init(&(p->queue_domgl), setting_GetSlideAvgTimes_FCL());      //初始化一下mg/l 数值指针
-				filter_init(&(p->queue_dopercent), setting_GetSlideAvgTimes_FCL());  //初始化一下%    数值指针
-				filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_FCL());       //初始化一下℃    数值指针
-			}
-			break;
-
-		case EC_DE21_ModbusID:
-		case EC_N900_ModbusID:		
 		case EC_shenghui_ModbusID:		
 		case EC_DE26_ModbusID:
 			snprintf(p->name, 7, "EC %02d", ModbusId); //生成名字
@@ -233,7 +227,6 @@ void DO_AddProbe(uint8_t ModbusId)//这里得添加名字
 			break;
 		
 		case ORP_DR31_ModbusID:
-		case ORP_Y900_ModbusID:
 			snprintf(p->name, 7, "ORP %02d", ModbusId); //生成名字
 		  add_Type=TYPE_ORP;
 			if(setting_GetIsOpen_SlideAvg_ORP())
@@ -254,32 +247,8 @@ void DO_AddProbe(uint8_t ModbusId)//这里得添加名字
 				filter_init(&(p->queue_dopercent), setting_GetSlideAvgTimes_NH4());  //初始化一下%    数值指针
 				filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_NH4());       //初始化一下℃    数值指针
 			}
-			break;
+			break;	
 		
-    	case F_L200_ModbusID:
-			snprintf(p->name, 5, "F- %02d", ModbusId); //生成名字
-		  add_Type=TYPE_F;
-			if(setting_GetIsOpen_SlideAvg_F())
-			{//如果开启了滑动平均就直接添加下 没开的话就等开的时候再初始化
-				filter_init(&(p->queue_domgl), setting_GetSlideAvgTimes_F());      //初始化一下mg/l 数值指针
-				filter_init(&(p->queue_dopercent), setting_GetSlideAvgTimes_F());  //初始化一下%    数值指针
-				filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_F());       //初始化一下℃    数值指针
-			}
-			break;
-		
-		
-		case CL_L100_ModbusID:
-			snprintf(p->name, 6, "CL- %02d", ModbusId); //生成名字
-		  add_Type=TYPE_CL;
-			if(setting_GetIsOpen_SlideAvg_CL())
-			{//如果开启了滑动平均就直接添加下 没开的话就等开的时候再初始化
-				filter_init(&(p->queue_domgl), setting_GetSlideAvgTimes_CL());      //初始化一下mg/l 数值指针
-				filter_init(&(p->queue_dopercent), setting_GetSlideAvgTimes_CL());  //初始化一下%    数值指针
-				filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_CL());       //初始化一下℃    数值指针
-			}
-			break;
-		
-		case Chl_T615_ModbusID:
 		case Chl_shenghui_ModbusID:
 			snprintf(p->name, 7, "Chl %02d", ModbusId); //生成名字
 		  add_Type=TYPE_Chl;
@@ -291,8 +260,7 @@ void DO_AddProbe(uint8_t ModbusId)//这里得添加名字
 			}
 			break;
 		
-		
-		case Bga_T613_ModbusID:
+		case Bga_shenghui_ModbusID:
 			snprintf(p->name, 7, "Bga %02d", ModbusId); //生成名字
 		  add_Type=TYPE_Bga;
 			if(setting_GetIsOpen_SlideAvg_Bga())
@@ -305,7 +273,6 @@ void DO_AddProbe(uint8_t ModbusId)//这里得添加名字
 		
 		case COD_DC17_ModbusID :
 		case COD_DC18_ModbusID :
-		case COD_C510_ModbusID :
 		case COD_shenghui_ModbusID :
 			snprintf(p->name, 7, "COD %02d", ModbusId); //生成名字
 		  add_Type=TYPE_CODuv;
@@ -314,7 +281,31 @@ void DO_AddProbe(uint8_t ModbusId)//这里得添加名字
 				filter_init(&(p->queue_domgl), setting_GetSlideAvgTimes_COD());      //初始化一下mg/l 数值指针
 				filter_init(&(p->queue_dopercent), setting_GetSlideAvgTimes_COD());  //初始化一下%    数值指针
 				filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_COD());       //初始化一下℃    数值指针
+				filter_init(&(p->queue_value), setting_GetSlideAvgTimes_COD());       //初始化一下℃    数值指针
+			}
+			break;
+			
+		case MLSS_Tianjian_ModbusID:
+			snprintf(p->name, 8, "MLSS %02d", ModbusId); //生成名字
+		  add_Type=TYPE_MLSS;
+			if(setting_GetIsOpen_SlideAvg_MLSS())
+			{//如果开启了滑动平均就直接添加下 没开的话就等开的时候再初始化
+				filter_init(&(p->queue_domgl), setting_GetSlideAvgTimes_MLSS());      //初始化一下mg/l 数值指针
+				filter_init(&(p->queue_dopercent), setting_GetSlideAvgTimes_MLSS());  //初始化一下%    数值指针
+				filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_MLSS());       //初始化一下℃    数值指针
 							
+			}
+			break;
+
+		case OiW_guohong_ModbusID:
+		case OiW_yushan_ModbusID:
+			snprintf(p->name, 8, "OiW %02d", ModbusId); //生成名字
+		  add_Type=TYPE_Oiw;
+			if(setting_GetIsOpen_SlideAvg_OIW())
+			{//如果开启了滑动平均就直接添加下 没开的话就等开的时候再初始化
+				filter_init(&(p->queue_domgl), setting_GetSlideAvgTimes_OIW());      //初始化一下mg/l 数值指针
+				filter_init(&(p->queue_dopercent), setting_GetSlideAvgTimes_OIW());  //初始化一下%    数值指针
+				filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_OIW());       //初始化一下℃    数值指针			
 			}
 			break;
 		
@@ -339,8 +330,20 @@ void DO_AddProbe(uint8_t ModbusId)//这里得添加名字
 	p->temperature.value_f = 0.0;
 	
 	//显示buff初始化一下全都显示成0
-	DO_zero_buf_mgl(p,ModbusId);
-	DO_zero_buf_percent(p);
+		//显示buff初始化一下全都显示成0
+	if (ModbusId == Bga_shenghui_ModbusID)
+	{
+		p->DOmgl_arr[0] = '0';
+		p->DOmgl_arr[1] = '.';
+		p->DOmgl_arr[2] = '0';
+		p->DOmgl_arr[3] = '0';
+		p->DOmgl_arr[4] = '\0';
+	}
+	else
+	{
+		DO_zero_buf_mgl(p,ModbusId);
+		DO_zero_buf_percent(p);
+	}
 	
 	p->temperature_arr[0] = ' ';
 	p->temperature_arr[1] = '0';
@@ -348,15 +351,17 @@ void DO_AddProbe(uint8_t ModbusId)//这里得添加名字
 	p->temperature_arr[3] = '0';
 	p->temperature_arr[4] = '0';
 	p->temperature_arr[5] = '\0';
-	if(cur_DO.DO_list == NULL){
-	 comA_DO.DO_list=p;
-	 cur_DO.DO_list = comA_DO.DO_list; 
-   comA_DO.current_sensor_type=add_Type;		
-	 cur_DO.current_sensor_type=add_Type;		
+	if(cur_DO.DO_list == NULL)
+	{
+	 	comA_DO.DO_list=p;
+	 	cur_DO.DO_list = comA_DO.DO_list; 
+   		comA_DO.current_sensor_type=add_Type;		
+	 	cur_DO.current_sensor_type=add_Type;		
 	}
-	else{
-	 comB_DO.DO_list=p; 		
-   comB_DO.current_sensor_type=add_Type;			
+	else
+	{
+		comB_DO.DO_list=p; 		
+   		comB_DO.current_sensor_type=add_Type;			
 	}	
 }
 
@@ -414,7 +419,6 @@ void DO_rs485_GetTempTwoDO(PtrToDOProbe ptd)
 	SetCrc(rs485_usart.tx_buf, rs485_usart.tx_size = 8);
 	
 	rs485_SetSentType(DO_SendType_GetTempTwoDO);
-	
 	
 }
 
@@ -1014,7 +1018,8 @@ void CheckValueLock(PtrToDOProbe ptd)
 	   interfacial_GetCurPage() == PAGE_5_COD_shenghui_THREE||
 	   interfacial_GetCurPage() == PAGE_5_shenghui_BGA_ONE||
 		interfacial_GetCurPage() == PAGE_5_shenghui_BGA_TWO||
-	   interfacial_GetCurPage() == PAGE_5_DR31_ORP_ONE	 
+	   interfacial_GetCurPage() == PAGE_5_DR31_ORP_ONE|| 
+	   interfacial_GetCurPage() == PAGE_5_MLSS_zero_signal
 		)   //在具体校准界面中，锁定功能失效
 	{
 			clear_DOShakeCount();              //清除抖动计数
@@ -1074,6 +1079,14 @@ void CheckValueLock(PtrToDOProbe ptd)
 			case TYPE_CODuv:
 				eps = DO_AutoLock_eps[setting_GetAutoLockLevel_COD()];
 				GetAutoLock_Flag=setting_GetAutoLock_COD();						
+				break;
+			case TYPE_MLSS:
+				eps = DO_AutoLock_eps[setting_GetAutoLockLevel_MLSS()];
+				GetAutoLock_Flag=setting_GetAutoLock_MLSS();	
+				break;
+			case TYPE_Oiw:
+				eps = DO_AutoLock_eps[setting_GetAutoLockLevel_OIW()];
+				GetAutoLock_Flag=setting_GetAutoLock_OIW();	
 				break;
 			default:
 				break;
@@ -1303,6 +1316,12 @@ void DO_UpdatePressSal(PtrToDOProbe *DO_head) //更新DO设备的气压值和盐
 				case DO_shenghui_ModbusID:  
 					DO_shenghui_rs485_SetPressure(get_CurDo(),press);	            
 					break;	
+
+				case DO_HF_DY12_ModbusID:  
+					Set_DY12_Press_Flag(1);       
+					Set_DY12_Press_Value((int16_t)(press * 100));
+					DO_HaiFa_DY12_rs485_Set_Cmd_open(get_CurDo());
+					break;
 				
 				default:
 					break;
@@ -1322,6 +1341,11 @@ void DO_UpdatePressSal(PtrToDOProbe *DO_head) //更新DO设备的气压值和盐
 					DO_shenghui_rs485_SetSalinity(get_CurDo(),sal);	            
 					break;	
 				
+				case DO_HF_DY12_ModbusID:
+					Set_DY12_Sal_Flag(1);       
+					Set_DY12_Sal_Value((int16_t)(sal * 100));
+					DO_HaiFa_DY12_rs485_Set_Cmd_open(get_CurDo());
+					break;
 				default:
 					break;
 			}

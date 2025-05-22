@@ -85,6 +85,7 @@ void interfacial_InitMsg(void);
 Interfacial_t* interfacial_GetCurrentInterfacial(void);
 PtrToOptionNode interfacial_GetCurrentOption(void);
 uint8_t* interfacial_GetOptionSensorName(void);
+void interfacial_SetOptionSensorName(uint8_t* value);
 
 uint8_t interfacial_GetSalChangedFlag(void);
 void interfacial_ClearSalChangedFlag(void);

@@ -44,6 +44,17 @@ uint8_t setting_GetIsChn(void)
 }
 
 
+/*设置盐度单位*/
+void setting_SetSal_Unit(uint8_t value)
+{
+	setting.setting_struct.Sal_unit = value;
+}
+/*获取盐度单位*/
+uint8_t setting_GetSal_Uni(void)
+{
+	return setting.setting_struct.Sal_unit;
+}
+
 
 /*设置pH 的标液组*/
 void setting_SetIs_pH_Group(uint8_t Is_pH_Group)
@@ -180,13 +191,13 @@ uint8_t setting_GetIsAlarm_Tur(void)
 /*设置是否报警*/
 void setting_SetIsAlarm_FCL(uint8_t IsAlarm)
 {
-	setting.setting_struct.IsAlarm_FCL = IsAlarm;
+	// setting.setting_struct.IsAlarm_FCL = IsAlarm;
 }
 
 /*获取是否报警*/
 uint8_t setting_GetIsAlarm_FCL(void)
 {
-	return setting.setting_struct.IsAlarm_FCL;
+	// return setting.setting_struct.IsAlarm_FCL;
 }
 
 /*设置是否报警*/
@@ -231,24 +242,24 @@ uint8_t setting_GetIsAlarm_NH4(void)
 
 void setting_SetIsAlarm_F(uint8_t IsAlarm)
 {
-	setting.setting_struct.IsAlarm_F = IsAlarm;
+	// setting.setting_struct.IsAlarm_F = IsAlarm;
 }
 
 /*获取是否报警*/
 uint8_t setting_GetIsAlarm_F(void)
 {
-	return setting.setting_struct.IsAlarm_F;
+	// return setting.setting_struct.IsAlarm_F;
 }
 
 void setting_SetIsAlarm_CL(uint8_t IsAlarm)
 {
-	setting.setting_struct.IsAlarm_CL = IsAlarm;
+	// setting.setting_struct.IsAlarm_CL = IsAlarm;
 }
 
 /*获取是否报警*/
 uint8_t setting_GetIsAlarm_CL(void)
 {
-	return setting.setting_struct.IsAlarm_CL;
+	// return setting.setting_struct.IsAlarm_CL;
 }
 
 
@@ -288,6 +299,29 @@ uint8_t setting_GetIsAlarm_COD(void)
 	return setting.setting_struct.IsAlarm_COD;
 }
 
+/*设置是否报警*/
+void setting_SetIsAlarm_MLSS(uint8_t IsAlarm)
+{
+	setting.setting_struct.IsAlarm_MLSS = IsAlarm;
+}
+
+/*获取是否报警*/
+uint8_t setting_GetIsAlarm_MLSS(void)
+{
+	return setting.setting_struct.IsAlarm_MLSS;
+}
+
+/*设置是否报警*/
+void setting_SetIsAlarm_OIW(uint8_t IsAlarm)
+{
+	setting.setting_struct.IsAlarm_OIW = IsAlarm;
+}
+
+/*获取是否报警*/
+uint8_t setting_GetIsAlarm_OIW(void)
+{
+	return setting.setting_struct.IsAlarm_OIW;
+}
 
 /*设置是否选中*/
 void setting_SetIsSelect_DO(uint8_t sSelect)
@@ -340,13 +374,13 @@ void setting_SetIsSelect_Tur(uint8_t sSelect)
 /*获取是否选中*/
 uint8_t setting_GetIsSelect_FCL(void)
 {
-	return setting.setting_struct.IsSelect_FCL;
+	// return setting.setting_struct.IsSelect_FCL;
 }
 
 /*设置是否选中*/
 void setting_SetIsSelect_FCL(uint8_t sSelect)
 {
-	setting.setting_struct.IsSelect_FCL = sSelect;
+	// setting.setting_struct.IsSelect_FCL = sSelect;
 }
 
 /*获取是否选中*/
@@ -399,26 +433,26 @@ uint8_t setting_GetIsSelect_NH4_shenghui(void)
 /*设置是否选中*/
 void setting_SetIsSelect_F(uint8_t sSelect)
 {
-	setting.setting_struct.IsSelect_F= sSelect;
+	// setting.setting_struct.IsSelect_F= sSelect;
 }
 
 /*获取是否选中*/
 uint8_t setting_GetIsSelect_F(void)
 {
-	return setting.setting_struct.IsSelect_F;
+	// return setting.setting_struct.IsSelect_F;
 }
 
 
 /*设置是否选中*/
 void setting_SetIsSelect_CL(uint8_t sSelect)
 {
-	setting.setting_struct.IsSelect_F= sSelect;
+	// setting.setting_struct.IsSelect_F= sSelect;
 }
 
 /*获取是否选中*/
 uint8_t setting_GetIsSelect_CL(void)
 {
-	return setting.setting_struct.IsSelect_F;
+	// return setting.setting_struct.IsSelect_F;
 }
 
 /*设置是否选中*/
@@ -507,11 +541,11 @@ uint8_t setting_GetIsOpen_SlideAvg_pH(void)
 /*是否开启滑动平均设置*/
 void setting_SetIsOpen_SlideAvg_FCL(uint8_t IsOpen)
 {
-	setting.setting_struct.IsOpen_SlideAvg_FCL = IsOpen;
+	// setting.setting_struct.IsOpen_SlideAvg_FCL = IsOpen;
 }
 uint8_t setting_GetIsOpen_SlideAvg_FCL(void)
 {
-	return setting.setting_struct.IsOpen_SlideAvg_FCL;
+	// return setting.setting_struct.IsOpen_SlideAvg_FCL;
 }
 
 /*是否开启滑动平均设置*/
@@ -557,21 +591,21 @@ uint8_t setting_GetIsOpen_SlideAvg_NH4(void)
 /*是否开启滑动平均设置*/
 void setting_SetIsOpen_SlideAvg_F(uint8_t IsOpen)
 {
-	setting.setting_struct.IsOpen_SlideAvg_F = IsOpen;
+	// setting.setting_struct.IsOpen_SlideAvg_F = IsOpen;
 }
 uint8_t setting_GetIsOpen_SlideAvg_F(void)
 {
-	return setting.setting_struct.IsOpen_SlideAvg_F;
+	// return setting.setting_struct.IsOpen_SlideAvg_F;
 }
 
 /*是否开启滑动平均设置*/
 void setting_SetIsOpen_SlideAvg_CL(uint8_t IsOpen)
 {
-	setting.setting_struct.IsOpen_SlideAvg_CL = IsOpen;
+	// setting.setting_struct.IsOpen_SlideAvg_CL = IsOpen;
 }
 uint8_t setting_GetIsOpen_SlideAvg_CL(void)
 {
-	return setting.setting_struct.IsOpen_SlideAvg_CL;
+	// return setting.setting_struct.IsOpen_SlideAvg_CL;
 }
 
 /*是否开启滑动平均设置*/
@@ -605,7 +639,26 @@ uint8_t setting_GetIsOpen_SlideAvg_COD(void)
 	return setting.setting_struct.IsOpen_SlideAvg_COD;
 }
 
+/*是否开启滑动平均设置*/
+void setting_SetIsOpen_SlideAvg_MLSS(uint8_t IsOpen)
+{
+	setting.setting_struct.IsOpen_SlideAvg_MLSS = IsOpen;
+}
+uint8_t setting_GetIsOpen_SlideAvg_MLSS(void)
+{
+	return setting.setting_struct.IsOpen_SlideAvg_MLSS;
+}
 
+
+/*是否开启滑动平均设置*/
+void setting_SetIsOpen_SlideAvg_OIW(uint8_t IsOpen)
+{
+	setting.setting_struct.IsOpen_SlideAvg_OIW = IsOpen;
+}
+uint8_t setting_GetIsOpen_SlideAvg_OIW(void)
+{
+	return setting.setting_struct.IsOpen_SlideAvg_OIW;
+}
 
 
 /*
@@ -678,87 +731,76 @@ void init_setting(void)
 	
 	setting.setting_struct.KeyPadTone = 1;
 	setting.setting_struct.AlarmTone = 1;
+	setting.setting_struct.Orp_high_Threshold_pn  = 68;
+	setting.setting_struct.Orp_low_Threshold_pn  = 68;
 	
 	/*锁定模式*/
 	setting.setting_struct.AutoLock_pH = 0;
 	setting.setting_struct.AutoLock_DO = 0;
-	setting.setting_struct.AutoLock_FCL = 0;
 	setting.setting_struct.AutoLock_EC = 0;
 	setting.setting_struct.AutoLock_Tur = 0;
 	setting.setting_struct.AutoLock_ORP = 0;
 	setting.setting_struct.AutoLock_NH4 = 0;
-	setting.setting_struct.AutoLock_F = 0;
-	setting.setting_struct.AutoLock_CL = 0;
 	setting.setting_struct.AutoLock_Chl = 0;
 	setting.setting_struct.AutoLock_Bga = 0;
 	setting.setting_struct.AutoLock_COD= 0;
+	setting.setting_struct.AutoLock_MLSS = 0;
 	
 	/*自动锁定等级*/
 	setting.setting_struct.AutoLock_level_pH = 0;
 	setting.setting_struct.AutoLock_level_DO = 0;
-	setting.setting_struct.AutoLock_level_FCL = 0;
 	setting.setting_struct.AutoLock_level_EC = 0;
 	setting.setting_struct.AutoLock_level_Tur = 0;
 	setting.setting_struct.AutoLock_level_ORP = 0;
 	setting.setting_struct.AutoLock_level_NH4 = 0;
-	setting.setting_struct.AutoLock_level_F = 0;
-	setting.setting_struct.AutoLock_level_CL = 0;
 	setting.setting_struct.AutoLock_level_Chl = 0;
 	setting.setting_struct.AutoLock_level_Bga = 0;
 	setting.setting_struct.AutoLock_level_COD = 0;
+	setting.setting_struct.AutoLock_level_MLSS = 0;
 	
 	/*是否开启滑动平均功能*/
 	setting.setting_struct.IsOpen_SlideAvg_pH = 0;
 	setting.setting_struct.IsOpen_SlideAvg_DO = 0;
-	setting.setting_struct.IsOpen_SlideAvg_FCL = 0;
 	setting.setting_struct.IsOpen_SlideAvg_EC = 0;
 	setting.setting_struct.IsOpen_SlideAvg_Tur = 0;
 	setting.setting_struct.IsOpen_SlideAvg_ORP = 0;
 	setting.setting_struct.IsOpen_SlideAvg_NH4 = 0;
-	setting.setting_struct.IsOpen_SlideAvg_F = 0;
-	setting.setting_struct.IsOpen_SlideAvg_CL = 0;
 	setting.setting_struct.IsOpen_SlideAvg_Chl = 0;
 	setting.setting_struct.IsOpen_SlideAvg_Bga = 0;
 	setting.setting_struct.IsOpen_SlideAvg_COD = 0;
+	setting.setting_struct.IsOpen_SlideAvg_MLSS = 0;
 	
 	/*滑动平均次数*/
 	setting.setting_struct.SlideAvgTimes_pH = 2;
 	setting.setting_struct.SlideAvgTimes_DO = 2;
-	setting.setting_struct.SlideAvgTimes_FCL = 2;
 	setting.setting_struct.SlideAvgTimes_EC = 2;
 	setting.setting_struct.SlideAvgTimes_Tur = 2;
 	setting.setting_struct.SlideAvgTimes_ORP = 2;
 	setting.setting_struct.SlideAvgTimes_NH4 = 2;
-	setting.setting_struct.SlideAvgTimes_F = 2;
-	setting.setting_struct.SlideAvgTimes_CL = 2;
 	setting.setting_struct.SlideAvgTimes_Chl = 2;
 	setting.setting_struct.SlideAvgTimes_Bga = 2;
 	setting.setting_struct.SlideAvgTimes_COD = 2;
+	setting.setting_struct.SlideAvgTimes_MLSS = 2;
 	
 	setting.setting_struct.IsAlarm_pH = 0;
 	setting.setting_struct.IsAlarm_DO = 0;
-	setting.setting_struct.IsAlarm_FCL = 0;
 	setting.setting_struct.IsAlarm_EC = 0;
 	setting.setting_struct.IsAlarm_Tur = 0;
 	setting.setting_struct.IsAlarm_ORP = 0;
 	setting.setting_struct.IsAlarm_NH4 = 0;
-	setting.setting_struct.IsAlarm_F = 0;
-	setting.setting_struct.IsAlarm_CL = 0;
 	setting.setting_struct.IsAlarm_Chl = 0;
 	setting.setting_struct.IsAlarm_Bga = 0;
 	setting.setting_struct.IsAlarm_COD = 0;
+	setting.setting_struct.IsAlarm_MLSS = 0;
 
 	setting.setting_struct.IsSelect_DO = 1;
 	setting.setting_struct.IsSelect_DO_shenghui = 1;
 	setting.setting_struct.IsSelect_pH = 1;
-	setting.setting_struct.IsSelect_FCL = 1;
 	setting.setting_struct.IsSelect_EC = 1;
 	setting.setting_struct.IsSelect_Tur = 1;
 	setting.setting_struct.IsSelect_ORP = 1;
 	setting.setting_struct.IsSelect_NH4_DN02 = 1;
 	setting.setting_struct.IsSelect_NH4_shenghui = 1;
-	setting.setting_struct.IsSelect_F = 1;
-	setting.setting_struct.IsSelect_CL = 1;
 	setting.setting_struct.IsSelect_Chl = 1;
 	setting.setting_struct.IsSelect_Bga = 1;
 	setting.setting_struct.IsSelect_COD_DC18 = 1;
@@ -773,9 +815,6 @@ void init_setting(void)
 	setting.setting_struct.LowThreshold_DO = 0.00;  //低门限报警阈值    判断mg/L
 	setting.setting_struct.HighThreshold_DO = 0.00; //高门限报警阈值
 
-	setting.setting_struct.LowThreshold_FCL = 0.00;  //低门限报警阈值
-	setting.setting_struct.HighThreshold_FCL = 0.00; //高门限报警阈值
-
 	setting.setting_struct.LowThreshold_EC = 0.00;  //低门限报警阈值
 	setting.setting_struct.HighThreshold_EC = 0.00; //高门限报警阈值
 
@@ -788,12 +827,6 @@ void init_setting(void)
 	setting.setting_struct.LowThreshold_NH4 = 0.00;  //低门限报警阈值
 	setting.setting_struct.HighThreshold_NH4 = 0.00; //高门限报警阈值
 
-	setting.setting_struct.LowThreshold_F = 0.00;  //低门限报警阈值
-	setting.setting_struct.HighThreshold_F = 0.00; //高门限报警阈值
-
-	setting.setting_struct.LowThreshold_CL = 0.00;  //低门限报警阈值
-	setting.setting_struct.HighThreshold_CL = 0.00; //高门限报警阈值
-
 	setting.setting_struct.LowThreshold_Chl = 0.00;  //低门限报警阈值
 	setting.setting_struct.HighThreshold_Chl = 0.00; //高门限报警阈值
 
@@ -802,6 +835,8 @@ void init_setting(void)
 
 	setting.setting_struct.LowThreshold_COD = 0.00;  //低门限报警阈值
 	setting.setting_struct.HighThreshold_COD = 0.00; //高门限报警阈值
+	setting.setting_struct.LowThreshold_Mlss = 0.00;  //低门限报警阈值
+	setting.setting_struct.HighThreshold_Mlss = 0.00; //高门限报警阈值
 	
 	setting.setting_struct.AirPressure = 0.0;    //大气压补偿
 	setting.setting_struct.Salinity = 0.0;       //盐度值
@@ -813,6 +848,9 @@ void init_setting(void)
 	
 	setting.setting_struct.TEMP_Unit = 0;//默认温度单位为 ℃
 	setting.setting_struct.DC18_Set = 0;	
+	setting.setting_struct.Sal_unit = 0;//默认ppt
+	setting.setting_struct.Mes_Unit = 0;//默认mg
+
 }
 
 
@@ -834,10 +872,15 @@ void init_setting(void)
 /*恢复出厂设置*/
 void setting_reset(void)
 {
+	uint8_t count_data_Clear[100];                          //清记录数的数组
+
 	init_setting();
 	// first_write();
 	SettingToFlash();
 	
+	memset(count_data_Clear,0,sizeof(count_data_Clear));
+	W25QXX_Write(count_data_Clear, LOG_COUNT_ADDR, 100);                                       //清记录条数
+
 	HAL_Delay(20);
 	FlashToSetting();
 }
@@ -845,14 +888,14 @@ void setting_reset(void)
 
 void first_write(void)
 {
-	uint8_t count_data[24] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};                          //清记录数的数组
+	uint8_t count_data[100];                          //清记录数的数组
 	uint8_t first_start = SETTING_FIRSTRUN_JUDGE;            //将第一次标志位写入数值
 		
 	init_setting();     		//初始化设置
 	setting_SetBattertType(0);   //第一次开机设置成默认锂电池   0是锂电池  1是干电池	
-
+	memset(count_data,0,sizeof(count_data));
 	W25QXX_Write(&first_start, SETTING_FIRSTRUN_ADDR, 1);                              //清第一次上电
-	W25QXX_Write(count_data, LOG_COUNT_ADDR, 24);                                       //清记录条数
+	W25QXX_Write(count_data, LOG_COUNT_ADDR, 100);                                       //清记录条数
 	
 	SettingToFlash();
 	
@@ -949,19 +992,19 @@ void setting_SetLowThreshold_pH(value_type value)
 
 value_type setting_GetHighThreshold_FCL(void)
 {
-	return setting.setting_struct.HighThreshold_FCL;
+	// return setting.setting_struct.HighThreshold_FCL;
 }
 void setting_SetHighThreshold_FCL(value_type value)
 {
-	setting.setting_struct.HighThreshold_FCL = value;
+	// setting.setting_struct.HighThreshold_FCL = value;
 }
 value_type setting_GetLowThreshold_FCL(void)
 {
-	return setting.setting_struct.LowThreshold_FCL;
+	// return setting.setting_struct.LowThreshold_FCL;
 }
 void setting_SetLowThreshold_FCL(value_type value)
 {
-	setting.setting_struct.LowThreshold_FCL = value;
+	// setting.setting_struct.LowThreshold_FCL = value;
 }
 
 value_type setting_GetHighThreshold_EC(void)
@@ -1036,36 +1079,36 @@ void setting_SetLowThreshold_NH4(value_type value)
 
 value_type setting_GetHighThreshold_F(void)
 {
-	return setting.setting_struct.HighThreshold_F;
+	// return setting.setting_struct.HighThreshold_F;
 }
 void setting_SetHighThreshold_F(value_type value)
 {
-	setting.setting_struct.HighThreshold_F= value;
+	// setting.setting_struct.HighThreshold_F= value;
 }
 value_type setting_GetLowThreshold_F(void)
 {
-	return setting.setting_struct.LowThreshold_F;
+	// return setting.setting_struct.LowThreshold_F;
 }
 void setting_SetLowThreshold_F(value_type value)
 {
-	setting.setting_struct.LowThreshold_F = value;
+	// setting.setting_struct.LowThreshold_F = value;
 }
 
 value_type setting_GetHighThreshold_CL(void)
 {
-	return setting.setting_struct.HighThreshold_CL;
+	// return setting.setting_struct.HighThreshold_CL;
 }
 void setting_SetHighThreshold_CL(value_type value)
 {
-	setting.setting_struct.HighThreshold_CL= value;
+	// setting.setting_struct.HighThreshold_CL= value;
 }
 value_type setting_GetLowThreshold_CL(void)
 {
-	return setting.setting_struct.LowThreshold_CL;
+	// return setting.setting_struct.LowThreshold_CL;
 }
 void setting_SetLowThreshold_CL(value_type value)
 {
-	setting.setting_struct.LowThreshold_CL = value;
+	// setting.setting_struct.LowThreshold_CL = value;
 }
 
 value_type setting_GetHighThreshold_Chl(void)
@@ -1120,6 +1163,41 @@ void setting_SetLowThreshold_COD(value_type value)
 	setting.setting_struct.LowThreshold_COD = value;
 }
 
+value_type setting_GetHighThreshold_MLSS(void)
+{
+	return setting.setting_struct.HighThreshold_Mlss;
+}
+void setting_SetHighThreshold_MLSS(value_type value)
+{
+	setting.setting_struct.HighThreshold_Mlss= value;
+}
+
+value_type setting_GetLowThreshold_MLSS(void)
+{
+	return setting.setting_struct.LowThreshold_Mlss;
+}
+void setting_SetLowThreshold_MLSS(value_type value)
+{
+	setting.setting_struct.LowThreshold_Mlss = value;
+}
+
+value_type setting_GetHighThreshold_OIW(void)
+{
+	return setting.setting_struct.HighThreshold_OIW;
+}
+void setting_SetHighThreshold_OIW(value_type value)
+{
+	setting.setting_struct.HighThreshold_OIW= value;
+}
+
+value_type setting_GetLowThreshold_OIW(void)
+{
+	return setting.setting_struct.LowThreshold_OIW;
+}
+void setting_SetLowThreshold_OIW(value_type value)
+{
+	setting.setting_struct.LowThreshold_OIW = value;
+}
 
 
 
@@ -1143,11 +1221,11 @@ void setting_SetSlideAvgTimes_pH(uint8_t times)
 
 uint8_t setting_GetSlideAvgTimes_FCL(void)
 {
-	return setting.setting_struct.SlideAvgTimes_FCL;
+	// return setting.setting_struct.SlideAvgTimes_FCL;
 }
 void setting_SetSlideAvgTimes_FCL(uint8_t times)
 {
-	setting.setting_struct.SlideAvgTimes_FCL = times;
+	// setting.setting_struct.SlideAvgTimes_FCL = times;
 }
 
 uint8_t setting_GetSlideAvgTimes_EC(void)
@@ -1188,20 +1266,20 @@ void setting_SetSlideAvgTimes_NH4(uint8_t times)
 
 uint8_t setting_GetSlideAvgTimes_F(void)
 {
-	return setting.setting_struct.SlideAvgTimes_F;
+	// return setting.setting_struct.SlideAvgTimes_F;
 }
 void setting_SetSlideAvgTimes_F(uint8_t times)
 {
-	setting.setting_struct.SlideAvgTimes_F = times;
+	// setting.setting_struct.SlideAvgTimes_F = times;
 }
 
 uint8_t setting_GetSlideAvgTimes_CL(void)
 {
-	return setting.setting_struct.SlideAvgTimes_CL;
+	// return setting.setting_struct.SlideAvgTimes_CL;
 }
 void setting_SetSlideAvgTimes_CL(uint8_t times)
 {
-	setting.setting_struct.SlideAvgTimes_CL = times;
+	// setting.setting_struct.SlideAvgTimes_CL = times;
 }
 
 
@@ -1233,17 +1311,45 @@ void setting_SetSlideAvgTimes_COD(uint8_t times)
 	setting.setting_struct.SlideAvgTimes_COD = times;
 }
 
+uint8_t setting_GetSlideAvgTimes_MLSS(void)
+{
+	return setting.setting_struct.SlideAvgTimes_MLSS;
+}
+void setting_SetSlideAvgTimes_MLSS(uint8_t times)
+{
+	setting.setting_struct.SlideAvgTimes_MLSS = times;
+}
+
+uint8_t setting_GetSlideAvgTimes_OIW(void)
+{
+	return setting.setting_struct.SlideAvgTimes_OIW;
+}
+void setting_SetSlideAvgTimes_OIW(uint8_t times)
+{
+	setting.setting_struct.SlideAvgTimes_OIW = times;
+}
 
 
 
 
 
+uint8_t setting_GetOrp_low_Threshold_pn(void)
+{
+	return setting.setting_struct.Orp_low_Threshold_pn;
+}
+void setting_SetOrp_low_Threshold_pn(uint8_t value)
+{
+	setting.setting_struct.Orp_low_Threshold_pn = value;
+}
 
-
-
-
-
-
+uint8_t setting_GetOrp_high_Threshold_pn(void)
+{
+	return setting.setting_struct.Orp_high_Threshold_pn;
+}
+void setting_SetOrp_high_Threshold_pn(uint8_t value)
+{
+	setting.setting_struct.Orp_high_Threshold_pn = value;
+}
 
 
 uint8_t setting_GetAutoLock_DO(void)
@@ -1275,11 +1381,12 @@ void setting_SetAutoLock_Tur(uint8_t AutoLock)
 
 uint8_t setting_GetAutoLock_FCL(void)
 {
-	return setting.setting_struct.AutoLock_FCL;
+	// return setting.setting_struct.AutoLock_FCL;
+	return 1;
 }
 void setting_SetAutoLock_FCL(uint8_t AutoLock)
 {
-	setting.setting_struct.AutoLock_FCL = AutoLock;
+	// setting.setting_struct.AutoLock_FCL = AutoLock;
 }
 
 uint8_t setting_GetAutoLock_EC(void)
@@ -1311,20 +1418,20 @@ void setting_SetAutoLock_NH4(uint8_t AutoLock)
 
 uint8_t setting_GetAutoLock_F(void)
 {
-	return setting.setting_struct.AutoLock_F;
+	// return setting.setting_struct.AutoLock_F;
 }
 void setting_SetAutoLock_F(uint8_t AutoLock)
 {
-	setting.setting_struct.AutoLock_F = AutoLock;
+	// setting.setting_struct.AutoLock_F = AutoLock;
 }
 
 uint8_t setting_GetAutoLock_CL(void)
 {
-	return setting.setting_struct.AutoLock_CL;
+	// return setting.setting_struct.AutoLock_CL;
 }
 void setting_SetAutoLock_CL(uint8_t AutoLock)
 {
-	setting.setting_struct.AutoLock_CL = AutoLock;
+	// setting.setting_struct.AutoLock_CL = AutoLock;
 }
 
 uint8_t setting_GetAutoLock_Chl(void)
@@ -1352,6 +1459,24 @@ uint8_t setting_GetAutoLock_COD(void)
 void setting_SetAutoLock_COD(uint8_t AutoLock)
 {
 	setting.setting_struct.AutoLock_COD = AutoLock;
+}
+
+uint8_t setting_GetAutoLock_MLSS(void)
+{
+	return setting.setting_struct.AutoLock_MLSS;
+}
+void setting_SetAutoLock_MLSS(uint8_t AutoLock)
+{
+	setting.setting_struct.AutoLock_MLSS = AutoLock;
+}
+
+uint8_t setting_GetAutoLock_OIW(void)
+{
+	return setting.setting_struct.AutoLock_OIW;
+}
+void setting_SetAutoLock_OIW(uint8_t AutoLock)
+{
+	setting.setting_struct.AutoLock_OIW = AutoLock;
 }
 
 
@@ -1384,11 +1509,11 @@ void setting_SetAutoLockLevel_Tur(uint8_t level)
 
 uint8_t setting_GetAutoLockLevel_FCL(void)
 {
-	return setting.setting_struct.AutoLock_level_FCL;
+	// return setting.setting_struct.AutoLock_level_FCL;
 }
 void setting_SetAutoLockLevel_FCL(uint8_t level)
 {
-	setting.setting_struct.AutoLock_level_FCL = level;
+	// setting.setting_struct.AutoLock_level_FCL = level;
 }
 
 uint8_t setting_GetAutoLockLevel_EC(void)
@@ -1420,20 +1545,20 @@ void setting_SetAutoLockLevel_NH4(uint8_t level)
 
 uint8_t setting_GetAutoLockLevel_F(void)
 {
-	return setting.setting_struct.AutoLock_level_F;
+	// return setting.setting_struct.AutoLock_level_F;
 }
 void setting_SetAutoLockLevel_F(uint8_t level)
 {
-	setting.setting_struct.AutoLock_level_F = level;
+	// setting.setting_struct.AutoLock_level_F = level;
 }
 
 uint8_t setting_GetAutoLockLevel_CL(void)
 {
-	return setting.setting_struct.AutoLock_level_CL;
+	// return setting.setting_struct.AutoLock_level_CL;
 }
 void setting_SetAutoLockLevel_CL(uint8_t level)
 {
-	setting.setting_struct.AutoLock_level_CL = level;
+	// setting.setting_struct.AutoLock_level_CL = level;
 }
 
 uint8_t setting_GetAutoLockLevel_Chl(void)
@@ -1464,6 +1589,24 @@ void setting_SetAutoLockLevel_COD(uint8_t level)
 	setting.setting_struct.AutoLock_level_COD = level;
 }
 
+uint8_t setting_GetAutoLockLevel_MLSS(void)
+{
+	return setting.setting_struct.AutoLock_level_MLSS;
+}
+void setting_SetAutoLockLevel_MLSS(uint8_t level)
+{
+	setting.setting_struct.AutoLock_level_MLSS = level;
+}
+
+uint8_t setting_GetAutoLockLevel_OIW(void)
+{
+	return setting.setting_struct.AutoLock_level_OIW;
+}
+void setting_SetAutoLockLevel_OIW(uint8_t level)
+{
+	setting.setting_struct.AutoLock_level_OIW = level;
+}
+
 
 uint8_t setting_GetAutoShut(void)
 {
@@ -1486,7 +1629,14 @@ void setting_SetInitLogo(uint8_t logo)
 	W25QXX_Write(&logo, SETTING_LOGO_ADDR, 1);
 }
 
-
+uint8_t setting_GetMesUnit(void)
+{
+	return setting.setting_struct.Mes_Unit;
+}
+void setting_SetMesUnit(uint8_t value)
+{
+	setting.setting_struct.Mes_Unit = value;
+}
 
 
 

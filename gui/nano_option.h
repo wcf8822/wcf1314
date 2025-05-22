@@ -21,7 +21,9 @@ void NanoOptionList_Print  (list_NanoOption nanooptionlist, uint8_t IsChn);
 void NanoOptionList_Destory(PtrToNanoOptionNode *nanooptionlist);
 
 uint32_t NanoOptionList_GetValue(PtrToNanoOptionNode nanooptionlist, uint8_t coefficient);
+uint32_t NanoOptionList_Get_np_Value(PtrToNanoOptionNode nanooptionlist, uint8_t coefficient);
 
+extern int8_t orp_np;
 
 
 #endif

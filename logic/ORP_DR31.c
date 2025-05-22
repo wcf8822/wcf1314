@@ -12,7 +12,7 @@
 void ORP_DR31_rs485_GetModbusId(void)	
 {
 	rs485_usart.tx_buf[0] = ORP_DR31_ModbusID;
-	rs485_usart.tx_buf[1] = 0x04;
+	rs485_usart.tx_buf[1] = 0x03;
 	rs485_usart.tx_buf[2] = 0x0B;
 	rs485_usart.tx_buf[3] = 0x00;
 	rs485_usart.tx_buf[4] = 0x00;
@@ -29,7 +29,7 @@ void ORP_DR31_rs485_GetValue(PtrToDOProbe ptd)
 {
 	if(ptd == NULL) return;
 	rs485_usart.tx_buf[0] = ORP_DR31_ModbusID;
-	rs485_usart.tx_buf[1] = 0x04;
+	rs485_usart.tx_buf[1] = 0x03;
 	rs485_usart.tx_buf[2] = 0x0B;
 	rs485_usart.tx_buf[3] = 0x00;
 	rs485_usart.tx_buf[4] = 0x00;
@@ -37,9 +37,7 @@ void ORP_DR31_rs485_GetValue(PtrToDOProbe ptd)
 	
 	SetCrc(rs485_usart.tx_buf, rs485_usart.tx_size = 8);
 	
-	
 	rs485_SetSentType(DO_SendType_GetTempTwoDO);
-	
 }
 
 
@@ -50,7 +48,7 @@ void ORP_DR31_rs485_CAL(PtrToDOProbe ptd,int16_t Value)
 	uint16_u Cal_Value;
 	Cal_Value.value_f=Value;
 	rs485_usart.tx_buf[0]  = ORP_DR31_ModbusID;
-	rs485_usart.tx_buf[1]  = 0x10;
+	rs485_usart.tx_buf[1]  = 0x06;
 	rs485_usart.tx_buf[2]  = 0x0B;
 	rs485_usart.tx_buf[3]  = 0x01;
 	rs485_usart.tx_buf[4]  = Cal_Value.value_arr[1];
@@ -90,14 +88,15 @@ void ORP_DR31_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 	
 	ptd->ORP_value.value_arr[0] =	dat[1];
 	ptd->ORP_value.value_arr[1] =	dat[0];
-			
+
+	ptd->DOmgl.value_f = ptd->ORP_value.value_f;
 	if(ptd->is_FirstGetValue)//如果是第一次获取到数据的话给它一个值
 	{
 		ptd->is_FirstGetValue = 0;
 		
 		ptd->last_DOmgl = ptd->ORP_value.value_f;
 		
-		snprintf(ptd->DOmgl_arr,       7, "%5d", ptd->ORP_value.value_f);
+		snprintf(ptd->DOmgl_arr,       6, "%5d", ptd->ORP_value.value_f);
 	}
 	else
 	{
@@ -132,7 +131,7 @@ void ORP_DR31_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 			
 			if(!DO_GetValueLocked(ptd))
 			{
-				snprintf(ptd->DOmgl_arr,       7, "%5d", DO_mgl_temp);
+				snprintf(ptd->DOmgl_arr,       6, "%5d", DO_mgl_temp);
 			}
 			
 			ptd->update_count = 0;

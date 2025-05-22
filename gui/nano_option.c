@@ -89,7 +89,7 @@ void NanoOptionList_Print(list_NanoOption nanooptionlist, uint8_t IsChn)
 					}
 					else
 					{
-						temp_num_arr[0]= (p->value - 10) + 'A';
+						temp_num_arr[0]= (p->value - 9) + 'A';
 					}
 					
 					temp_num_arr[1] = '\0';
@@ -171,4 +171,30 @@ uint32_t NanoOptionList_GetValue(PtrToNanoOptionNode nanooptionlist, uint8_t coe
 	return ret;
 }
 
-
+int8_t orp_np = 0;
+/*获取正负符号值*/
+uint32_t NanoOptionList_Get_np_Value(PtrToNanoOptionNode nanooptionlist, uint8_t coefficient)
+{
+	uint32_t ret = 0;//临时变量
+	PtrToNanoOptionNode p = nanooptionlist; //遍历链表的临时变量
+	
+	if(nanooptionlist == NULL) //安全性检测
+	{
+		return 0;
+	}
+	
+	ret += p->value;
+	orp_np = p->value;
+	if (orp_np == 67 || orp_np == 68)
+	{
+		ret = 0;
+	}
+	
+	do
+	{
+		p = p->next_option;
+		ret = ret*coefficient + p->value;
+	}while(p != nanooptionlist->prev_option);
+	
+	return ret;
+}

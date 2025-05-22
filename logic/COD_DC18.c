@@ -540,14 +540,15 @@ void COD_DC17_UPdata_Mes_Para(PtrToDOProbe ptd, uint8_t* data)
 	}
 }
 
-
+	// float DO_mgl_toc = 0.0;
+	float tocmgl_sum = 0.0;
 void COD_DC18_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 {
 	float temperature_temp = 0.0;
 	float DO_Percent_temp = 0.0;
 	float DO_mgl_temp = 0.0;	
 	float DO_mgl_toc = 0.0;	
-	float tocmgl_sum = 0.0;
+	// float tocmgl_sum = 0.0;
 	uint16_u uint16_u_DOpercent;
 	uint16_u uint16_u_DOmgl;
 	int16_u int16_u_temperature;
@@ -579,9 +580,9 @@ void COD_DC18_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 	ptd->temperature.value_f=ptd->temperature.value_f/100.0;
 	
 	//TOC
-	uint16_u_DOmgl.value_arr[0]=dat[7];
-	uint16_u_DOmgl.value_arr[1]=dat[6];
-	ptd->pH_Vol.value_f=int16_u_temperature.value_f /10.0;
+	uint16_u_DOmgl.value_arr[0]=dat[11];
+	uint16_u_DOmgl.value_arr[1]=dat[10];
+	ptd->pH_Vol.value_f=uint16_u_DOmgl.value_f /10.0;
 
 	//浊度校准值
 	int16_u_temperature.value_arr[0]=dat[15];
@@ -648,17 +649,18 @@ void COD_DC18_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 						filter_clear(&(ptd->queue_domgl));
 						filter_clear(&(ptd->queue_dopercent));
 						filter_clear(&(ptd->queue_temp));
+						filter_clear(&(ptd->queue_value));
 					}
 					
 					filter_inset2arr(&(ptd->queue_domgl), DO_mgl_temp);
 					filter_inset2arr(&(ptd->queue_dopercent), DO_Percent_temp);
 					filter_inset2arr(&(ptd->queue_temp), temperature_temp);
-					filter_inset2arr(&(ptd->queue_domgl), DO_mgl_toc);
+					filter_inset2arr(&(ptd->queue_value), DO_mgl_toc);
 
 					temperature_temp  = filter_get_avg(&(ptd->queue_temp)); 
 					DO_mgl_temp  = filter_get_avg(&(ptd->queue_domgl)); 
 					DO_Percent_temp  = filter_get_avg(&(ptd->queue_dopercent));
-					DO_mgl_toc = filter_get_avg(&(ptd->queue_domgl)); 
+					DO_mgl_toc = filter_get_avg(&(ptd->queue_value)); 
 				}
 				else
 				{
@@ -728,17 +730,18 @@ void COD_DC18_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 						filter_clear(&(ptd->queue_domgl));
 						filter_clear(&(ptd->queue_dopercent));
 						filter_clear(&(ptd->queue_temp));
+						filter_clear(&(ptd->queue_value));
 					}
 					
 					filter_inset2arr(&(ptd->queue_domgl), DO_mgl_temp);
 					filter_inset2arr(&(ptd->queue_dopercent), DO_Percent_temp);
 					filter_inset2arr(&(ptd->queue_temp), temperature_temp);
-					filter_inset2arr(&(ptd->queue_domgl), DO_mgl_toc);
+					filter_inset2arr(&(ptd->queue_value), DO_mgl_toc);
 
 					temperature_temp  = filter_get_avg(&(ptd->queue_temp)); 
 					DO_mgl_temp  = filter_get_avg(&(ptd->queue_domgl)); 
 					DO_Percent_temp  = filter_get_avg(&(ptd->queue_dopercent));
-					DO_mgl_toc = filter_get_avg(&(ptd->queue_domgl)); 
+					DO_mgl_toc = filter_get_avg(&(ptd->queue_value)); 
 				}
 				else
 				{
@@ -761,5 +764,3 @@ void COD_DC18_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 		}
 	}
 }
-
-

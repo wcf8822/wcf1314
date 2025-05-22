@@ -50,14 +50,13 @@ typedef enum{
 	/*二级界面*/
 	PAGE_2_SENSORMANAGE,   //传感器管理
 	PAGE_2_SYSTEM,         //系统设置界面
-  PAGE_2_HISTORY_ShowOPTION,	
-  PAGE_2_HISTORY_DeleteOPTION,	
+	PAGE_2_HISTORY_ShowOPTION,	
+	PAGE_2_HISTORY_DeleteOPTION,	
 	PAGE_2_HISTORY,        //历史数据界面
 
 	/*三级界面*/
 	PAGE_3_SENSORSSEARCH,  //自动搜索设备
 	PAGE_3_SENSORS,        //传感器信息
-	
 	
 	PAGE_3_TIME,           //时间设置
 	PAGE_3_BEEP,           //按键音
@@ -68,11 +67,13 @@ typedef enum{
 	PAGE_3_PRESSURE,       //气压设置
 	PAGE_3_SALT,           //盐度设置
 	PAGE_3_GPS,            //gps
-  PAGE_3_UNIT,		    //单位设置
+  	PAGE_3_UNIT,		    //单位设置
 	PAGE_3_INFO,           //仪表信息
 	PAGE_3_RESERT,         //恢复出厂设置
-	PAGE_3_AUTOLOCK_TYPE,  //显示需要自动锁定的传感器类型
-	
+	PAGE_3_Set_TDS_coefficient,  //电导率tds系数设置
+	PAGE_3_Set_Temp_coefficient,  //电导率温度系数设置
+	PAGE_3_Set_Sal_uint,  //盐度单位设置
+
 	PAGE_3_DATASAVE,       //数据保存
 	PAGE_3_DATASHOW,       //数据显示
 	PAGE_3_DATADELETE,     //数据删除
@@ -80,7 +81,6 @@ typedef enum{
 	PAGE_3_LOG,            //日志
 	
 	PAGE_3_SLIDEAVG_TYPE,  //显示需要滑动平均的传感器类型
-	
 	
 	/*四级界面*/
 	PAGE_4_ALARMTONE,      //报警音
@@ -95,7 +95,14 @@ typedef enum{
 	PAGE_4_SENSORINFO,     //传感器信息
 	PAGE_4_CAL,                          //校准
 	PAGE_4_PARASET,        //参数设置
-	
+
+	PAGE_4_MesUNIT,		   //测量单位设置
+	PAGE_4_Cal_Num_Set,		   //标定点数设置
+	PAGE_4_Mes_Mode,		   //测量档位设置
+	PAGE_4_Set_Mode_Temp,		   //温度模式设置
+	PAGE_4_Temp_k,		   //温度补偿系数
+	PAGE_4_Clear_time,		   //清洁周期
+	PAGE_4_Cal_Info,		   //校准系数
 	PAGE_4_SLIDEAVG,       //滑动平均开启关闭设置
 	
 	PAGE_4_CAL_GROUP, //pH 标液组管理
@@ -113,7 +120,6 @@ typedef enum{
 	PAGE_4_Model_selection,	 //型号选择
 	PAGE_4_LOCKSAVE,  //锁定保存
 	
-
 	/*五级界面*/
 	PAGE_5_ALARMVALUE,     //报警阈值设置
 	
@@ -123,53 +129,54 @@ typedef enum{
 	
 	PAGE_5_TEMP,           //温度校准
 	
-//DO	
+	//DO	
 	PAGE_5_DO_ONE_First,            //单点
 	PAGE_5_DO_TWO_FIRST,       // 连续校准两点的第1点
 	PAGE_5_DO_TWO_SECOND,      //连续校准两点的第2点
+	PAGE_5_MLSS_zero_signal,
+	PAGE_5_OIW_K_CAL,//斜率校准
 	PAGE_5_SENSORCAP,      //帽膜设置
 	
-
-//NH3N
-  PAGE_5_NH3N_ONE,    //氨氮第一点校准
-  PAGE_5_NH3N_TWO,   //氨氮第二点校准
+	//NH3N
+  	PAGE_5_NH3N_ONE,    //氨氮第一点校准
+  	PAGE_5_NH3N_TWO,   //氨氮第二点校准
 	PAGE_5_NH3N_pH_ONE, //氨氮的pH第一点4.01校准
 	PAGE_5_NH3N_pH_TWO,//氨氮的pH第二点6.86校准
 	PAGE_5_NH3N_pH_THREE,//氨氮的pH第三点9.18校准
 	
-//COD
-  PAGE_5_COD_shenghui_Zero,   //昇辉COD的零点校准
-  PAGE_5_COD_shenghui_Tur_ONE,//昇辉COD的 浊度第一点校准
-  PAGE_5_COD_shenghui_Tur_TWO,//昇辉COD的 浊度第二点校准
+	//COD
+	PAGE_5_COD_shenghui_Zero,   //昇辉COD的零点校准
+	PAGE_5_COD_shenghui_Tur_ONE,//昇辉COD的 浊度第一点校准
+	PAGE_5_COD_shenghui_Tur_TWO,//昇辉COD的 浊度第二点校准
 	PAGE_5_COD_shenghui_ONE, //昇辉COD的 第一点校准
 	PAGE_5_COD_shenghui_TWO,//昇辉COD的 第二点校准
 	PAGE_5_COD_shenghui_THREE,	//昇辉COD的 第三点校准
 	
-  PAGE_5_COD_DC18_Tur_Zero, //DC18 COD的浊度零点校准
-  PAGE_5_COD_DC18_Tur_Slope,//DC18 COD的浊度斜率校准
-  PAGE_5_COD_DC18_Zero,//DC18 COD的零点校准
-  PAGE_5_COD_DC18_Slope,//DC18 COD的斜率校准
-  PAGE_5_COD_DC18_Coefficient,	//DC18 COD的补偿系数
+	PAGE_5_COD_DC18_Tur_Zero, //DC18 COD的浊度零点校准
+	PAGE_5_COD_DC18_Tur_Slope,//DC18 COD的浊度斜率校准
+	PAGE_5_COD_DC18_Zero,//DC18 COD的零点校准
+	PAGE_5_COD_DC18_Slope,//DC18 COD的斜率校准
+	PAGE_5_COD_DC18_Coefficient,	//DC18 COD的补偿系数
 
-  PAGE_5_COD_DC17_IN_Tur_Zero, //DC17 COD的浊度零点校准
-  PAGE_5_COD_DC17_IN_Zero,//DC17 COD的内部零点校准
+	PAGE_5_COD_DC17_IN_Tur_Zero, //DC17 COD的浊度零点校准
+	PAGE_5_COD_DC17_IN_Zero,//DC17 COD的内部零点校准
 	
 	PAGE_5_COD_Cleanse,		  //清洗界面
 	
-//昇辉 Tur
-  PAGE_5_shenghui_Tur_ONE,//昇辉 浊度第一点校准
-  PAGE_5_shenghui_Tur_TWO,//昇辉 浊度第二点校准
-  PAGE_5_shenghui_Tur_THREE,//昇辉 浊度第三点校准
-	
-//昇辉 EC
-  PAGE_5_shenghui_EC_ONE,//昇辉 电导率校准 
-//昇辉 BGA
-  PAGE_5_shenghui_BGA_ONE,//昇辉 BGA标定点1校准
-  PAGE_5_shenghui_BGA_TWO,//昇辉 BGA标定点2校准
-//DR31 ORP
-  PAGE_5_DR31_ORP_ONE,   //DR31_ORP单点校准
-//自研DE26 EC
-  PAGE_5_DE26_EC_Zero,  // 电导率零点校准 
+	//昇辉 Tur
+	PAGE_5_shenghui_Tur_ONE,//昇辉 浊度第一点校准
+	PAGE_5_shenghui_Tur_TWO,//昇辉 浊度第二点校准
+	PAGE_5_shenghui_Tur_THREE,//昇辉 浊度第三点校准
+		
+	//昇辉 EC
+	PAGE_5_shenghui_EC_ONE,//昇辉 电导率校准 
+	//昇辉 BGA
+	PAGE_5_shenghui_BGA_ONE,//昇辉 BGA标定点1校准
+	PAGE_5_shenghui_BGA_TWO,//昇辉 BGA标定点2校准
+	//DR31 ORP
+	PAGE_5_DR31_ORP_ONE,   //DR31_ORP单点校准
+	//自研DE26 EC
+	PAGE_5_DE26_EC_Zero,  // 电导率零点校准 
 	
 } PAGE_NUM;
 

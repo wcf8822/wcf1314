@@ -141,10 +141,10 @@ void GUI_PutChar(uint8_t x, uint8_t y, char c, uint8_t hno, uint8_t lno, uint8_t
 			GUI_PutCharArr(x, y, (uint8_t *)(FONT_ENG_MENU[67]), hno, lno, IsInverse);
 			break;
 		case '?':
-			GUI_PutCharArr(x, y, (uint8_t *)(FONT_ENG_MENU[68]), hno, lno, IsInverse);
+			GUI_PutCharArr(x, y, (uint8_t *)(FONT_ENG_MENU[69]), hno, lno, IsInverse);
 			break;
 		case '+':
-			GUI_PutCharArr(x, y, (uint8_t *)(FONT_ENG_MENU[69]), hno, lno, IsInverse);
+			GUI_PutCharArr(x, y, (uint8_t *)(FONT_ENG_MENU[68]), hno, lno, IsInverse);
 			break;
 		case '!':
 			GUI_PutCharArr(x, y, (uint8_t *)(FONT_ENG_MENU[70]), hno, lno, IsInverse);
@@ -173,6 +173,10 @@ void GUI_PutChar(uint8_t x, uint8_t y, char c, uint8_t hno, uint8_t lno, uint8_t
 			{
 				GUI_PutCharArr(x, y, (uint8_t *)(FONT_ENG_MENU[(c) - 65 +INDEX_A]), hno, lno, IsInverse); //因为A ascii 为65 数组中的A下标为14 所以为 data-65+14 就变成-51
 			}
+			if(c > 'z')
+			{
+				GUI_PutCharArr(x, y, (uint8_t *)(FONT_ENG_MENU[(c) - 97 +INDEX_a]), hno, lno, IsInverse); 
+			}
 			break;
 	}
 }
@@ -187,6 +191,9 @@ void GUI_PutLargeChar(uint8_t x, uint8_t y, char c, uint8_t hno, uint8_t lno, ui
 			break;
 		case ' ':
 			GUI_PutCharArr(x, y, (uint8_t *)(FONT_LARGE[11]), hno, lno, IsInverse);
+			break;
+		case '-':
+			GUI_PutCharArr(x, y, (uint8_t *)(FONT_LARGE[12]), hno, lno, IsInverse);
 			break;
 		default:
 			if(c >= '0' && c <= '9')//数字
@@ -205,6 +212,9 @@ void GUI_PutMediumChar(uint8_t x, uint8_t y, char c, uint8_t hno, uint8_t lno, u
 			break;
 		case ' ':
 			GUI_PutCharArr(x, y, (uint8_t *)(FONT_MEDIUM[11]), hno, lno, IsInverse);
+			break;
+		case '-':
+			GUI_PutCharArr(x, y, (uint8_t *)(FONT_MEDIUM[12]), hno, lno, IsInverse);
 			break;
 		default:
 			if(c >= '0' && c <= '9')//数字
@@ -265,9 +275,19 @@ void GUI_PutChnStr(uint8_t x, uint8_t y, uint8_t *dat, uint8_t str_len, uint8_t 
 	{
 		return;
 	}
-	for(uint8_t i = 0; i < str_len; i++)
+	if(dat == qingjiezhouqishezhi_cn)
 	{
-		GUI_PutCharArr(x+i*16, y, (uint8_t *)(FONT_CHN_MENU[dat[i]]), hno, lno, IsInverse);
+		for(uint8_t i = 0; i < str_len; i++)
+		{
+			GUI_PutCharArr(x+i*16, y, (uint8_t *)(FONT_CHN_MENU_xin[dat[i]]), hno, lno, IsInverse);
+		}
+	}
+	else
+	{
+		for(uint8_t i = 0; i < str_len; i++)
+		{
+			GUI_PutCharArr(x+i*16, y, (uint8_t *)(FONT_CHN_MENU[dat[i]]), hno, lno, IsInverse);
+		}
 	}
 	
 }

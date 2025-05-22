@@ -40,6 +40,9 @@ typedef enum{
 	UINT_Cells_mL,//ю╤блтЕ
 	UINT_Kcells_mL,//ю╤блтЕ
 	UINT_mSCM,
+	UINT_PPM,
+	UINT_GL,
+	UINT_PPB,
 }LABEL_UINT_TYPE;
 
 //╠Йг╘╫з╣Ц

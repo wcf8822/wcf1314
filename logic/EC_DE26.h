@@ -16,5 +16,9 @@ void EC_DE26_rs485_ClearCal(PtrToDOProbe ptd);
 void EC_DE26_SetSN(PtrToDOProbe ptd,uint8_t* buff, uint8_t len);
 void EC_DE26_SetSHWVersion(PtrToDOProbe ptd);
 void EC_DE26_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat);
+void EC_DE26_SetTds_value(PtrToDOProbe ptd,float Value);
+void EC_DE26_SetTemp_value(PtrToDOProbe ptd,float Value);
+void EC_DE26_rs485_Get_tds_temp_value(PtrToDOProbe ptd);
+void EC_DE26_Settds_temp_xishu(PtrToDOProbe ptd,uint8_t *dat);
 
 #endif

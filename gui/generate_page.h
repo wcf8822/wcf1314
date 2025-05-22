@@ -88,6 +88,7 @@ void generate_SlideAverage_Value(PtrToInterfacial interfacial, uint8_t temp);   
 
 void generate_IntervaSave(PtrToInterfacial interfacial,uint16_t num, uint8_t is_chn);
 void generate_LockSave(PtrToInterfacial interfacial);
+void generate_MLSS_ZERO(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
 
 
 void generate_NH3N_ONE(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
@@ -128,6 +129,17 @@ void generate_FACTORY(PtrToInterfacial interfacial);//工厂模式
 void generate_DC18_Set(PtrToInterfacial interfacial);//DC18
 void generate_INCAL(PtrToInterfacial interfacial);//DC18内部校准
 void generate_Model_selection(PtrToInterfacial interfacial);//
+void generate_DE26_EC_tds_value(PtrToInterfacial interfacial);
+void generate_DE26_EC_temp_data_value(PtrToInterfacial interfacial);
+void generate_Sal_set_uint(PtrToInterfacial interfacial);
+void generate_shenghui_BGA_ONE(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+void generate_SetMes_Unit(PtrToInterfacial interfacial);
+void generate_SetCal_Num(PtrToInterfacial interfacial);
+void generate_SetTemp_para_Mode(PtrToInterfacial interfacial,PAGE_NUM cur_PageNum);
+void generate_Temp_Clear_Time(PtrToInterfacial interfacial, PAGE_NUM cur_PageNum);
+void generate_Sensor_Cal_Info(PtrToInterfacial interfacial);
+void generate_OIW_K_CAL(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+
 #endif
 
 

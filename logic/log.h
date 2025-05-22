@@ -43,10 +43,12 @@ typedef struct{
 	float CODuv_mg_L;                    //化学需氧量
 
 	float CODuv_toc_mg_l;				 //COD的toc值
-	
-	float ppm;                         		     //水中油
-	
+		
 	float NO3_mg_L;                      //硝酸根离子	
+
+	float MLSS_mg_L;						//污泥浓度
+
+	float OIW_mg_L;						//水中油
 	
 }log_FloatData_t;
 
@@ -101,7 +103,11 @@ void log_SendBytes();
 void log_SendCount(void);
 
 
-extern uint16_t DO_Send_Count ,pH_Send_Count ,Tur_Send_Count,FCL_Send_Count ,EC_Send_Count ,ORP_Send_Count ,NH4_Send_Count ,F_Send_Count,CL_Send_Count,Chl_Send_Count ,Bga_Send_Count ,COD_Send_Count ;
+extern uint16_t DO_Send_Count ,		pH_Send_Count ,		Tur_Send_Count,
+				FCL_Send_Count ,	EC_Send_Count ,		ORP_Send_Count ,
+				NH4_Send_Count ,	F_Send_Count,		CL_Send_Count,
+				Chl_Send_Count ,	Bga_Send_Count ,	COD_Send_Count ,
+				MLSS_Send_Count,	OiW_Send_Count;
 
 #endif
 

@@ -223,6 +223,8 @@ void ch340_DataHandle(void)
 							  Chl_Send_Count = 0;
 							  Bga_Send_Count = 0;
 							  COD_Send_Count = 0;							
+							  MLSS_Send_Count = 0;
+							  OiW_Send_Count = 0;
 								break;
 							
 							case 0x02://查第几条记录
@@ -234,9 +236,6 @@ void ch340_DataHandle(void)
 								break;
 						}
 						break;
-					
-					
-						
 					default:
 						break;
 					

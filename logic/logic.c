@@ -248,7 +248,7 @@ void logic_DeviceDestory(void)//////////////////////////////////////////////////
 				break;
 			case PAGE_5_DO_ONE_First:
 			case PAGE_5_DO_TWO_SECOND:
-				
+			case PAGE_5_MLSS_zero_signal:
 			case PAGE_5_NH3N_ONE:
 			case PAGE_5_NH3N_TWO:
 			case PAGE_5_NH3N_pH_ONE:
@@ -274,7 +274,6 @@ void logic_DeviceDestory(void)//////////////////////////////////////////////////
 			case PAGE_5_shenghui_Tur_THREE:				
 				
 			case PAGE_5_shenghui_EC_ONE:
-				
       		case PAGE_5_DE26_EC_Zero:
 			case PAGE_5_DR31_ORP_ONE:
 			case PAGE_5_shenghui_BGA_ONE:
@@ -393,17 +392,14 @@ void Save_Data(void)
 									
 	generate_MessageBox(MESSAGE_SAVELOG, 1);	
 }
-// GPIO_PinState menustatus;
 void main_loop(void) //main函数调用的循环函数
 {
-	
 	if(get_RtcFlag())
 	{
 		clear_RtcFlag();
 		BLINKLED();
 		HYM8563_UpdateTime();
 	}
-	// menustatus = HAL_GPIO_ReadPin(KEY_MENU_GPIO_Port,KEY_MENU_Pin);
 	if(get_BmpFlag())//2s
 	{
 		clear_BmpFlag();
@@ -413,14 +409,14 @@ void main_loop(void) //main函数调用的循环函数
 		{
 			if(++count_savedata >= (uint16_t)(setting_GetAutoIntervalTime() / 2))
 			{
-        clear_SAVEDATACount();
-        Save_Data();			
-			}		
+				clear_SAVEDATACount();
+				Save_Data();			
+			}
 		}
 		else
 		{
-      clear_SAVEDATACount();
-		}	
+      		clear_SAVEDATACount();
+		}
 	}
 	
 	if(get_GPSFlag())
@@ -515,9 +511,3 @@ void main_loop(void) //main函数调用的循环函数
 	
 	RTC_AutoShut();
 }
-
-
-
-
-
-

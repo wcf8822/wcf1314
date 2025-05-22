@@ -38,82 +38,74 @@ typedef struct struct_setting{
 	
 	uint8_t AutoLock_pH;       //是否自动锁定
 	uint8_t AutoLock_DO;       //是否自动锁定
-	uint8_t AutoLock_FCL;      //是否自动锁定
 	uint8_t AutoLock_EC;       //是否自动锁定
 	uint8_t AutoLock_Tur;      //是否自动锁定
 	uint8_t AutoLock_ORP;      //是否自动锁定
 	uint8_t AutoLock_NH4;      //是否自动锁定
-	uint8_t AutoLock_F;        //是否自动锁定
-	uint8_t AutoLock_CL;       //是否自动锁定
 	uint8_t AutoLock_Chl;      //是否自动锁定
 	uint8_t AutoLock_Bga;      //是否自动锁定
 	uint8_t AutoLock_COD;      //是否自动锁定
+	uint8_t AutoLock_MLSS;      //是否自动锁定
+	uint8_t AutoLock_OIW;      //是否自动锁定
 	
 	uint8_t AutoLock_level_pH;       //自动锁定等级
 	uint8_t AutoLock_level_DO;       //自动锁定等级
-	uint8_t AutoLock_level_FCL;      //自动锁定等级
 	uint8_t AutoLock_level_EC;       //自动锁定等级
 	uint8_t AutoLock_level_Tur;      //自动锁定等级
 	uint8_t AutoLock_level_ORP;      //自动锁定等级
 	uint8_t AutoLock_level_NH4;      //自动锁定等级
-	uint8_t AutoLock_level_F;        //自动锁定等级
-	uint8_t AutoLock_level_CL;       //自动锁定等级
 	uint8_t AutoLock_level_Chl;      //自动锁定等级
 	uint8_t AutoLock_level_Bga;      //自动锁定等级
 	uint8_t AutoLock_level_COD;    //自动锁定等级
+	uint8_t AutoLock_level_MLSS;    //自动锁定等级
+	uint8_t AutoLock_level_OIW;    //自动锁定等级
 	
 	uint8_t IsAlarm_pH;       //是否报警
 	uint8_t IsAlarm_DO;       //是否报警
-	uint8_t IsAlarm_FCL;      //是否报警
 	uint8_t IsAlarm_EC;       //是否报警
 	uint8_t IsAlarm_Tur;      //是否报警
 	uint8_t IsAlarm_ORP;      //是否报警
 	uint8_t IsAlarm_NH4;      //是否报警
-	uint8_t IsAlarm_F;        //是否报警
-	uint8_t IsAlarm_CL;       //是否报警
 	uint8_t IsAlarm_Chl;      //是否报警
 	uint8_t IsAlarm_Bga;      //是否报警
 	uint8_t IsAlarm_COD;    //是否报警
+	uint8_t IsAlarm_MLSS;    //是否报警
+	uint8_t IsAlarm_OIW;    //是否报警
 	
 	uint8_t AutoShut;         //0 5 10 20
 	
 	uint8_t IsOpen_SlideAvg_pH;  //是否开启滑动平均
 	uint8_t IsOpen_SlideAvg_DO;  //是否开启滑动平均
-	uint8_t IsOpen_SlideAvg_FCL;  //是否开启滑动平均
 	uint8_t IsOpen_SlideAvg_EC;  //是否开启滑动平均
 	uint8_t IsOpen_SlideAvg_Tur;  //是否开启滑动平均
 	uint8_t IsOpen_SlideAvg_ORP;  //是否开启滑动平均
 	uint8_t IsOpen_SlideAvg_NH4;  //是否开启滑动平均
-	uint8_t IsOpen_SlideAvg_F;  //是否开启滑动平均
-	uint8_t IsOpen_SlideAvg_CL;  //是否开启滑动平均
 	uint8_t IsOpen_SlideAvg_Chl;  //是否开启滑动平均
 	uint8_t IsOpen_SlideAvg_Bga;  //是否开启滑动平均
 	uint8_t IsOpen_SlideAvg_COD;  //是否开启滑动平均
+	uint8_t IsOpen_SlideAvg_MLSS;  //是否开启滑动平均
+	uint8_t IsOpen_SlideAvg_OIW;  //是否开启滑动平均
 	
 	uint8_t SlideAvgTimes_pH;    //滑动平均次数
 	uint8_t SlideAvgTimes_DO;    //滑动平均次数
-	uint8_t SlideAvgTimes_FCL;    //滑动平均次数
 	uint8_t SlideAvgTimes_EC;    //滑动平均次数
 	uint8_t SlideAvgTimes_Tur;    //滑动平均次数
 	uint8_t SlideAvgTimes_ORP;    //滑动平均次数
 	uint8_t SlideAvgTimes_NH4;    //滑动平均次数
-	uint8_t SlideAvgTimes_F;    //滑动平均次数
-	uint8_t SlideAvgTimes_CL;    //滑动平均次数
 	uint8_t SlideAvgTimes_Chl;    //滑动平均次数
 	uint8_t SlideAvgTimes_Bga;    //滑动平均次数
 	uint8_t SlideAvgTimes_COD;    //滑动平均次数
+	uint8_t SlideAvgTimes_MLSS;	  //滑动平均次数
+	uint8_t SlideAvgTimes_OIW;	  //滑动平均次数
 	
 	uint8_t IsSelect_pH;       //是否选中加入到读取指令
 	uint8_t IsSelect_DO;       //是否选中   海发、禹山溶解氧
 	uint8_t IsSelect_DO_shenghui;       //昇辉溶解氧
-	uint8_t IsSelect_FCL;      //是否选中
 	uint8_t IsSelect_EC;       //是否选中
 	uint8_t IsSelect_Tur;      //是否选中
 	uint8_t IsSelect_ORP;      //是否选中
 	uint8_t IsSelect_NH4_DN02;      //自研氨氮
 	uint8_t IsSelect_NH4_shenghui;      //昇辉氨氮
-	uint8_t IsSelect_F;        //是否选中
-	uint8_t IsSelect_CL;       //是否选中
 	uint8_t IsSelect_Chl;      //是否选中
 	uint8_t IsSelect_Bga;      //是否选中
 	uint8_t IsSelect_COD_DC18;    //自研  COD
@@ -124,10 +116,7 @@ typedef struct struct_setting{
 	
 	value_type LowThreshold_DO;  //低门限报警阈值
 	value_type HighThreshold_DO; //高门限报警阈值
-	
-	value_type LowThreshold_FCL;  //低门限报警阈值
-	value_type HighThreshold_FCL; //高门限报警阈值
-	
+		
 	value_type LowThreshold_EC;  //低门限报警阈值
 	value_type HighThreshold_EC; //高门限报警阈值
 	
@@ -139,13 +128,7 @@ typedef struct struct_setting{
 	
 	value_type LowThreshold_NH4;  //低门限报警阈值
 	value_type HighThreshold_NH4; //高门限报警阈值
-	
-	value_type LowThreshold_F;  //低门限报警阈值
-	value_type HighThreshold_F; //高门限报警阈值
-	
-	value_type LowThreshold_CL;  //低门限报警阈值
-	value_type HighThreshold_CL; //高门限报警阈值
-	
+		
 	value_type LowThreshold_Chl;  //低门限报警阈值
 	value_type HighThreshold_Chl; //高门限报警阈值
 	
@@ -154,6 +137,12 @@ typedef struct struct_setting{
 	
 	value_type LowThreshold_COD;  //低门限报警阈值
 	value_type HighThreshold_COD; //高门限报警阈值
+
+	value_type LowThreshold_Mlss;  //低门限报警阈值
+	value_type HighThreshold_Mlss; //高门限报警阈值
+
+	value_type LowThreshold_OIW;  //低门限报警阈值
+	value_type HighThreshold_OIW; //高门限报警阈值
 	
 	value_type AirPressure;   //气压补偿
 	value_type Salinity;      //盐度值
@@ -166,6 +155,10 @@ typedef struct struct_setting{
 	uint8_t DC18_Set;		
 	uint8_t SinMesTime;	   //单次测量时间
 	uint8_t Instrument_model;	   //仪表型号(580或者702)
+	uint8_t Orp_low_Threshold_pn;		//orp低门限报警阈值 正负号
+	uint8_t Orp_high_Threshold_pn;		//orp高门限报警阈值 正负号
+	uint8_t Sal_unit;		//0:ppt 5:百分号 10:千分号
+	uint8_t Mes_Unit;	   //测量单位
 }setting_t;
 
 enum AUTOLOCK_ENUM{
@@ -246,6 +239,11 @@ uint8_t setting_GetIsOpen_SlideAvg_Bga(void);
 void setting_SetIsOpen_SlideAvg_COD(uint8_t IsOpen);
 uint8_t setting_GetIsOpen_SlideAvg_COD(void);
 
+void setting_SetIsOpen_SlideAvg_MLSS(uint8_t IsOpen);
+uint8_t setting_GetIsOpen_SlideAvg_MLSS(void);
+
+uint8_t setting_GetSlideAvgTimes_OIW(void);
+void setting_SetSlideAvgTimes_OIW(uint8_t times);
 /*滑动平均次数设置*/
 uint8_t setting_GetSlideAvgTimes_DO(void);
 void setting_SetSlideAvgTimes_DO(uint8_t times);
@@ -285,8 +283,15 @@ void setting_SetSlideAvgTimes_Bga(uint8_t times);
 uint8_t setting_GetSlideAvgTimes_COD(void);
 void setting_SetSlideAvgTimes_COD(uint8_t times);
 
+uint8_t setting_GetSlideAvgTimes_MLSS(void);
+void setting_SetSlideAvgTimes_MLSS(uint8_t times);
 
 
+uint8_t setting_GetOrp_low_Threshold_pn(void);
+void setting_SetOrp_low_Threshold_pn(uint8_t value);
+
+uint8_t setting_GetOrp_high_Threshold_pn(void);
+void setting_SetOrp_high_Threshold_pn(uint8_t value);
 
 
 
@@ -376,9 +381,10 @@ uint8_t setting_GetAutoLock_Bga(void);
 void setting_SetAutoLock_Bga(uint8_t AutoLock);
 uint8_t setting_GetAutoLock_COD(void);
 void setting_SetAutoLock_COD(uint8_t AutoLock);
-
-
-
+uint8_t setting_GetAutoLock_MLSS(void);
+void setting_SetAutoLock_MLSS(uint8_t AutoLock);
+uint8_t setting_GetAutoLock_OIW(void);
+void setting_SetAutoLock_OIW(uint8_t AutoLock);
 
 uint8_t setting_GetAutoLockLevel_DO(void);
 void setting_SetAutoLockLevel_DO(uint8_t level);
@@ -404,8 +410,10 @@ uint8_t setting_GetAutoLockLevel_Bga(void);
 void setting_SetAutoLockLevel_Bga(uint8_t level);
 uint8_t setting_GetAutoLockLevel_COD(void);
 void setting_SetAutoLockLevel_COD(uint8_t level);
-
-
+uint8_t setting_GetAutoLockLevel_MLSS(void);
+void setting_SetAutoLockLevel_MLSS(uint8_t level);
+uint8_t setting_GetAutoLockLevel_OIW(void);
+void setting_SetAutoLockLevel_OIW(uint8_t level);
 /*设置、获取是否选中*/
 /*获取是否选中*/
 uint8_t setting_GetIsSelect_DO(void);
@@ -477,6 +485,13 @@ uint8_t setting_GetIsAlarm_Bga(void);
 void setting_SetIsAlarm_COD(uint8_t IsAlarm);
 uint8_t setting_GetIsAlarm_COD(void);
 
+void setting_SetIsAlarm_MLSS(uint8_t IsAlarm);
+uint8_t setting_GetIsAlarm_MLSS(void);
+
+void setting_SetIsAlarm_OIW(uint8_t IsAlarm);
+uint8_t setting_GetIsAlarm_OIW(void);
+
+
 //报警上下限
 value_type setting_GetHighThreshold_pH(void);
 void setting_SetHighThreshold_pH(value_type value);
@@ -522,6 +537,18 @@ value_type setting_GetHighThreshold_COD(void);
 void setting_SetHighThreshold_COD(value_type value);
 value_type setting_GetLowThreshold_COD(void);
 void setting_SetLowThreshold_COD(value_type value);
+value_type setting_GetHighThreshold_MLSS(void);
+void setting_SetHighThreshold_MLSS(value_type value);
+value_type setting_GetLowThreshold_MLSS(void);
+void setting_SetLowThreshold_MLSS(value_type value);
+value_type setting_GetHighThreshold_OIW(void);
+void setting_SetHighThreshold_OIW(value_type value);
+value_type setting_GetLowThreshold_OIW(void);
+void setting_SetLowThreshold_OIW(value_type value);
+
+
+void setting_SetIsOpen_SlideAvg_OIW(uint8_t IsOpen);
+uint8_t setting_GetIsOpen_SlideAvg_OIW(void);
 
 void setting_SetKeyGPS(uint8_t KeyGps);
 uint8_t setting_GetIsKeyGps(void);
@@ -544,5 +571,12 @@ void setting_SetKey_DC18_Set(uint8_t KeyGps);
 uint8_t setting_GetIsKey_DC18_Set(void);
 	
 
+/*设置盐度单位*/
+void setting_SetSal_Unit(uint8_t value);
+/*获取盐度单位*/
+uint8_t setting_GetSal_Uni(void);
+
+uint8_t setting_GetMesUnit(void);
+void setting_SetMesUnit(uint8_t value);
 
 #endif

@@ -1,6 +1,15 @@
 {
     "files.associations": {
         "orp_dr31.h": "c",
-        "spi_flash.h": "c"
+        "spi_flash.h": "c",
+        "setting.h": "c",
+        "mlss_tianjian.h": "c",
+        "bga_shenghui.h": "c",
+        "dissolved_oxygen.h": "c",
+        "oiw_guohong.h": "c",
+        "oiw_yushan.h": "c",
+        "do_haifa_dy12.h": "c",
+        "nh3n_dn02.h": "c",
+        "vcruntime.h": "c"
     }
 }

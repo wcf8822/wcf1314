@@ -150,7 +150,14 @@ void LabelList_Print(list_label lbllist , uint8_t IsChn)
 				}
 				else
 				{
-					GUI_PutEngStr(p->x, p->y, p->content_eng, MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+					if(p->content_eng == qianfenhao_en)
+					{
+						GUI_PutChnStr(p->x, p->y, p->content_chn, p->ChnContent_size, MENU_FONT_CHN_LSIZE, MENU_FONT_CHN_RSIZE, LOADBIT_NORMAL);
+					}
+					else
+					{
+						GUI_PutEngStr(p->x, p->y, p->content_eng, MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+					}
 				}
 				break;
 				
@@ -227,6 +234,21 @@ void LabelList_Print(list_label lbllist , uint8_t IsChn)
 						temp_x+=8;
 						break;
 					case UINT_UGL:
+						GUI_PutChar(temp_x, p->y, 'g', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, '/', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'L', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						break;
+						break;
+					case UINT_PPM:
+						GUI_PutChar(temp_x, p->y, 'p', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'p', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'm', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
 						break;
 					case UINT_PPT:
 						GUI_PutChar(temp_x, p->y, 'p', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
@@ -272,6 +294,22 @@ void LabelList_Print(list_label lbllist , uint8_t IsChn)
 						GUI_PutChar(temp_x, p->y, 'm', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
 						temp_x+=8;
 						GUI_PutChar(temp_x, p->y, 'L', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						break;
+					case UINT_GL:
+						GUI_PutChar(temp_x, p->y, 'g', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, '/', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'L', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						break;
+					case UINT_PPB:
+						GUI_PutChar(temp_x, p->y, 'p', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'p', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+						temp_x+=8;
+						GUI_PutChar(temp_x, p->y, 'b', MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
 						temp_x+=8;
 						break;
 					default:

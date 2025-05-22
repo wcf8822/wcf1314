@@ -209,19 +209,18 @@ void Error_Handler(void);
 #define LOG_FIRST_Bga_ADDR         0x3CB000+10*LOG_MAX_COUNT*sizeof(log_t)   //Bga 第一条记录的存储地址
 #define LOG_FIRST_COD_ADDR         0x3CB000+11*LOG_MAX_COUNT*sizeof(log_t)   //COD 第一条记录的存储地址
 #define LOG_FIRST_PPM_ADDR         0x3CB000+12*LOG_MAX_COUNT*sizeof(log_t)   //水中油 第一条记录的存储地址
+#define LOG_FIRST_MLSS_ADDR        0x3CB000+13*LOG_MAX_COUNT*sizeof(log_t)   //污泥浓度 第一条记录的存储地址
+#define LOG_FIRST_OIW_ADDR         0x3CB000+14*LOG_MAX_COUNT*sizeof(log_t)   //水中油 第一条记录的存储地址
 
 #define LOG_COUNT_ADDR         0x000200 //记录条数储存位起始地址  
 
-
-//#define MIN_K 0.5
-//#define MAX_K 1.5
-//#define MAX_B 0.15
 #define MAX_EPS_K 0.5
 #define MAX_EPS_B 0.15
 
 #define CAL_ZERO_VALUE 0.001
 
 #define SHUTDOWN() HAL_GPIO_WritePin(BAT_OFF_GPIO_Port, BAT_OFF_Pin, GPIO_PIN_SET)
+// #define SHUTDOWN() HAL_GPIO_WritePin(BAT_OFF_GPIO_Port, BAT_OFF_Pin, GPIO_PIN_RESET)
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

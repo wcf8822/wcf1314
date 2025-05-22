@@ -22,7 +22,11 @@
 #include "pH_Dph07.h"
 #include "Chl_shenghui.h"
 #include "ORP_DR31.h"
+#include "MLSS_Tianjian.h"
 #include "BGA_shenghui.h"
+#include "OiW_Guohong.h"
+#include "OiW_yushan.h"
+#include "DO_HaiFa_DY12.h"
 
 uint8_t DC18_DC17_flag;		//17,18切换标志位
 
@@ -1283,7 +1287,7 @@ void EC_DE26_DataHandle(void){
 			{
 				
 				uint8_t DO_ID = EC_DE26_ModbusID;
-        DO_AddProbe(DO_ID);			
+        		DO_AddProbe(DO_ID);			
 				rs485_DevicePlus();//添加下设备树上的设备个数
 				EC_DE26_UpdateTemp2DO(get_COMADo()->modbus_id == EC_DE26_ModbusID ? get_COMADo() : get_COMBDo(), &(rs485_usart.rx_buf[3]));				
 				EC_DE26_rs485_GetSN(get_COMADo());
@@ -1295,7 +1299,7 @@ void EC_DE26_DataHandle(void){
 			if(rs485_usart.rx_buf[1] == 0x03)
 			{
 				close_circle();
-				EC_DE26_SetSN(get_COMADo()->modbus_id == EC_DE26_ModbusID ? get_COMADo() : get_COMBDo(), &(rs485_usart.rx_buf[3]), 12);
+				EC_DE26_SetSN(get_COMADo()->modbus_id == EC_DE26_ModbusID ? get_COMADo() : get_COMBDo(), &(rs485_usart.rx_buf[3]), 0);
 				EC_DE26_rs485_GetSHWVersion(get_COMADo());
 
 			}
@@ -1306,11 +1310,34 @@ void EC_DE26_DataHandle(void){
 			{
 				close_circle();
 				EC_DE26_SetSHWVersion(get_COMADo()->modbus_id == EC_DE26_ModbusID ? get_COMADo() : get_COMBDo());
-				DO_SetIsInit(get_COMADo()->modbus_id == EC_DE26_ModbusID ? get_COMADo() : get_COMBDo());
+				EC_DE26_rs485_Get_tds_temp_value(get_COMADo());
+			}
+			break;
+
+		case DO_SendType_GetMesParameter:
+			close_circle();
+			EC_DE26_Settds_temp_xishu(get_COMADo()->modbus_id == EC_DE26_ModbusID ? get_COMADo() : get_COMBDo(), &(rs485_usart.rx_buf[3]));
+			DO_SetIsInit(get_COMADo()->modbus_id == EC_DE26_ModbusID ? get_COMADo() : get_COMBDo());
+			break;
+		
+		case DO_SendType_SetSalinity:
+		case DO_SendType_SetPressure:
+			if(rs485_usart.rx_buf[1] == 0x10 && rs485_usart.rx_buf[2] == 0x06)
+			{
+				close_circle();
+				if(interfacial_GetCurPage() == PAGE_3_Set_TDS_coefficient ||
+				   interfacial_GetCurPage() == PAGE_3_Set_Temp_coefficient)
+				{
+					generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+				}
+				EC_DE26_rs485_Get_tds_temp_value(get_COMADo());
+			}
+			else
+			{
+				generate_MessageBox(MESSAGE_SUCCESSFUL, 0);
 			}
 			break;
 			
-		
 		case DO_SendType_GetTempTwoDO:
 			if(rs485_usart.rx_buf[1] == 0x03 && rs485_usart.rx_buf[2] == 0x14)
 			{
@@ -1599,7 +1626,7 @@ void ORP_DR31_DataHandle(void){
 	switch(rs485_GetSentType())
 	{	
 		case DO_SendType_GetModbusId:   //获取modbus id
-			if(rs485_usart.rx_buf[1] == 0x04)
+			if(rs485_usart.rx_buf[1] == 0x03)
 			{	
 				uint8_t DO_ID = ORP_DR31_ModbusID;
 				
@@ -1612,7 +1639,7 @@ void ORP_DR31_DataHandle(void){
 			break;
 
 		case DO_SendType_GetTempTwoDO:  //获取测量值
-			if(rs485_usart.rx_buf[1] == 0x04)
+			if(rs485_usart.rx_buf[1] == 0x03)
 			{
 				close_circle();
 				ORP_DR31_UpdateTemp2DO(get_COMADo()->modbus_id == ORP_DR31_ModbusID ? get_COMADo() : get_COMBDo(), &(rs485_usart.rx_buf[3]));
@@ -1626,22 +1653,22 @@ void ORP_DR31_DataHandle(void){
 				close_circle();
 				if(interfacial_GetCurPage() == PAGE_1_RESETCAL)
 				{
-						generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+					generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
 				}
 			}
 			break;	
 
 		case DO_SendType_SetKB://ORP单点校准
-			if(rs485_usart.rx_buf[1] == 0x10 && rs485_usart.rx_buf[2] == 0x9C)//校准返回
+			if(rs485_usart.rx_buf[1] == 0x06 && rs485_usart.rx_buf[2] == 0x0b)//校准返回
 			{		
 		  		close_circle();
 				switch(interfacial_GetCurPage())
 				{
 					case PAGE_5_DR31_ORP_ONE:		
 						generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
-						interfacial_GetCurrentInterfacial()->label_head->next_label->next_label->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
-						interfacial_GetCurrentInterfacial()->label_head->next_label->next_label->next_label->content_eng = (uint8_t *)chenggong_en;
-						interfacial_GetCurrentInterfacial()->label_head->next_label->next_label->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
+						interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
+						interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
+						interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
 						break;
 										
 					default:
@@ -1678,7 +1705,7 @@ void BGA_shenghui_DataHandle(void){
 				shenghui_SetSN(get_COMADo()->modbus_id == Bga_shenghui_ModbusID ? get_COMADo() : get_COMBDo(), &(rs485_usart.rx_buf[3]), 12);
 				BGA_shenghui_rs485_GetSHWVersion(get_COMADo());
 			}
-			break;					
+			break;
 		
 		case DO_SendType_GetSHWVersion: //获取软硬件版本号
 			if(rs485_usart.rx_buf[1] == 0x04 && rs485_usart.rx_buf[2] == 0x02)
@@ -1707,9 +1734,9 @@ void BGA_shenghui_DataHandle(void){
 					case PAGE_5_shenghui_BGA_ONE:
 					case PAGE_5_shenghui_BGA_TWO:
 						generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
-						interfacial_GetCurrentInterfacial()->label_head->next_label->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
-						interfacial_GetCurrentInterfacial()->label_head->next_label->next_label->content_eng = (uint8_t *)chenggong_en;
-						interfacial_GetCurrentInterfacial()->label_head->next_label->next_label->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
+						interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
+						interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
+						interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
 						break;
 										
 					default:
@@ -1719,7 +1746,7 @@ void BGA_shenghui_DataHandle(void){
 			break;
 		
 		case DO_SendType_SetTemp://温度校准
-			if( rs485_usart.rx_buf[2] == 0x9C && rs485_usart.rx_buf[3] == 0x57)
+			// if( rs485_usart.rx_buf[2] == 0x9C && rs485_usart.rx_buf[3] == 0x57)
 			{
 				close_circle();
 				if(interfacial_GetCurPage() == PAGE_5_TEMP)
@@ -1730,7 +1757,7 @@ void BGA_shenghui_DataHandle(void){
 			break;
 
 		case DO_SendType_HyphiveClearCal://恢复出厂设置
-			if(rs485_usart.rx_buf[2] == 0x9C && rs485_usart.rx_buf[3] == 0x51)
+			// if(rs485_usart.rx_buf[2] == 0x9C && rs485_usart.rx_buf[3] == 0x51)
 			{
 				close_circle();
 				if(interfacial_GetCurPage() == PAGE_1_RESETCAL)
@@ -1744,6 +1771,467 @@ void BGA_shenghui_DataHandle(void){
 	}
 }
 
+
+void MLSS_Tianjian_DataHandle()
+{
+	switch(rs485_GetSentType())
+	{
+		case DO_SendType_GetModbusId:   //获取modbus id
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{	
+				uint8_t DO_ID = MLSS_Tianjian_ModbusID;
+				
+				DO_AddProbe(DO_ID);
+				rs485_DevicePlus();//添加下设备树上的设备个数
+				/*获取sn号和软件版本号*/
+				MLSS_Tianjian_GetSN_Software(get_COMADo());
+			}
+			break;
+			
+			/*设置sn号和软件版本号*/
+		case DO_SendType_GetSN:
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{	
+				close_circle();
+				MLSS_Tianjian_SetSHWVersion(get_COMADo()->modbus_id == MLSS_Tianjian_ModbusID ? get_COMADo() : get_COMBDo(),&(rs485_usart.rx_buf[3]));
+				MLSS_Tianjian_rs485_Set_Unit(get_COMADo()->modbus_id == MLSS_Tianjian_ModbusID ? get_COMADo() : get_COMBDo(),0x00);
+			}
+			break;
+			/*设置传感器单位*/
+		case DO_SendType_SetSensorCap:
+			if(rs485_usart.rx_buf[1] == 0x06)
+			{	
+				close_circle();
+				MLSS_Tianjian_rs485_Get_Cal_Num(get_COMADo()->modbus_id == MLSS_Tianjian_ModbusID ? get_COMADo() : get_COMBDo());
+			}
+			break;
+
+		case DO_SendType_GetPressure:
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{	
+				close_circle();
+				MLSS_Tianjian_rs485_Set_Cal_Num1(get_COMADo()->modbus_id == MLSS_Tianjian_ModbusID ? get_COMADo() : get_COMBDo(),&(rs485_usart.rx_buf[3]));
+			}
+			break;
+
+			/*解析数据*/
+		case DO_SendType_GetTempTwoDO:
+			// if(rs485_usart.rx_buf[1] == 0x04 && rs485_usart.rx_buf[2] == 0x08)
+			{
+				close_circle();
+				MLSS_Tianjian_UpdateTemp2DO(get_COMADo()->modbus_id == MLSS_Tianjian_ModbusID ? get_COMADo() : get_COMBDo(),&(rs485_usart.rx_buf[3]));
+				DO_SetIsGetedValue(get_COMADo()->modbus_id == MLSS_Tianjian_ModbusID ? get_COMADo() : get_COMBDo());//设置do设备已经有数据了
+			}
+			break;
+		
+			/*恢复出厂设置*/
+		case DO_SendType_HyphiveClearCal://恢复出厂设置
+			// if(rs485_usart.rx_buf[2] == 0x9C && rs485_usart.rx_buf[3] == 0x51)
+			{
+				close_circle();
+				if(interfacial_GetCurPage() == PAGE_1_RESETCAL)
+				{
+					generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+				}
+			}
+			break;		
+		
+		case DO_SendType_SetPressure:
+			close_circle();
+			MLSS_Tianjian_rs485_Get_Cal_Num(get_COMADo()->modbus_id == MLSS_Tianjian_ModbusID ? get_COMADo() : get_COMBDo());
+			break;
+
+		case DO_SendType_SetKB:
+			close_circle();
+			if(interfacial_GetCurPage() == PAGE_5_DR31_ORP_ONE)
+			{
+				generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+				interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
+				interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
+				interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
+			}
+			
+			break;
+
+		case DO_SendType_SetZeroCal:
+			close_circle();
+			if(interfacial_GetCurPage() == PAGE_5_DE26_EC_Zero)
+			{
+				generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+				interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
+				interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
+				interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
+			}
+			break;
+
+		case DO_SendType_SetTemp:
+			close_circle();
+			if(interfacial_GetCurPage() == PAGE_5_DO_ONE_First || interfacial_GetCurPage() == PAGE_5_DO_TWO_FIRST)
+			{
+				generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+				interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
+				interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
+				interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
+			}
+			break;
+
+		case DO_SendType_Set_Mes_mode:
+			close_circle();
+			if(interfacial_GetCurPage() == PAGE_5_MLSS_zero_signal)
+			{
+				generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+				interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
+				interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
+				interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
+			}
+			break;
+		
+		default:
+			break;
+	}
+}
+
+/**
+ * @brief 水中油协议解析
+ * 
+ * @param DO_ID 
+ */
+void OIW_DataHandle(uint8_t DO_ID)
+{
+	switch(rs485_GetSentType())
+	{
+		case DO_SendType_GetModbusId://获取modbus id
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{					
+				DO_AddProbe(DO_ID);
+				rs485_DevicePlus();//添加下设备树上的设备个数
+				/*获取0x24后面7个寄存器*/
+				if(DO_ID == OiW_guohong_ModbusID)
+				{
+					OiW_Guohong_rs485_GetSN(get_COMADo()->modbus_id == DO_ID ? get_COMADo() : get_COMBDo());
+				}
+				else
+				{
+					OiW_yushan_rs485_GetSN(get_COMADo()->modbus_id == DO_ID ? get_COMADo() : get_COMBDo());
+				}
+			}
+			break;
+
+		case DO_SendType_GetSN:
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{
+				close_circle();
+				if(DO_ID == OiW_guohong_ModbusID)
+				{
+					OiW_Guohong_rs485_SetSN(get_COMADo()->modbus_id == DO_ID ? get_COMADo() : get_COMBDo(),&(rs485_usart.rx_buf[3]));
+					OiW_Guohong_rs485_Get_Cal_value(get_COMADo()->modbus_id == DO_ID ? get_COMADo() : get_COMBDo());
+				}
+				else
+				{
+					OiW_yushan_rs485_SetSN(get_COMADo()->modbus_id == DO_ID ? get_COMADo() : get_COMBDo(),&(rs485_usart.rx_buf[4]));
+					OiW_yushan_rs485_GetSHWVersion(get_COMADo()->modbus_id == DO_ID ? get_COMADo() : get_COMBDo());
+				}
+			}
+			break;
+
+		case DO_SendType_GetDOPercent:
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{
+				close_circle();
+				if(DO_ID == OiW_guohong_ModbusID)
+				{
+					OiW_Guohong_rs485_Set_Cal_info(get_COMADo()->modbus_id == DO_ID ? get_COMADo() : get_COMBDo(),&(rs485_usart.rx_buf[3]));
+				}
+				else
+				{
+					OiW_yushan_rs485_SetCal_k_b(get_COMADo()->modbus_id == DO_ID ? get_COMADo() : get_COMBDo(),&(rs485_usart.rx_buf[3]));
+				}
+			}
+			break;
+			/*解析数据*/
+		case DO_SendType_GetTempTwoDO:
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{
+				close_circle();
+				if(DO_ID == OiW_guohong_ModbusID)
+				{
+					OiW_Guohong_UpdateTemp2DO(get_COMADo()->modbus_id == DO_ID ? get_COMADo() : get_COMBDo(),&(rs485_usart.rx_buf[3]));
+					DO_SetIsGetedValue(get_COMADo()->modbus_id == DO_ID ? get_COMADo() : get_COMBDo());//设置do设备已经有数据了
+				}
+				else
+				{
+					OiW_yushan_UpdateTemp2DO(get_COMADo()->modbus_id == DO_ID ? get_COMADo() : get_COMBDo(),&(rs485_usart.rx_buf[3]));
+					DO_SetIsGetedValue(get_COMADo()->modbus_id == DO_ID ? get_COMADo() : get_COMBDo());//设置do设备已经有数据了
+				}
+			}
+			break;
+		
+		case DO_SendType_SetPressure:
+		case DO_SendType_SetFullCal:
+			if(rs485_usart.rx_buf[1] == 0x06)
+			{
+				close_circle();
+				if(interfacial_GetCurPage() == PAGE_4_Set_Mode_Temp || interfacial_GetCurPage() == PAGE_4_Mes_Mode
+				|| interfacial_GetCurPage() == PAGE_4_Clear_time)
+				{
+					generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+				}
+				if(DO_ID == OiW_guohong_ModbusID)
+				{
+					OiW_Guohong_rs485_GetSN(get_COMADo()->modbus_id == DO_ID ? get_COMADo() : get_COMBDo());
+				}
+			}
+			break;
+		case DO_SendType_Set_Mes_mode:
+			if(rs485_usart.rx_buf[1] == 0x10)
+			{
+				close_circle();
+				if(interfacial_GetCurPage() ==  PAGE_4_Temp_k)
+				{
+					generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+				}
+				if(DO_ID == OiW_guohong_ModbusID)
+				{
+					OiW_Guohong_rs485_Get_Cal_value(get_COMADo()->modbus_id == DO_ID ? get_COMADo() : get_COMBDo());
+				}
+			}
+			break;
+
+		case DO_SendType_SetKB:
+			if(rs485_usart.rx_buf[1] == 0x10)
+			{
+				close_circle();
+				if(interfacial_GetCurPage() == PAGE_5_shenghui_Tur_ONE 
+				|| interfacial_GetCurPage() == PAGE_5_shenghui_Tur_TWO 
+				|| interfacial_GetCurPage() == PAGE_5_shenghui_Tur_THREE)
+				{
+					generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+					interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
+					interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
+					interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
+				}
+				if(DO_ID == OiW_guohong_ModbusID)
+				{
+				}
+				else
+				{
+					OiW_yushan_rs485_GetCal_k_b(get_COMADo()->modbus_id == DO_ID ? get_COMADo() : get_COMBDo());
+				}
+				// OiW_Guohong_rs485_Get_Status(get_COMADo()->modbus_id == DO_ID ? get_COMADo() : get_COMBDo());
+			}
+			break;
+
+		// case DO_SendType_Get_Tur_Status:
+		// 	break;
+
+		case DO_SendType_Set_Mes_Time:
+		case DO_SendType_SetSensorCap:
+			if(rs485_usart.rx_buf[1] == 0x10)
+			{
+				close_circle();
+				if(interfacial_GetCurPage() == PAGE_5_DR31_ORP_ONE || interfacial_GetCurPage() == PAGE_5_OIW_K_CAL)
+				{
+					generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+					interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
+					interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
+					interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
+				}
+				if(DO_ID == OiW_guohong_ModbusID)
+				{
+					OiW_Guohong_rs485_Get_Cal_value(get_COMADo()->modbus_id == DO_ID ? get_COMADo() : get_COMBDo());
+				}
+				else
+				{
+					OiW_yushan_rs485_GetCal_k_b(get_COMADo()->modbus_id == DO_ID ? get_COMADo() : get_COMBDo());
+				}
+			}
+			break;
+
+		case DO_SendType_GetSalinity:
+			if(rs485_usart.rx_buf[1] == 0x06)
+			{
+				close_circle();
+				if(DO_ID == OiW_guohong_ModbusID)
+				{
+					OiW_Guohong_rs485_Set_Zero_Cal(get_COMADo()->modbus_id == DO_ID ? get_COMADo() : get_COMBDo());
+				}
+			}
+			break;
+		case DO_SendType_GetPressure:
+			if(rs485_usart.rx_buf[1] == 0x06)
+			{
+				close_circle();
+				if(interfacial_GetCurPage() == PAGE_5_MLSS_zero_signal)
+				{
+					generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+					interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
+					interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
+					interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
+				}			
+			}
+			break;
+
+		case DO_SendType_HyphiveClearCal:	
+			if(rs485_usart.rx_buf[1] == 0x10)
+			{
+				close_circle();
+				if(DO_ID == OiW_guohong_ModbusID)
+				{
+					OiW_Guohong_rs485_Set_OIW_B_Reset(get_COMADo()->modbus_id == DO_ID ? get_COMADo() : get_COMBDo(),0);
+				}
+				else
+				{
+					if(interfacial_GetCurPage() == PAGE_1_RESETCAL)
+					{
+						generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+					}
+					if(interfacial_GetCurPage() == PAGE_5_DR31_ORP_ONE || interfacial_GetCurPage() == PAGE_5_OIW_K_CAL)
+					{
+						generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+						interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
+						interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
+						interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
+					}
+					OiW_yushan_rs485_GetCal_k_b(get_COMADo()->modbus_id == DO_ID ? get_COMADo() : get_COMBDo());
+				}
+			}
+			break;
+
+		case DO_SendType_GetSHWVersion:
+			if(DO_ID == OiW_guohong_ModbusID)
+			{
+				if(rs485_usart.rx_buf[1] == 0x10)
+				{
+					close_circle();
+					if(interfacial_GetCurPage() == PAGE_1_RESETCAL)
+					{
+						generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+					}
+				}
+			}
+			else
+			{
+				if(rs485_usart.rx_buf[1] == 0x03)
+				{
+					close_circle();
+					OiW_yushan_rs485_SetSHWVersion(get_COMADo()->modbus_id == DO_ID ? get_COMADo() : get_COMBDo(),&(rs485_usart.rx_buf[3]));
+					OiW_yushan_rs485_GetCal_k_b(get_COMADo()->modbus_id == DO_ID ? get_COMADo() : get_COMBDo());
+				}
+			}
+			break;
+
+		default:
+			break;
+	}
+}
+
+
+/*海发禹山溶解氧传感器  串口数据处理*/
+void DO_HF_DY12_DataHandle(void){
+	switch(rs485_GetSentType())
+	{
+		case DO_SendType_GetModbusId:   //溶解氧获取modbus id
+			if( rs485_usart.rx_buf[1] == 0x03)
+			{
+				uint8_t DO_ID =DO_HF_DY12_ModbusID;
+				DO_AddProbe(DO_ID);//在所有设备树中添加溶解氧节点
+				rs485_DevicePlus();//添加下设备树上的设备个数
+				DO_HaiFa_DY12_rs485_SetSN_SH(get_COMADo());
+			}
+			break;
+		
+		case DO_SendType_GetTempTwoDO:
+			if(rs485_usart.rx_buf[1] == 0x03 && rs485_usart.rx_buf[2] == 0x10)
+			{
+				close_circle();
+				DO_HaiFa_DY12_UpdateTemp2DO(get_COMADo()->modbus_id == DO_HF_DY12_ModbusID ? get_COMADo() : get_COMBDo(),  &(rs485_usart.rx_buf[3]));
+				DO_SetIsGetedValue(get_COMADo()->modbus_id == DO_HF_DY12_ModbusID ? get_COMADo() : get_COMBDo());//设置do设备已经有数据了
+				DO_SetIsInit(get_COMADo()->modbus_id == DO_HF_DY12_ModbusID ? get_COMADo() : get_COMBDo());
+			}
+			break;
+		
+		case DO_SendType_SetSalinity:
+		case DO_SendType_SetPressure:
+		case DO_SendType_SetZeroCal:
+			if( rs485_usart.rx_buf[1] == 0x06 && rs485_usart.rx_buf[2] == 0x00)//校准返回
+			{
+				close_circle();
+				DO_HaiFa_DY12_rs485_Set_Cmd_close(get_COMADo()->modbus_id == DO_HF_DY12_ModbusID ? get_COMADo() : get_COMBDo());
+			}
+			break;
+			
+		case DO_SendType_Stop:
+			if( rs485_usart.rx_buf[1] == 0x06 && rs485_usart.rx_buf[2] == 0x00)//校准返回
+			{
+				close_circle();
+				if(interfacial_GetCurPage() == PAGE_3_SALT
+				|| interfacial_GetCurPage() == PAGE_3_PRESSURE)
+				{
+					generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+				}
+				else if(interfacial_GetCurPage() == PAGE_5_DO_ONE_First
+				|| interfacial_GetCurPage() == PAGE_5_DO_TWO_FIRST)
+				{
+					generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+					interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
+					interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
+					interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
+				}
+				DO_HaiFa_DY12_rs485_GetValue(get_COMADo()->modbus_id == DO_HF_DY12_ModbusID ? get_COMADo() : get_COMBDo());
+			}
+			break;
+		
+		case DO_SendType_SetFullCal:
+			if( rs485_usart.rx_buf[1] == 0x06 && rs485_usart.rx_buf[2] == 0x00)//校准返回
+			{
+				close_circle();
+				DO_HaiFa_DY12_rs485_Set_Break(get_COMADo()->modbus_id == DO_HF_DY12_ModbusID ? get_COMADo() : get_COMBDo());
+			}
+			break;
+
+		case DO_SendType_Start:
+			if(rs485_usart.rx_buf[1] == 0x06 && rs485_usart.rx_buf[3] == 0x28)//校准返回
+			{
+				close_circle();
+				if(Get_DY12_Set_Sal())
+				{
+					Set_DY12_Sal_Flag(0);
+					DO_HaiFa_DY12_rs485_Set_Sal(get_COMADo()->modbus_id == DO_HF_DY12_ModbusID ? get_COMADo() : get_COMBDo(),Get_DY12_Set_Sal_Value());
+				}
+				else if(Get_DY12_Set_Press())
+				{
+					Set_DY12_Press_Flag(0);
+					DO_HaiFa_DY12_rs485_Set_Press(get_COMADo()->modbus_id == DO_HF_DY12_ModbusID ? get_COMADo() : get_COMBDo(),Get_DY12_Set_PressValue());
+				}
+				else if(Get_DY12_Set_Zero_Cal())
+				{
+					Set_DY12_Zero_Flag(0);
+					DO_HaiFa_DY12_rs485_Set_Cal(get_COMADo()->modbus_id == DO_HF_DY12_ModbusID ? get_COMADo() : get_COMBDo(),1);
+				}
+				else if(Get_DY12_Set_Full_Cal())
+				{
+					Set_DY12_Full_Flag(0);
+					DO_HaiFa_DY12_rs485_Set_Cal(get_COMADo()->modbus_id == DO_HF_DY12_ModbusID ? get_COMADo() : get_COMBDo(),2);
+				}
+			}
+			break;
+
+		case DO_SendType_HyphiveClearCal:
+			if( rs485_usart.rx_buf[1] == 0x06 && rs485_usart.rx_buf[4] == 0xFF)
+			{
+				close_circle();
+				if(interfacial_GetCurPage() == PAGE_1_RESETCAL)
+				{
+					generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+				}
+			}
+			break;
+
+  		default:
+			break;
+	}
+
+}
 //这是在main里处理的
 void rs485_DataHandle(void)
 {
@@ -1769,11 +2257,11 @@ void rs485_DataHandle(void)
 			    break;
 				
 				case COD_DC18_ModbusID:
-					COD_DC18_DataHandle();
+			  COD_DC18_DataHandle();
 			    break;
 			
 				case COD_DC17_ModbusID:
-					COD_DC17_DataHandle();
+			  COD_DC17_DataHandle();
 				break;
 			
 				case DO_shenghui_ModbusID:  
@@ -1819,6 +2307,22 @@ void rs485_DataHandle(void)
 				case Bga_shenghui_ModbusID:
 			  BGA_shenghui_DataHandle();
 				break;
+
+				case MLSS_Tianjian_ModbusID:
+			  MLSS_Tianjian_DataHandle();
+				break;
+
+				case OiW_yushan_ModbusID:
+			  OIW_DataHandle(OiW_yushan_ModbusID);
+				break;
+				
+				case OiW_guohong_ModbusID:
+			  OIW_DataHandle(OiW_guohong_ModbusID);
+				break;
+
+				case DO_HF_DY12_ModbusID:  
+          	  DO_HF_DY12_DataHandle();					
+			    break;
 
 				default:
 					break;

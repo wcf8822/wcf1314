@@ -64,6 +64,24 @@ void EC_DE26_rs485_GetSN(PtrToDOProbe ptd)
 	
 }
 
+/*获取tds,温度系数*/
+void EC_DE26_rs485_Get_tds_temp_value(PtrToDOProbe ptd)
+{
+	if(ptd == NULL) return;
+	rs485_usart.tx_buf[0] = EC_DE26_ModbusID;
+	rs485_usart.tx_buf[1] = 0x03;
+	rs485_usart.tx_buf[2] = 0x06;
+	rs485_usart.tx_buf[3] = 0x22;
+	rs485_usart.tx_buf[4] = 0x00;
+	rs485_usart.tx_buf[5] = 0x06;
+
+	SetCrc(rs485_usart.tx_buf, rs485_usart.tx_size = 8);
+	
+	rs485_SetCircularSentStatus();
+	
+	rs485_SetSentType(DO_SendType_GetMesParameter);
+}
+
 /*获取软硬件版本号*/
 void EC_DE26_rs485_GetSHWVersion(PtrToDOProbe ptd)
 {
@@ -80,11 +98,63 @@ void EC_DE26_rs485_GetSHWVersion(PtrToDOProbe ptd)
 	rs485_SetCircularSentStatus();
 	
 	rs485_SetSentType(DO_SendType_GetSHWVersion);
-	
 }
 
+// 电导率电极设置TDS系数
+void EC_DE26_SetTds_value(PtrToDOProbe ptd,float Value)
+{
+	if(ptd == NULL) return;
+	float_u Cal_Value;
 
+	Cal_Value.value_f=Value;
 
+	rs485_usart.tx_buf[0]  = EC_DE26_ModbusID;
+	rs485_usart.tx_buf[1]  = 0x10;
+	rs485_usart.tx_buf[2]  = 0x06;
+	rs485_usart.tx_buf[3]  = 0x22;
+	rs485_usart.tx_buf[4]  = 0x00;
+	rs485_usart.tx_buf[5]  = 0x02;
+	rs485_usart.tx_buf[6]  = 0x04;
+	
+	rs485_usart.tx_buf[7]  = Cal_Value.value_arr[1];
+	rs485_usart.tx_buf[8]  = Cal_Value.value_arr[0];
+	rs485_usart.tx_buf[9]  = Cal_Value.value_arr[3];
+	rs485_usart.tx_buf[10] = Cal_Value.value_arr[2];  
+	
+	SetCrc(rs485_usart.tx_buf, rs485_usart.tx_size = 13);
+	
+	rs485_SetCircularSentStatus();
+	
+	rs485_SetSentType(DO_SendType_SetSalinity);
+}
+
+// 电导率电极设置温度补偿系数
+void EC_DE26_SetTemp_value(PtrToDOProbe ptd,float Value)
+{
+	if(ptd == NULL) return;
+	float_u Cal_Value;
+
+	Cal_Value.value_f=Value;
+
+	rs485_usart.tx_buf[0]  = EC_DE26_ModbusID;
+	rs485_usart.tx_buf[1]  = 0x10;
+	rs485_usart.tx_buf[2]  = 0x06;
+	rs485_usart.tx_buf[3]  = 0x26;
+	rs485_usart.tx_buf[4]  = 0x00;
+	rs485_usart.tx_buf[5]  = 0x02;
+	rs485_usart.tx_buf[6]  = 0x04;
+	
+	rs485_usart.tx_buf[7]  = Cal_Value.value_arr[1];
+	rs485_usart.tx_buf[8]  = Cal_Value.value_arr[0];
+	rs485_usart.tx_buf[9]  = Cal_Value.value_arr[3];
+	rs485_usart.tx_buf[10] = Cal_Value.value_arr[2];  
+	
+	SetCrc(rs485_usart.tx_buf, rs485_usart.tx_size = 13);
+	
+	rs485_SetCircularSentStatus();
+	
+	rs485_SetSentType(DO_SendType_SetPressure);
+}
 
 // 电导率单点标定 1413μS/cm
 void EC_DE26_rs485_Frist(PtrToDOProbe ptd,float Value)
@@ -112,7 +182,6 @@ void EC_DE26_rs485_Frist(PtrToDOProbe ptd,float Value)
 	rs485_SetCircularSentStatus();
 	
 	rs485_SetSentType(DO_SendType_SetKB);
-	
 }
 
 //电导率零点 标定
@@ -214,7 +283,7 @@ void EC_DE26_rs485_ClearCal(PtrToDOProbe ptd)
 
 void EC_DE26_SetSN(PtrToDOProbe ptd,uint8_t* buff, uint8_t len)
 {
-	if(ptd == NULL) return;
+	// if(ptd == NULL) return;
 	if(len == 0){
 		ptd->SN[0]='L';
 		ptd->SN[1]='H';
@@ -251,11 +320,32 @@ void EC_DE26_SetSHWVersion(PtrToDOProbe ptd)
 
 }
 
+void EC_DE26_Settds_temp_xishu(PtrToDOProbe ptd,uint8_t *dat)
+{
+	//tds系数
+	ptd->compensate_b.value_arr[0] =	dat[1];
+  	ptd->compensate_b.value_arr[1] =	dat[0];
+	ptd->compensate_b.value_arr[2] =	dat[3];
+	ptd->compensate_b.value_arr[3] =	dat[2];
+
+	snprintf(ptd->tocmgl_Vol_arr, 6, "%5.3f", ptd->compensate_b.value_f);
+
+	//温度系数
+	ptd->compensate_k.value_arr[0] =	dat[9];
+	ptd->compensate_k.value_arr[1] =	dat[8];
+	ptd->compensate_k.value_arr[2] =	dat[11];
+	ptd->compensate_k.value_arr[3] =	dat[10];
+ 
+	ptd->compensate_k.value_f = ptd->compensate_k.value_f * 100;
+	snprintf(ptd->DOmgl_Vol_arr, 6, "%4.2f", ptd->compensate_k.value_f);
+}
+
 void EC_DE26_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 {
 	float temperature_temp = 0.0;
 	float DO_Percent_temp = 0.0;
 	float DO_mgl_temp = 0.0;
+	float unit_data = 1.0;
   static unsigned char EC_unit_Flag=0;	
 	
 	if(ptd == NULL) return;
@@ -284,7 +374,16 @@ void EC_DE26_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 	ptd->temperature.value_arr[2] =	dat[19];
 	ptd->temperature.value_arr[3] =	dat[18];	
 	
-	snprintf(ptd->DOpercent_Vol_arr,  8, "%6.2f", (ptd->pH_Vol.value_f));
+	if(setting_GetSal_Uni() == 5)
+	{
+		unit_data = 10;
+	}
+	else
+	{
+		unit_data = 1;
+	}
+
+	// snprintf(ptd->DOpercent_Vol_arr,  7, "%5.2f", (ptd->pH_Vol.value_f));
 	if(setting_Get_Temp_Unit())//温度单位为华氏度时需要做以下换算
 	{
 		ptd->temperature.value_f = ptd->temperature.value_f*1.8+32;//摄氏度转华氏度公式
@@ -305,32 +404,73 @@ void EC_DE26_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 		ptd->last_DOmgl = ptd->DOmgl.value_f;
 		
 		snprintf(ptd->temperature_arr, 6, "%5.1f", ptd->temperature.value_f);
-		snprintf(ptd->DOpercent_arr,   7, "%6.2f", (ptd->DOpercent.value_f ));
+		// snprintf(ptd->DOpercent_arr,   7, "%5.2f", (ptd->DOpercent.value_f ));
 		//snprintf(ptd->DOmgl_arr,       7, "%5.2f", ptd->DOmgl.value_f);
 		
 		if(ptd->DOmgl.value_f >= 1000000)//1000ms ---
 		{
-			snprintf(ptd->DOmgl_arr,       7, "%5d",1000);			
+			snprintf(ptd->DOmgl_arr,       7, "%5d",1000);
+			snprintf(ptd->DOpercent_arr,       7, "%5d",(unsigned int)ptd->DOpercent.value_f / 1000);	
 		}
 		else if(ptd->DOmgl.value_f >= 100000.0 && ptd->DOmgl.value_f < 1000000.0)//100.0ms - 999.9ms
 		{
-			snprintf(ptd->DOmgl_arr,       7, "%5.1f",ptd->DOmgl.value_f / 1000.0);			
+			snprintf(ptd->DOmgl_arr,       7, "%5.1f",ptd->DOmgl.value_f / 1000.0);		
+			snprintf(ptd->DOpercent_arr,       7, "%5.1f",ptd->DOpercent.value_f / 1000.0);		
 		}
 		else if(ptd->DOmgl.value_f >= 10000.0 && ptd->DOmgl.value_f < 100000.0)//10.00ms - 99.99ms
 		{
-			snprintf(ptd->DOmgl_arr,       7, "%5.2f",ptd->DOmgl.value_f / 1000.0);			
+			snprintf(ptd->DOmgl_arr,       7, "%5.2f",ptd->DOmgl.value_f / 1000.0);		
+			snprintf(ptd->DOpercent_arr,       7, "%5.2f",ptd->DOpercent.value_f / 1000.0);		
 		}
 		else if(ptd->DOmgl.value_f >= 1000.0 && ptd->DOmgl.value_f < 10000.0)//1000 - 9999 无小数
 		{
-			snprintf(ptd->DOmgl_arr,       7, "%5d",(unsigned int)ptd->DOmgl.value_f);		
+			snprintf(ptd->DOmgl_arr,       7, "%5d",(unsigned int)ptd->DOmgl.value_f);	
+			snprintf(ptd->DOpercent_arr,       7, "%5d",(unsigned int)ptd->DOpercent.value_f);	
 		}
 		else if(ptd->DOmgl.value_f >= 100.0 && ptd->DOmgl.value_f < 1000.0)//100.0 - 999.9 一位小数
 		{
 			snprintf(ptd->DOmgl_arr,       7, "%5.1f",ptd->DOmgl.value_f);	
+			snprintf(ptd->DOpercent_arr,       7, "%5.1f",ptd->DOpercent.value_f);
 		}
 		else if(ptd->DOmgl.value_f >= 0.0 && ptd->DOmgl.value_f < 100.0)//0.00 - 99.99 两位小数
 		{
 			snprintf(ptd->DOmgl_arr,       7, "%5.2f",ptd->DOmgl.value_f);
+			snprintf(ptd->DOpercent_arr,       7, "%5.2f",ptd->DOpercent.value_f);
+		}
+		//tds
+		// if(ptd->DOpercent.value_f >= 10000)//1000ms ---
+		// {
+		// 	snprintf(ptd->DOpercent_arr,       7, "%5d",(unsigned int)ptd->DOpercent.value_f);			
+		// }
+		// else if(ptd->DOpercent.value_f >= 1000.0 && ptd->DOpercent.value_f < 10000.0)//1000 - 9999 无小数
+		// {
+		// 	snprintf(ptd->DOpercent_arr,       7, "%5d",(unsigned int)ptd->DOpercent.value_f);		
+		// }
+		// else if(ptd->DOpercent.value_f >= 100.0 && ptd->DOpercent.value_f < 1000.0)//100.0 - 999.9 一位小数
+		// {
+		// 	snprintf(ptd->DOpercent_arr,       7, "%5.1f",ptd->DOpercent.value_f);	
+		// }
+		// else if(ptd->DOpercent.value_f >= 0.0 && ptd->DOpercent.value_f < 100.0)//0.00 - 99.99 两位小数
+		// {
+		// 	snprintf(ptd->DOpercent_arr,       7, "%5.2f",ptd->DOpercent.value_f);
+		// }
+
+		//盐度
+		if(ptd->pH_Vol.value_f >= 10000)//1000ms ---
+		{
+			snprintf(ptd->DOpercent_Vol_arr,       7, "%5d",(unsigned int)ptd->pH_Vol.value_f / unit_data);			
+		}
+		else if(ptd->pH_Vol.value_f >= 1000.0 && ptd->pH_Vol.value_f < 10000.0)//1000 - 9999 无小数
+		{
+			snprintf(ptd->DOpercent_Vol_arr,       7, "%5d",(unsigned int)ptd->pH_Vol.value_f / unit_data);		
+		}
+		else if(ptd->pH_Vol.value_f >= 100.0 && ptd->pH_Vol.value_f < 1000.0)//100.0 - 999.9 一位小数
+		{
+			snprintf(ptd->DOpercent_Vol_arr,       7, "%5.1f",ptd->pH_Vol.value_f / unit_data);	
+		}
+		else if(ptd->pH_Vol.value_f >= 0.0 && ptd->pH_Vol.value_f < 100.0)//0.00 - 99.99 两位小数
+		{
+			snprintf(ptd->DOpercent_Vol_arr,       7, "%5.2f",ptd->pH_Vol.value_f / unit_data);
 		}
 	}
 	else
@@ -381,31 +521,72 @@ void EC_DE26_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 			if(!DO_GetValueLocked(ptd))
 			{
 				snprintf(ptd->temperature_arr, 6, "%5.1f", temperature_temp);
-				snprintf(ptd->DOpercent_arr,   7, "%6.2f", DO_Percent_temp);
+				// snprintf(ptd->DOpercent_arr,   7, "%5.2f", DO_Percent_temp);
 				//snprintf(ptd->DOmgl_arr,       7, "%5.2f", DO_mgl_temp);
 				if(DO_mgl_temp >= 1000000)//1000ms ---
 				{
-					snprintf(ptd->DOmgl_arr,       7, "%5d",1000);			
+					snprintf(ptd->DOmgl_arr,       7, "%5d",1000);	
+					snprintf(ptd->DOpercent_arr,       7, "%5d",(unsigned int)DO_Percent_temp / 1000);				
 				}
 				else if(DO_mgl_temp >= 100000.0 && DO_mgl_temp < 1000000.0)//100.0ms - 999.9ms
 				{
-					snprintf(ptd->DOmgl_arr,       7, "%5.1f",DO_mgl_temp / 1000.0);			
+					snprintf(ptd->DOmgl_arr,       7, "%5.1f",DO_mgl_temp / 1000.0);	
+					snprintf(ptd->DOpercent_arr,       7, "%5.1f",DO_Percent_temp / 1000.0);				
 				}
 				else if(DO_mgl_temp >= 10000.0 && DO_mgl_temp < 100000.0)//10.00ms - 99.99ms
 				{
-					snprintf(ptd->DOmgl_arr,       7, "%5.2f",DO_mgl_temp / 1000.0);			
+					snprintf(ptd->DOmgl_arr,       7, "%5.2f",DO_mgl_temp / 1000.0);	
+					snprintf(ptd->DOpercent_arr,       7, "%5.2f",DO_Percent_temp / 1000.0);			
 				}
 				else if(DO_mgl_temp >= 1000.0 && DO_mgl_temp < 10000.0)//1000us - 9999 无小数
 				{
-					snprintf(ptd->DOmgl_arr,       7, "%5d",(unsigned int)DO_mgl_temp);		
+					snprintf(ptd->DOmgl_arr,       7, "%5d",(unsigned int)DO_mgl_temp);	
+					snprintf(ptd->DOpercent_arr,       7, "%5d",(unsigned int)DO_Percent_temp);		
 				}
 				else if(DO_mgl_temp >= 100.0 && DO_mgl_temp < 1000.0)//100.0us - 999.9 一位小数
 				{
 					snprintf(ptd->DOmgl_arr,       7, "%5.1f",DO_mgl_temp);	
+					snprintf(ptd->DOpercent_arr,       7, "%5.1f",DO_Percent_temp);	
 				}
 				else if(DO_mgl_temp >= 0.0 && DO_mgl_temp < 100.0)//0.00us - 99.99 两位小数
 				{
 					snprintf(ptd->DOmgl_arr,       7, "%5.2f",DO_mgl_temp);
+					snprintf(ptd->DOpercent_arr,       7, "%5.2f",DO_Percent_temp);
+				}
+				//tds
+				// if(DO_Percent_temp >= 10000)//1000ms ---
+				// {
+				// 	snprintf(ptd->DOpercent_arr,       7, "%5d",(unsigned int)DO_Percent_temp);			
+				// }
+				// else if(DO_Percent_temp >= 1000.0 && DO_Percent_temp < 10000.0)//1000 - 9999 无小数
+				// {
+				// 	snprintf(ptd->DOpercent_arr,       7, "%5d",(unsigned int)DO_Percent_temp);		
+				// }
+				// else if(DO_Percent_temp >= 100.0 && DO_Percent_temp < 1000.0)//100.0 - 999.9 一位小数
+				// {
+				// 	snprintf(ptd->DOpercent_arr,       7, "%5.1f",DO_Percent_temp);	
+				// }
+				// else if(DO_Percent_temp >= 0.0 && DO_Percent_temp < 100.0)//0.00 - 99.99 两位小数
+				// {
+				// 	snprintf(ptd->DOpercent_arr,       7, "%5.2f",DO_Percent_temp);
+				// }
+
+				//盐度
+				if(ptd->pH_Vol.value_f >= 10000)//1000ms ---
+				{
+					snprintf(ptd->DOpercent_Vol_arr,       7, "%5d",(unsigned int)ptd->pH_Vol.value_f / unit_data);			
+				}
+				else if(ptd->pH_Vol.value_f >= 1000.0 && ptd->pH_Vol.value_f < 10000.0)//1000 - 9999 无小数
+				{
+					snprintf(ptd->DOpercent_Vol_arr,       7, "%5d",(unsigned int)ptd->pH_Vol.value_f / unit_data);		
+				}
+				else if(ptd->pH_Vol.value_f >= 100.0 && ptd->pH_Vol.value_f < 1000.0)//100.0 - 999.9 一位小数
+				{
+					snprintf(ptd->DOpercent_Vol_arr,       7, "%5.1f",ptd->pH_Vol.value_f / unit_data);	
+				}
+				else if(ptd->pH_Vol.value_f >= 0.0 && ptd->pH_Vol.value_f < 100.0)//0.00 - 99.99 两位小数
+				{
+					snprintf(ptd->DOpercent_Vol_arr,       7, "%5.2f",ptd->pH_Vol.value_f / unit_data);
 				}
 			}
 			ptd->update_count = 0;

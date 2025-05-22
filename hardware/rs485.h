@@ -13,56 +13,39 @@
 #define RS485_DE_H()    HAL_GPIO_WritePin(RS485_DE_GPIO_Port, RS485_DE_Pin, GPIO_PIN_SET)
 #define RS485_DE_L()    HAL_GPIO_WritePin(RS485_DE_GPIO_Port, RS485_DE_Pin, GPIO_PIN_RESET)
 
-#define RS485_CIRCULAR_TIM 800  //循环发送的话多久发一次
+#define RS485_CIRCULAR_TIM 600  //循环发送的话多久发一次
 
 #define RESEND_MAX 4 //最大重发数，超过这个数就认为设备断开连接了
 
-#define DO_DO56_ModbusID 6
-#define DO_DY06_ModbusID 7
-#define DO_D900_ModbusID 23
-#define DO_DY12_ModbusID 33
 #define DO_shenghui_ModbusID 90
 #define DO_HF1012_ModbusID 81
+#define DO_HF_DY12_ModbusID 33
 
 #define pH_DpH07_ModbusID 1
-#define pH_P900_ModbusID 11
 #define pH_shenghui_ModbusID 92
 
-
-#define Tur_TUR01_ModbusID 4
-#define Tur_DX01_ModbusID 5
 #define Tur_shenghui_ModbusID 91
 
-#define FCL_DL06_ModbusID 8
-#define FCL_F900_ModbusID 12
-
 #define EC_shenghui_ModbusID 93
-#define EC_DE21_ModbusID 2
-#define EC_N900_ModbusID 19
 #define EC_DE26_ModbusID 52
 
-
 #define ORP_DR31_ModbusID 9
-#define ORP_Y900_ModbusID 17
 
 #define NH3N_DN02_ModbusID 34
 #define NH3N_shenghui_ModbusID 94
 
-#define F_L200_ModbusID  37
-
-#define CL_L100_ModbusID 36
-
-#define Chl_T615_ModbusID 99
 #define Chl_shenghui_ModbusID 96
 
-#define Bga_T613_ModbusID 98
 #define Bga_shenghui_ModbusID 97
 
 #define COD_DC18_ModbusID 10
 #define	COD_DC17_ModbusID 74
-#define COD_C510_ModbusID 27
 #define COD_shenghui_ModbusID 95
 
+#define OiW_yushan_ModbusID 78
+#define OiW_guohong_ModbusID 29
+
+#define MLSS_Tianjian_ModbusID 77
 /*传感器类型*/
 typedef enum{
 	TYPE_DO = 0,           //溶解氧
@@ -77,17 +60,12 @@ typedef enum{
 	TYPE_Chl,              //
 	TYPE_Bga,              //
 	TYPE_CODuv,              //
-	
+	TYPE_MLSS,				//污泥浓度
+	TYPE_Oiw,				//水中油
 	TYPE_NONE              //未接传感器
 	
 }SENSOR_TYPE;
 
-
-
-typedef enum{
-	COMA ,           //第一个连接的传感器
-	COMB ,           //第二个连接的传感器
-}COM_TYPE_enum;
 
 typedef enum
 {//制造商枚举
@@ -112,7 +90,6 @@ typedef struct DO_struct{
 	uint8_t up_count ;
 	uint8_t down_count ;
 	
-	
 	uint8_t modbus_id;         //设备的Modbus ID
 	uint8_t new_ModbusID;      //临时的设备modbus id
 	
@@ -120,13 +97,11 @@ typedef struct DO_struct{
 	float DOmgl_sum ;
 	float DOpercent_sum ;
 	float temperature_sum ;
-  float last_DOmgl;	
+  	float last_DOmgl;	
 	
 	manufacturer_enum manufacturer; //生产厂商
-  COM_TYPE_enum	 COM;
-	char SWV[4];
-	char HWV[4];
-	
+	char SWV[5];
+	char HWV[5];
 	char name[8];
 	
 	char temperature_arr[6];   //温度显示数组
@@ -138,7 +113,7 @@ typedef struct DO_struct{
 
 	uint8_t SN[17];            //设备sn码  还要加一位\0
 
-  uint16_u Measure_Range;
+ 	uint16_u Measure_Range;
 	float_u temperature;       //温度值
 	float_u DOpercent;         //DO %
 	float_u DOmgl;             //DO mg/L
@@ -157,15 +132,12 @@ typedef struct DO_struct{
 	filter_t queue_domgl;      //mg/l 数据队列
 	filter_t queue_dopercent;  //%    数据队列
 	filter_t queue_temp;       //℃    数据队列
+	filter_t queue_value;       
 
 	uint16_u DC17_Mes_Para;	   //DC17测量模式
 	uint16_u DC17_Mes_Time;	   //DC17测量时间
 
-	char Mes_Timearr[4];	//测量时间数组
-	
-//  struct DO_struct* next_DO; //下一个溶解氧设备
-	
-	
+	char Mes_Timearr[4];	//测量时间数组	
 }DOProbe_t;
 typedef DOProbe_t* PtrToDOProbe;//DO设备指针
 

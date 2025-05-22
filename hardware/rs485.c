@@ -272,8 +272,6 @@ void rs485_SendBuf(void)//这个也是在main函数里面运行的
 		rs485_Search_Sensor();	
 	}
 	rs485_send();
-
-
 }
 
 

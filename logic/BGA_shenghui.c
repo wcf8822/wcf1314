@@ -284,7 +284,6 @@ void BGA_shenghui_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 
 		if(ptd->DOmgl.value_f >= 10000)//Kcells/mL
 		{
-			// ptd->DOmgl.value_f = ptd->DOmgl.value_f /1000.0;
 			if ((ptd->DOmgl.value_f / 1000.0) < 10.0)
 			{
 				snprintf(ptd->DOmgl_arr,       5, "%3.1f", (ptd->DOmgl.value_f /1000.0));
@@ -330,7 +329,7 @@ void BGA_shenghui_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 			temperature_temp = ptd->temperature_sum / ((float)ptd->update_count);
 			DO_mgl_temp = ptd->DOmgl_sum / ((float)ptd->update_count);
 			
-			if(setting_GetIsOpen_SlideAvg_DO() && setting_GetSlideAvgTimes_DO()>=2)//开启并且次数最起码为2次
+			if(setting_GetIsOpen_SlideAvg_Bga() && setting_GetSlideAvgTimes_Bga()>=2)//开启并且次数最起码为2次
 			{
 				if(is_FirstFilter)
 				{

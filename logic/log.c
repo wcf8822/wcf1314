@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define log_count_Max  12
+#define log_count_Max  14
 
 
 typedef union
@@ -30,8 +30,11 @@ const uint16_t LogCount_max = LOG_MAX_COUNT;
 uint16_t log_Get_Log_Total_Count()
 {				
 
- return log_count.log_count_Type[TYPE_DO] + log_count.log_count_Type[TYPE_pH] + log_count.log_count_Type[TYPE_Tur] + log_count.log_count_Type[TYPE_FCL]  + log_count.log_count_Type[TYPE_EC]  + log_count.log_count_Type[TYPE_ORP] 
-	         + log_count.log_count_Type[TYPE_NH4]  + log_count.log_count_Type[TYPE_F]  + log_count.log_count_Type[TYPE_CL]  + log_count.log_count_Type[TYPE_Chl]  + log_count.log_count_Type[TYPE_Bga] +  log_count.log_count_Type[TYPE_CODuv] ;
+ return   log_count.log_count_Type[TYPE_DO]   + log_count.log_count_Type[TYPE_pH]  + log_count.log_count_Type[TYPE_Tur] 
+ 		+ log_count.log_count_Type[TYPE_FCL]  + log_count.log_count_Type[TYPE_EC]  + log_count.log_count_Type[TYPE_ORP] 
+	    + log_count.log_count_Type[TYPE_NH4]  + log_count.log_count_Type[TYPE_F]   + log_count.log_count_Type[TYPE_CL]  
+		+ log_count.log_count_Type[TYPE_Chl]  + log_count.log_count_Type[TYPE_Bga] + log_count.log_count_Type[TYPE_CODuv]
+		+ log_count.log_count_Type[TYPE_MLSS] + log_count.log_count_Type[TYPE_Oiw];
 
 }
 
@@ -104,6 +107,14 @@ void log_WriteLog(log_union *log, uint16_t index,SENSOR_TYPE type)
 			case TYPE_CODuv:
        addr = LOG_FIRST_COD_ADDR + (index << 8);		
 				break;
+
+			case TYPE_MLSS:
+		addr = LOG_FIRST_MLSS_ADDR + (index << 8);		
+				break;
+			
+			case TYPE_Oiw:
+		addr = LOG_FIRST_OIW_ADDR + (index << 8);		
+				break;
 			
 			default:
 				break;	     
@@ -163,6 +174,13 @@ void log_ReadData(log_union*p ,uint16_t index,SENSOR_TYPE type)
        addr = LOG_FIRST_COD_ADDR + (index << 8);		
 				break;
 			
+			case TYPE_MLSS:
+		addr = LOG_FIRST_MLSS_ADDR + (index << 8);		
+				break;
+
+			case TYPE_Oiw:
+		addr = LOG_FIRST_OIW_ADDR + (index << 8);		
+				break;
 			default:
 				break;	     
 	}
@@ -210,8 +228,9 @@ void log_init(log_t *dat)
 	dat->log_data.CODuv_mg_L = 0.0;
 	
 	dat->log_data.CODuv_toc_mg_l = 0.0;
-	dat->log_data.ppm= 0.0;	
 	dat->log_data.NO3_mg_L= 0.0;	
+	dat->log_data.MLSS_mg_L= 0.0;
+	dat->log_data.OIW_mg_L= 0.0;		
 }
 
 
@@ -254,7 +273,7 @@ uint8_t log_SaveData(SENSOR_TYPE sensor_type)
 			break;
 			
 		case TYPE_pH:
-			if(log_count.log_count_Type[0] >= LogCount_max)//如果写满了直接跳过
+			if(log_count.log_count_Type[1] >= LogCount_max)//如果写满了直接跳过
 			{
 				return 0;
 			}
@@ -275,7 +294,7 @@ uint8_t log_SaveData(SENSOR_TYPE sensor_type)
 			break;
 			
 		case TYPE_Tur:
-			if(log_count.log_count_Type[0] >= LogCount_max)//如果写满了直接跳过
+			if(log_count.log_count_Type[2] >= LogCount_max)//如果写满了直接跳过
 			{
 				return 0;
 			}
@@ -289,7 +308,7 @@ uint8_t log_SaveData(SENSOR_TYPE sensor_type)
 			break;
 			
 		case TYPE_FCL:
-			if(log_count.log_count_Type[0] >= LogCount_max)//如果写满了直接跳过
+			if(log_count.log_count_Type[3] >= LogCount_max)//如果写满了直接跳过
 			{
 				return 0;
 			}
@@ -311,7 +330,7 @@ uint8_t log_SaveData(SENSOR_TYPE sensor_type)
 		break;
 			
 		case TYPE_EC:
-			if(log_count.log_count_Type[0] >= LogCount_max)//如果写满了直接跳过
+			if(log_count.log_count_Type[4] >= LogCount_max)//如果写满了直接跳过
 			{
 				return 0;
 			}
@@ -320,7 +339,11 @@ uint8_t log_SaveData(SENSOR_TYPE sensor_type)
 			log_u.log.type_str[2] = 0x00;		
       index=	log_count.log_count_Type[4];			
 			
-			log_u.log.log_data.EC_us_cm = get_CurDo()->DOmgl.value_f;          
+			log_u.log.log_data.EC_us_cm = get_CurDo()->DOmgl.value_f;    
+			// log_u.log.log_data.EC_TDS = atof(get_CurDo()->DOpercent_arr);  
+			log_u.log.log_data.EC_TDS = get_CurDo()->DOpercent.value_f;
+			// log_u.log.log_data.EC_salinity = get_CurDo()->pH_Vol.value_f ; 
+			 
 			if(setting_Get_Temp_Unit())
 			{
 			    log_u.log.log_data.temperature = (get_CurDo()->temperature.value_f-32)/1.8;
@@ -333,7 +356,7 @@ uint8_t log_SaveData(SENSOR_TYPE sensor_type)
 			break;
 			
 		case TYPE_ORP:
-			if(log_count.log_count_Type[0] >= LogCount_max)//如果写满了直接跳过
+			if(log_count.log_count_Type[5] >= LogCount_max)//如果写满了直接跳过
 			{
 				return 0;
 			}
@@ -354,7 +377,7 @@ uint8_t log_SaveData(SENSOR_TYPE sensor_type)
 			break;
 			
 		case TYPE_NH4:
-			if(log_count.log_count_Type[0] >= LogCount_max)//如果写满了直接跳过
+			if(log_count.log_count_Type[6] >= LogCount_max)//如果写满了直接跳过
 			{
 				return 0;
 			}
@@ -377,7 +400,7 @@ uint8_t log_SaveData(SENSOR_TYPE sensor_type)
 			}			
 			break;
 		case TYPE_F:
-			if(log_count.log_count_Type[0] >= LogCount_max)//如果写满了直接跳过
+			if(log_count.log_count_Type[7] >= LogCount_max)//如果写满了直接跳过
 			{
 				return 0;
 			}
@@ -398,7 +421,7 @@ uint8_t log_SaveData(SENSOR_TYPE sensor_type)
 
 			break;
 		case TYPE_CL:
-			if(log_count.log_count_Type[0] >= LogCount_max)//如果写满了直接跳过
+			if(log_count.log_count_Type[8] >= LogCount_max)//如果写满了直接跳过
 			{
 				return 0;
 			}
@@ -421,7 +444,7 @@ uint8_t log_SaveData(SENSOR_TYPE sensor_type)
 			
 			
 		case TYPE_Chl:
-			if(log_count.log_count_Type[0] >= LogCount_max)//如果写满了直接跳过
+			if(log_count.log_count_Type[9] >= LogCount_max)//如果写满了直接跳过
 			{
 				return 0;
 			}
@@ -441,7 +464,7 @@ uint8_t log_SaveData(SENSOR_TYPE sensor_type)
 			}			
 			break;
 		case TYPE_Bga:
-			if(log_count.log_count_Type[0] >= LogCount_max)//如果写满了直接跳过
+			if(log_count.log_count_Type[10] >= LogCount_max)//如果写满了直接跳过
 			{
 				return 0;
 			}
@@ -463,7 +486,7 @@ uint8_t log_SaveData(SENSOR_TYPE sensor_type)
 			
 			break;
 		case TYPE_CODuv:
-			if(log_count.log_count_Type[0] >= LogCount_max)//如果写满了直接跳过
+			if(log_count.log_count_Type[11] >= LogCount_max)//如果写满了直接跳过
 			{
 				return 0;
 			}
@@ -483,6 +506,41 @@ uint8_t log_SaveData(SENSOR_TYPE sensor_type)
 			{
 		    	log_u.log.log_data.temperature = atof(get_CurDo()->temperature_arr);//DO_GetTemperature(get_CurDo());			
 			}			
+			break;
+		case TYPE_MLSS:
+			if(log_count.log_count_Type[12] >= LogCount_max)//如果写满了直接跳过
+			{
+				return 0;
+			}
+			log_u.log.type_str[0] = 'M';
+			log_u.log.type_str[1] = 'L';
+			log_u.log.type_str[2] = 'S';
+			log_u.log.type_str[3] = 'S';
+      index=	log_count.log_count_Type[12];
+
+			log_u.log.log_data.MLSS_mg_L = get_CurDo()->DOmgl.value_f;
+			break;
+
+		case TYPE_Oiw:
+			if(log_count.log_count_Type[13] >= LogCount_max)//如果写满了直接跳过
+			{
+				return 0;
+			}
+			log_u.log.type_str[0] = 'O';
+			log_u.log.type_str[1] = 'i';
+			log_u.log.type_str[2] = 'W';
+      index=	log_count.log_count_Type[13];
+
+			log_u.log.log_data.OIW_mg_L = atof(get_CurDo()->DOmgl_arr);
+
+			if(setting_Get_Temp_Unit())
+			{
+			    log_u.log.log_data.temperature = (get_CurDo()->temperature.value_f-32)/1.8;
+			}
+			else
+			{
+		    	log_u.log.log_data.temperature = atof(get_CurDo()->temperature_arr);//DO_GetTemperature(get_CurDo());			
+			}	
 			break;
 					
 		default:
@@ -512,51 +570,17 @@ uint8_t log_SaveData(SENSOR_TYPE sensor_type)
 	return 1;
 }
 
-
-	
-//void log_PrintfLogOffset(void)
-//{
-//	printf("type_str\t:%ld\n",&(((log_send_t *)0)->logu.log.type_str));
-//	
-//	printf("years\t\t:%ld\n",&(((log_send_t *)0)->logu.log.time.years));
-//	printf("month\t\t:%ld\n",&(((log_send_t *)0)->logu.log.time.month));
-//	printf("day\t\t:%ld\n",&(((log_send_t *)0)->logu.log.time.day));
-//	printf("hour\t\t:%ld\n",&(((log_send_t *)0)->logu.log.time.hour));
-//	printf("minute\t\t:%ld\n",&(((log_send_t *)0)->logu.log.time.minute));
-//	printf("seconds\t\t:%ld\n",&(((log_send_t *)0)->logu.log.time.seconds));
-//	
-//	printf("sn\t\t:%ld\n",&(((log_send_t *)0)->logu.log.sn));
-//	printf("E_W\t\t:%ld\n",&(((log_send_t *)0)->logu.log.E_W));
-//	printf("N_S\t\t:%ld\n",&(((log_send_t *)0)->logu.log.N_S));
-//	printf("latitude\t:%ld\n",&(((log_send_t *)0)->logu.log.latitude));
-//	printf("longitude\t:%ld\n",&(((log_send_t *)0)->logu.log.longitude));
-
-//	printf("temperature\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.temperature));
-//	printf("pressure\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.pressure));
-//	printf("salinity\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.salinity));
-//	printf("pH\t\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.pH));
-//	printf("DO_mg_L\t\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.DO_mg_L));
-//	printf("DO_percent\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.DO_percent));
-//	printf("FCL_mg_L\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.FCL_mg_L));
-//	printf("EC_us_cm\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.EC_us_cm));
-//	printf("Tur_NTU\t\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.Tur_NTU));
-//	printf("ORP_mV\t\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.ORP_mV));
-//	printf("NH4_mg_L\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.NH4_mg_L));
-//	printf("F_mg_L\t\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.F_mg_L));
-//	printf("Cl_mg_L\t\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.Cl_mg_L));
-//	printf("Chl_ug_L\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.Chl_ug_L));
-//	printf("Bga_cells_mL\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.Bga_cells_mL));
-//	printf("CODuv_mg_L\t:%ld\n",&(((log_send_t *)0)->logu.log.log_data.CODuv_mg_L));
-//}
-
 void send_char(char ch)
 {
 	while(!(USART1->SR & (1<<6)));
 	USART1->DR = ch;
 }
 
-
-uint16_t DO_Send_Count = 0,pH_Send_Count = 0,Tur_Send_Count = 0,FCL_Send_Count = 0,EC_Send_Count = 0,ORP_Send_Count = 0,NH4_Send_Count = 0,F_Send_Count = 0,CL_Send_Count = 0,Chl_Send_Count = 0,Bga_Send_Count = 0,COD_Send_Count = 0;
+uint16_t DO_Send_Count = 0,		pH_Send_Count = 0,		Tur_Send_Count = 0,
+		FCL_Send_Count = 0,		EC_Send_Count = 0,		ORP_Send_Count = 0,
+		NH4_Send_Count = 0,		F_Send_Count = 0,		CL_Send_Count = 0,
+		Chl_Send_Count = 0,		Bga_Send_Count = 0,		COD_Send_Count = 0,
+		MLSS_Send_Count = 0,	OiW_Send_Count = 0;
 
 void log_SendBytes()
 {
@@ -625,6 +649,16 @@ void log_SendBytes()
 		 log_ReadData(&log_send_u.log_send.logu, DO_Send_Count,TYPE_DO);
 		 DO_Send_Count++;
 	 }	
+	 else if( MLSS_Send_Count < log_count.log_count_Type[TYPE_MLSS] )
+	 {
+		 log_ReadData(&log_send_u.log_send.logu, MLSS_Send_Count,TYPE_MLSS);
+		 MLSS_Send_Count++;
+	 }
+	 else if( OiW_Send_Count < log_count.log_count_Type[TYPE_Oiw] )
+	 {
+		 log_ReadData(&log_send_u.log_send.logu, OiW_Send_Count,TYPE_Oiw);
+		 OiW_Send_Count++;
+	 }
 	 
 	SetCrc(log_send_u.log_send_arr, sizeof(log_send_u.log_send_arr));
 	
@@ -643,9 +677,3 @@ void log_SendCount(void)
 	
 	HAL_UART_Transmit(ch340e_usart.huart, send_temp, sizeof(send_temp),200);
 }
-
-
-
-
-
-

@@ -58,6 +58,7 @@ extern unsigned char num_10x20[13][40];
 #define YOUKUOHAO   FONT_ENG_MENU[72]
 #define SHESHIDU    chn_16x16[165]
 #define HUASHIDU    chn_16x16[241]
+#define qianfenhao   FONT_CHN_MENU[253]
 //extern const unsigned char logo_arr_lh[200][16];
 //extern const unsigned char logo_arr_hl[200][16];
 extern const unsigned char logo_arr_hl[];
@@ -136,9 +137,6 @@ extern const unsigned char gaomenxianyuzhi_en[];
 
 extern const unsigned char chuchangxulie_en[];
 
-extern const unsigned char maomoxiaozhun_cn[4];
-extern const unsigned char maomoxiaozhun_en[];
-
 extern const unsigned char querenxiaozhun_cn[4];
 extern const unsigned char querenxiaozhun_en[];
 
@@ -164,9 +162,6 @@ extern const unsigned char yingjianbanben_en[];
 
 extern const unsigned char ruanjianbanben_cn[5];
 extern const unsigned char ruanjianbanben_en[];
-
-extern const unsigned char rizhiliebiao_cn[4];
-extern const unsigned char rizhiliebiao_en[];
 
 extern const unsigned char lingdian_cn[2];
 extern const unsigned char lingdian_en[];
@@ -229,6 +224,8 @@ extern const unsigned char shibai_en[];
 
 extern const unsigned char jiaozhunshibai_cn[4];
 
+extern const unsigned char jianhao_en[];
+extern const unsigned char jiahao_en[];
 
 extern const unsigned char diyidian_cn[4];
 extern const unsigned char diyidian_en[];
@@ -371,7 +368,7 @@ extern const unsigned char yingwen_cn[8];
 extern const unsigned char zidongsousuozhong_cn[3] ;
 extern const unsigned char zidongsousuozhong_en[] ;
 
-extern const unsigned char sensor_type_str[13][7];
+extern const unsigned char sensor_type_str[15][7];
 
 extern const unsigned char battery_image[6][33];
 extern const unsigned char battery_image_big[4][484];
@@ -381,8 +378,6 @@ extern const unsigned char warning_logo_clear[104];
 
 extern const unsigned char celiangfuhao[48];
 
-
-
 extern const unsigned char lvboshezhi_cn[4];
 extern const unsigned char lvboshezhi_en[];
 
@@ -390,7 +385,6 @@ extern const unsigned char canshu_cn[3];
 extern const unsigned char canshu_en[];
 
 extern const unsigned char cishuxianzhi_slideavg[];
-
 
 extern const unsigned char kuai_cn[1];
 extern const unsigned char kuai_en[];
@@ -410,10 +404,8 @@ extern const char wendudanwei_en[];
 extern const unsigned char sheshidu_cn[2] ;
 extern const unsigned char huashidu_cn[1] ;
 
-
 extern const unsigned char wuchuanganqi_cn[4] ;
 extern const unsigned char wuchuanganqi_en[] ;
-
 
 extern const unsigned char COD_Zero_cn[2] ;
 extern const unsigned char COD_Zero_en[] ;
@@ -439,7 +431,6 @@ extern const unsigned char rongjieyangjiaozhun_en[] ;
 extern const unsigned char rongjieyang_cn[3] ;
 extern const unsigned char rongjieyang_en[] ;
 
-
 extern const unsigned char rongyang_cn[2] ;
 extern const unsigned char rongyang_en[] ;
 
@@ -448,8 +439,6 @@ extern const unsigned char baohelv_en[];
 
 extern const unsigned char baohedu_cn[3];
 extern const unsigned char baohedu_en[];
-
-
 
 /*
 COD传感器
@@ -493,7 +482,6 @@ extern const unsigned char COD_slope_en[];
 
 extern const unsigned char COD_Coefficient_cn[4];
 extern const unsigned char COD_Coefficient_en[]; 
-
 
 extern const unsigned char dangqianxiguangdu_cn[5];
 extern const unsigned char dangqianxiguangdu_en[];
@@ -546,7 +534,6 @@ extern const unsigned char andan_pH_jiaozhun1_USA_en[] ;
 extern const unsigned char andan_pH_jiaozhun2_USA_en[];
 extern const unsigned char andan_pH_jiaozhun3_USA_en[] ;
 
-
 extern const unsigned char andan_jiaozhun1_cn[3] ;
 extern const unsigned char andan_jiaozhun2_cn[3] ;
 
@@ -574,7 +561,6 @@ extern const unsigned char GB_en[] ;
 extern const unsigned char USA_cn[5];
 extern const unsigned char USA_en[];
 
-
 extern const unsigned char GB_Show_en[] ;
 extern const unsigned char USA_Show_en[];
 /*
@@ -591,6 +577,19 @@ extern const unsigned char diandaolvdanwei_en[];
 extern const unsigned char diandaolvdanweims_cn[3];
 extern const unsigned char diandaolvdanweims_en[];
 
+extern const unsigned char TDS_cn[2];
+extern const unsigned char TDS_en[];	
+
+extern const unsigned char yandu_zhu_en[];
+
+extern const unsigned char tds_trans_value_cn[8];
+extern const unsigned char tds_trans_value_en[];
+
+extern const unsigned char wenduxishushezhi_cn[6];
+extern const unsigned char wenduxishushezhi_en[];	
+
+extern const unsigned char yandudanweishezhi_cn[6];
+extern const unsigned char yandudanweishezhi_en[];
 /*
 浊度传感器
 */
@@ -600,19 +599,6 @@ extern const unsigned char zhuodu_jiaozhun_en[] ;
 extern const unsigned char zhuodu_cn[2] ;
 extern const unsigned char zhuodu_en[] ;
 
-
-
-/*
-FCL 传感器
-*/
-extern const unsigned char FCL_jiaozhun_cn[4] ;
-extern const unsigned char FCL_jiaozhun_en[] ;
-
-extern const unsigned char FCL_cn[2] ;
-extern const unsigned char FCL_en[] ;
-
-
-
 /*
 ORP 传感器
 */
@@ -621,7 +607,6 @@ extern const unsigned char ORP_jiaozhun_en[] ;
 
 extern const unsigned char ORP_cn[2] ;
 extern const unsigned char ORP_en[] ;
-
 /*
 F 传感器
 */
@@ -630,8 +615,6 @@ extern const unsigned char F_jiaozhun_en[];
 
 extern const unsigned char F_cn[1];
 extern const unsigned char F_en[] ;
-
-
 /*
 CL 传感器
 */
@@ -640,8 +623,6 @@ extern const unsigned char CL_jiaozhun_en[] ;
 
 extern const unsigned char CL_cn[2] ;
 extern const unsigned char CL_en[] ;
-
-
 /*
 Chl 传感器
 */
@@ -663,13 +644,20 @@ extern const unsigned char gaodian_en[] ;
 extern const unsigned char liangchengshezhi_cn[4] ;
 extern const unsigned char liangchengshezhi_en[] ;
 
-
 extern const unsigned char diliangcheng_cn[7] ;
 extern const unsigned char diliangcheng_en[];
 
 extern const unsigned char gaoliangcheng_cn[8] ;
 extern const unsigned char gaoliangcheng_en[] ;
 
+extern const unsigned char PPT_cn[2];
+extern const unsigned char PPT_en[];
+extern const unsigned char baifenhao_cn[1];
+extern const unsigned char baifenhao_en[];
+
+extern const unsigned char qianfenhao_cn[1];
+extern const unsigned char qianfenhao1_cn[1];
+extern const unsigned char qianfenhao_en[];
 
 /*
 Bga 传感器
@@ -680,9 +668,8 @@ extern const unsigned char Bga_jiaozhun1_en[] ;
 extern const unsigned char Bga_jiaozhun2_cn[3];
 extern const unsigned char Bga_jiaozhun2_en[];
 
-extern const unsigned char Bga_cn[2] ;
+extern const unsigned char Bga_cn[3] ;
 extern const unsigned char Bga_en[] ;
-
 
 extern const unsigned char tiaolingjiaozhun_cn[4];
 extern const unsigned char tiaolingjiaozhun_en[];
@@ -698,6 +685,101 @@ extern const unsigned char LH_D702_en[];
 
 extern const unsigned char LH_B580_cn[2];
 extern const unsigned char LH_B580_en[];
+
+//MLSS
+extern const unsigned char MLSS_cn[4];
+extern const unsigned char MLSS_en[];
+
+extern const unsigned char celiangdanweishezhi_cn[6];
+extern const unsigned char celiangdanweishezhi_en[];
+
+extern const unsigned char biaodingdianshushezhi_cn[6];
+extern const unsigned char biaodingdianshushezhi_en[];
+
+extern const unsigned char lingdianshezhi_cn[4];
+extern const unsigned char lingdianshezhi_en[];
+
+extern const unsigned char xielvshezhi_cn[4];
+extern const unsigned char xielvshezhi_en[];
+
+extern const unsigned char Mlss_mg_cn[2];
+extern const unsigned char Mlss_g_cn[2];
+extern const unsigned char Mlss_ppm_cn[2];
+extern const unsigned char Mlss_baifen_cn[1];
+
+extern const unsigned char Mlss_mg_en[];
+extern const unsigned char Mlss_g_en[];
+extern const unsigned char Mlss_ppm_en[];
+extern const unsigned char Mlss_baifen_en[];
+
+//oiw
+extern const unsigned char disandian_cn[4];
+extern const unsigned char disandian_en[];
+extern const unsigned char Oiw_cn[3];
+extern const unsigned char Oiw_en[];
+
+extern const unsigned char wendubuchangxishushezhi_cn[8];
+extern const unsigned char wendubuchangxishushezhi_en[];
+
+extern const unsigned char celiangdangweishezhi_cn[6];
+extern const unsigned char celiangdangweishezhi_en[];
+
+extern const unsigned char qingjiezhouqishezhi_cn[6];
+extern const unsigned char qingjiezhouqishezhi_en[];
+
+extern const unsigned char wendumoshishezhi_cn[6];
+extern const unsigned char wendumoshishezhi_en[];
+
+extern const unsigned char jiaozhunxishu_cn[6];
+extern const unsigned char jiaozhunxishu_en[];
+
+extern const unsigned char Auto_cn[2];
+extern const unsigned char Auto_en[];
+
+extern const unsigned char shi_num_cn[3];
+extern const unsigned char shi_num_en[];
+
+extern const unsigned char bai_num_cn[3];
+extern const unsigned char bai_num_en[];
+
+extern const unsigned char ATC_cn[2];
+extern const unsigned char ATC_en[];
+
+extern const unsigned char MTC_cn[2];
+extern const unsigned char MTC_en[];
+
+extern const unsigned char lingdianxishu_cn[4];
+extern const unsigned char lingdianxishu_en[];
+
+extern const unsigned char xielvxishu_cn[4];
+extern const unsigned char xielvxishu_en[];
+
+extern const unsigned char kongbaidianweizhi_cn[5];
+extern const unsigned char kongbaidianweizhi_en[];
+
+extern const unsigned char K_en[];
+extern const unsigned char B_en[];
+
+extern const unsigned char xielvjiaozhun_cn[4];
+extern const unsigned char xielvjiaozhun_en[];
+
+extern const unsigned char dandianjiaozhun_cn[4];
+extern const unsigned char dandianjiaozhun_en[];
+
+extern const unsigned char lingdianjiaozhun_cn[4];
+extern const unsigned char lingdianjiaozhun_en[];
+
+extern const unsigned char biaoyejiaozhun_one_cn[5];
+extern const unsigned char biaoyejiaozhun_one_en[];
+
+extern const unsigned char biaoyejiaozhun_Two_cn[5];
+extern const unsigned char biaoyejiaozhun_Two_en[];
+
+extern const unsigned char biaoyejiaozhun_Three_cn[5];
+extern const unsigned char biaoyejiaozhun_Three_en[];
+
+extern const unsigned char manyang_cn[2];
+extern const unsigned char manyang_en[];
 #endif
 
 

@@ -921,6 +921,26 @@
               <FileType>1</FileType>
               <FilePath>..\logic\BGA_shenghui.c</FilePath>
             </File>
+            <File>
+              <FileName>MLSS_Tianjian.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\logic\MLSS_Tianjian.c</FilePath>
+            </File>
+            <File>
+              <FileName>OiW_Guohong.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\logic\OiW_Guohong.c</FilePath>
+            </File>
+            <File>
+              <FileName>OiW_yushan.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\logic\OiW_yushan.c</FilePath>
+            </File>
+            <File>
+              <FileName>DO_HaiFa_DY12.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\logic\DO_HaiFa_DY12.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
