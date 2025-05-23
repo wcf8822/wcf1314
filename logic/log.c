@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define log_count_Max  14
 
 
 typedef union

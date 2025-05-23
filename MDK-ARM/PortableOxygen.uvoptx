@@ -148,7 +148,24 @@
           <Name></Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint/>
+      <Breakpoint>
+        <Bp>
+          <Number>0</Number>
+          <Type>0</Type>
+          <LineNumber>881</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134292652</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>D:\ZYX--2024\Project files\B580_Ver_list\闄嗘亽\B580\PortableOxygen B580\logic\setting.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\\../logic/setting.c\881</Expression>
+        </Bp>
+      </Breakpoint>
       <WatchWindow1>
         <Ww>
           <count>0</count>
@@ -394,6 +411,16 @@
           <count>48</count>
           <WinNumber>1</WinNumber>
           <ItemText>rs485_usart.rs485_circular_sent</ItemText>
+        </Ww>
+        <Ww>
+          <count>49</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>count_data_Clear</ItemText>
+        </Ww>
+        <Ww>
+          <count>50</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>pBuffer</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>

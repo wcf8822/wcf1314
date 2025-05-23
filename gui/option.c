@@ -136,7 +136,6 @@ void OptionList_Print(list_option OptionList , uint8_t IsChn, float RowSpacing) 
 		option_y = OPTION_STARTY + RowSpacing  + (p->option_index - index_temp)*(16+ RowSpacing);
 		if(p->IsLarge)
 		{
-			//GUI_RectangleFill(0, option_y, 159, option_y+16, p->IsSelected);
 			gui_ClearLines(option_y-1, option_y+17,  p->IsSelected);
 			set_StartPoint(16);//画框的时候刷新下开始刷新的点///////////////////////32
 		}

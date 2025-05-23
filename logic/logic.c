@@ -151,6 +151,7 @@ void software_init(void)
 	ad_data = get_bat_avg(25);     //最初给个值不至于直接0了
 	HYM8563_UpdateTime();
 	logic_BatteryAD();
+	set_StartPoint(0);
 	StatusBar_Update();
 	
 	
@@ -354,13 +355,11 @@ void warning(void)
 				gui_DrawMes((uint8_t *)celiangfuhao);
 			}
 			Mes_show = !Mes_show;
-			// gui_ClearLock();
 			set_StartPoint(0);
 		}
 		else
 		{
 			gui_DrawMes((uint8_t *)celiangfuhao);
-			// gui_DrawLock((uint8_t *)icon_lock);//画锁
 		}
 	}	
 }

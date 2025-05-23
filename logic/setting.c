@@ -3,7 +3,9 @@
 #include "spi_flash.h"
 #include <string.h>
 #include "rtc.h"
-
+#include "log.h"
+#include <stdlib.h>
+#include <stdio.h>
 STATIC setting_union setting;
 
 
@@ -853,34 +855,19 @@ void init_setting(void)
 
 }
 
-
-
-/*
-	uint8_t IsChn :1;         //是否显示中文
-	uint8_t KeyPadTone:1;     //是否有按键音
-	uint8_t AlarmTone:1;      //是否打开报警提示音
-	uint8_t IsAlarm:1;        //是否报警
-	
-	uint8_t AutoShut;         //0 5 10 20
-	uint8_t ModbusId;         //0-255
-	
-	value_type LowThreshold;  //低门限报警阈值
-	value_type HighThreshold; //高门限报警阈值
-	value_type AirPressure;   //气压补偿
-	value_type Salinity;      //盐度值
-*/
 /*恢复出厂设置*/
 void setting_reset(void)
 {
-	uint8_t count_data_Clear[100];                          //清记录数的数组
-
 	init_setting();
-	// first_write();
+
+	//清除所有历史数据
+	for(uint8_t i = 0;i<log_count_Max;i++)
+	{
+		log_SetLogCount(0,i);
+	}
+
 	SettingToFlash();
 	
-	memset(count_data_Clear,0,sizeof(count_data_Clear));
-	W25QXX_Write(count_data_Clear, LOG_COUNT_ADDR, 100);                                       //清记录条数
-
 	HAL_Delay(20);
 	FlashToSetting();
 }
@@ -888,19 +875,19 @@ void setting_reset(void)
 
 void first_write(void)
 {
-	uint8_t count_data[100];                          //清记录数的数组
 	uint8_t first_start = SETTING_FIRSTRUN_JUDGE;            //将第一次标志位写入数值
 		
 	init_setting();     		//初始化设置
 	setting_SetBattertType(0);   //第一次开机设置成默认锂电池   0是锂电池  1是干电池	
-	memset(count_data,0,sizeof(count_data));
 	W25QXX_Write(&first_start, SETTING_FIRSTRUN_ADDR, 1);                              //清第一次上电
-	W25QXX_Write(count_data, LOG_COUNT_ADDR, 100);                                       //清记录条数
 	
+	for(uint8_t i = 0;i<log_count_Max;i++)
+	{
+		log_SetLogCount(0,i);
+	}
+
 	SettingToFlash();
-	
-//	W25QXX_Write(setting.setting_arr, SETTING_START_ADDR, sizeof(setting.setting_arr));//将出厂设置写入flash
-	
+		
 	HAL_Delay(20);
 	FlashToSetting();
 }

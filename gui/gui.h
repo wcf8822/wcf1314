@@ -62,7 +62,7 @@ typedef enum{
 	PAGE_3_BEEP,           //按键音
 	PAGE_3_LANGUAGE,       //语言设置
 	PAGE_3_AUTOSHUT,       //自动关机
-  PAGE_3_AUTOSAVE,      //自动保存
+  	PAGE_3_AUTOSAVE,      //自动保存
 	PAGE_3_ALARM_TYPE,     //报警设置已接设备列表
 	PAGE_3_PRESSURE,       //气压设置
 	PAGE_3_SALT,           //盐度设置

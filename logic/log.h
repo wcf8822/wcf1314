@@ -5,6 +5,7 @@
 #include "rtc.h"
 #include "gps.h"
 #include "rs485.h"
+#define log_count_Max  14
 
 typedef struct{
 	float temperature;                        //温度

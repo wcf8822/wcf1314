@@ -10,6 +10,8 @@
         "oiw_yushan.h": "c",
         "do_haifa_dy12.h": "c",
         "nh3n_dn02.h": "c",
-        "vcruntime.h": "c"
+        "vcruntime.h": "c",
+        "stdio.h": "c",
+        "rs485.h": "c"
     }
 }
