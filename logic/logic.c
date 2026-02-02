@@ -391,6 +391,7 @@ void Save_Data(void)
 									
 	generate_MessageBox(MESSAGE_SAVELOG, 1);	
 }
+uint8_t close_flag =0;
 void main_loop(void) //main函数调用的循环函数
 {
 	if(get_RtcFlag())
@@ -427,6 +428,15 @@ void main_loop(void) //main函数调用的循环函数
 	if(get_BatFlag())
 	{
 		clear_BatFlag();
+		
+		if(get_close())
+		{
+			close_flag ++;
+		}
+		if(close_flag == 6)
+		{
+			HAL_GPIO_WritePin(BAT_OFF_GPIO_Port, BAT_OFF_Pin, GPIO_PIN_SET);
+		}
 		logic_BatteryAD(); //获取ad值
 	}
 	

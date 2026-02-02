@@ -61,6 +61,24 @@ void BGA_shenghui_rs485_GetVol(PtrToDOProbe ptd)
 	
 }
 
+/*获取校准状态*/
+void BGA_shenghui_rs485_GetCal_Status(PtrToDOProbe ptd)
+{
+	if(ptd == NULL) return;
+	rs485_usart.tx_buf[0] = Bga_shenghui_ModbusID;
+	rs485_usart.tx_buf[1] = 0x04;
+	rs485_usart.tx_buf[2] = 0x75;
+	rs485_usart.tx_buf[3] = 0x66;
+	rs485_usart.tx_buf[4] = 0x00;
+	rs485_usart.tx_buf[5] = 0x01;
+	
+	SetCrc(rs485_usart.tx_buf, rs485_usart.tx_size = 8);
+	
+	rs485_SetCircularSentStatus();
+	
+	rs485_SetSentType(DO_SendType_Start);
+	
+}
 
 /*获取sn*/
 void BGA_shenghui_rs485_GetSN(PtrToDOProbe ptd)
@@ -277,41 +295,41 @@ void BGA_shenghui_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 	ptd->temperature.value_arr[2] =	dat[7];
 	ptd->temperature.value_arr[3] =	dat[6];	
 
+	ptd->DOmgl.value_f /= 1000.0f;
+
+	if(setting_Get_Temp_Unit())//温度单位为华氏度时需要做以下换算
+	{
+		ptd->temperature.value_f = ptd->temperature.value_f*1.8+32;//摄氏度转华氏度公式
+		if(ptd->temperature.value_f > 140)
+		{
+			ptd->temperature.value_f = 140;
+		}
+		else if(ptd->temperature.value_f < 32)
+		{
+			ptd->temperature.value_f = 32;
+		}
+	}
+	
 	if(ptd->is_FirstGetValue)//如果是第一次获取到数据的话给它一个值
 	{
 		ptd->is_FirstGetValue = 0;
 		ptd->last_DOmgl = ptd->DOmgl.value_f;
 
-		if(ptd->DOmgl.value_f >= 10000)//Kcells/mL
+		if ((ptd->DOmgl.value_f) <= 0.0)
 		{
-			if ((ptd->DOmgl.value_f / 1000.0) < 10.0)
-			{
-				snprintf(ptd->DOmgl_arr,       5, "%3.1f", (ptd->DOmgl.value_f /1000.0));
-			}
-			else if((ptd->DOmgl.value_f / 1000.0) < 100.0)
-			{
-				snprintf(ptd->DOmgl_arr,       4, "%3d", (unsigned int)(ptd->DOmgl.value_f /1000.0));
-			}
-			else if((ptd->DOmgl.value_f / 1000.0) < 1000.0)
-			{
-				snprintf(ptd->DOmgl_arr,       4, "%3d", (unsigned int)(ptd->DOmgl.value_f /1000.0));
-			}
-			
+			snprintf(ptd->DOmgl_arr,       7, "%6.4f", (ptd->DOmgl.value_f));
 		}
-		else//Cells/mL
+		else if((ptd->DOmgl.value_f) <= 100.0)
 		{
-			if(ptd->DOmgl.value_f < 10.0)
-			{
-				snprintf(ptd->DOmgl_arr,       5, "%3.2f", ptd->DOmgl.value_f);
-			}
-			else if(ptd->DOmgl.value_f < 100.0)
-			{
-				snprintf(ptd->DOmgl_arr,       5, "%4.1f", ptd->DOmgl.value_f);
-			}
-			else
-			{
-				snprintf(ptd->DOmgl_arr,       5, "%4d", (unsigned int)(ptd->DOmgl.value_f));
-			}
+			snprintf(ptd->DOmgl_arr,       7, "%6.3f", (ptd->DOmgl.value_f));
+		}
+		else if((ptd->DOmgl.value_f) <= 1000.0)
+		{
+			snprintf(ptd->DOmgl_arr,       7, "%6.2f", (ptd->DOmgl.value_f));
+		}
+		else if((ptd->DOmgl.value_f) <= 10000.0)
+		{
+			snprintf(ptd->DOmgl_arr,       7, "%6.1f", (ptd->DOmgl.value_f));
 		}
 		snprintf(ptd->temperature_arr, 6, "%5.2f", ptd->temperature.value_f);
 	}
@@ -325,7 +343,6 @@ void BGA_shenghui_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 		
 		if(++ptd->update_count >= 3)
 		{
-			
 			temperature_temp = ptd->temperature_sum / ((float)ptd->update_count);
 			DO_mgl_temp = ptd->DOmgl_sum / ((float)ptd->update_count);
 			
@@ -353,35 +370,21 @@ void BGA_shenghui_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 			if(!DO_GetValueLocked(ptd))
 			{
 				snprintf(ptd->temperature_arr, 6, "%5.2f", temperature_temp);
-				if(DO_mgl_temp >= 10000)//Kcells/mL
+				if ((DO_mgl_temp) <= 0.0)
 				{
-					if ((DO_mgl_temp / 1000.0) < 10.0)
-					{
-						snprintf(ptd->DOmgl_arr,       5, "%3.1f", (DO_mgl_temp /1000.0));
-					}
-					else if((DO_mgl_temp / 1000.0) < 100.0)
-					{
-						snprintf(ptd->DOmgl_arr,       4, "%3d", (unsigned int)(DO_mgl_temp /1000.0));
-					}
-					else if((DO_mgl_temp / 1000.0) < 1000.0)
-					{
-						snprintf(ptd->DOmgl_arr,       4, "%3d", (unsigned int)(DO_mgl_temp /1000.0));
-					}
+					snprintf(ptd->DOmgl_arr,       7, "%6.4f", (DO_mgl_temp));
 				}
-				else//Cells/mL
+				else if((DO_mgl_temp) <= 100.0)
 				{
-					if(DO_mgl_temp < 10.0)
-					{
-						snprintf(ptd->DOmgl_arr,       5, "%3.2f", DO_mgl_temp);
-					}
-					else if(DO_mgl_temp < 100.0)
-					{
-						snprintf(ptd->DOmgl_arr,       5, "%4.1f", DO_mgl_temp);
-					}
-					else
-					{
-						snprintf(ptd->DOmgl_arr,       5, "%4d", (unsigned int)(DO_mgl_temp));
-					}
+					snprintf(ptd->DOmgl_arr,       7, "%6.3f", (DO_mgl_temp));
+				}
+				else if((DO_mgl_temp) <= 1000.0)
+				{
+					snprintf(ptd->DOmgl_arr,       7, "%6.2f", (DO_mgl_temp));
+				}
+				else if((DO_mgl_temp) <= 10000.0)
+				{
+					snprintf(ptd->DOmgl_arr,       7, "%6.1f", (DO_mgl_temp));
 				}
 			}
 			ptd->update_count = 0;

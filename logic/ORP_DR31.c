@@ -7,7 +7,6 @@
 #include "rtc.h"
 #include "dissolved_oxygen.h"
 
-
 /*获取探头Modbus通讯ID*/
 void ORP_DR31_rs485_GetModbusId(void)	
 {

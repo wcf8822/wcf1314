@@ -8,7 +8,7 @@ void EC_DE26_rs485_GetModbusId(void);
 void EC_DE26_rs485_GetValue(PtrToDOProbe ptd);
 void EC_DE26_rs485_GetSN(PtrToDOProbe ptd);
 void EC_DE26_rs485_GetSHWVersion(PtrToDOProbe ptd);
-void EC_DE26_rs485_Frist(PtrToDOProbe ptd,float Value);
+void EC_DE26_rs485_Frist(PtrToDOProbe ptd,float Value,uint8_t modbus);
 void EC_DE26_rs485_Zero(PtrToDOProbe ptd,float Value);
 void EC_DE26_rs485_SetTemp(PtrToDOProbe ptd, float temp);
 void EC_DE26_rs485_SetMode(PtrToDOProbe ptd,uint16_t Value);

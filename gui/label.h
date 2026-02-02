@@ -21,6 +21,7 @@ typedef enum{
 	LABEL_NUMBERORENG, //数字或者英文
 	LABEL_STRING,      //字符串包括中英文
 	LABEL_UINT,
+	LABEL_xinziku,	//新字库
 }LABEL_TYPE;
 
 typedef enum{

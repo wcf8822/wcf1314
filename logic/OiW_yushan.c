@@ -9,9 +9,9 @@
 
 
 /*获取探头Modbus通讯ID*/
-void OiW_yushan_rs485_GetModbusId(void)	
+void OiW_yushan_rs485_GetModbusId(uint8_t modbus_id)	
 {
-	rs485_usart.tx_buf[0] = OiW_yushan_ModbusID;
+	rs485_usart.tx_buf[0] = modbus_id;
 	rs485_usart.tx_buf[1] = 0x03;
 	rs485_usart.tx_buf[2] = 0x30;
 	rs485_usart.tx_buf[3] = 0x00;
@@ -25,10 +25,10 @@ void OiW_yushan_rs485_GetModbusId(void)
 }
 
 /*获取 水中油 温度 */
-void OiW_yushan_rs485_GetValue(PtrToDOProbe ptd)
+void OiW_yushan_rs485_GetValue(PtrToDOProbe ptd,uint8_t modbus_id)
 {
 	if(ptd == NULL) return;
-	rs485_usart.tx_buf[0] = OiW_yushan_ModbusID;
+	rs485_usart.tx_buf[0] = modbus_id;
 	rs485_usart.tx_buf[1] = 0x03;
 	rs485_usart.tx_buf[2] = 0x26;
 	rs485_usart.tx_buf[3] = 0x00;
@@ -42,10 +42,10 @@ void OiW_yushan_rs485_GetValue(PtrToDOProbe ptd)
 
 
 /*获取sn*/
-void OiW_yushan_rs485_GetSN(PtrToDOProbe ptd)
+void OiW_yushan_rs485_GetSN(PtrToDOProbe ptd,uint8_t modbus_id)
 {
 	if(ptd == NULL) return;
-	rs485_usart.tx_buf[0] = OiW_yushan_ModbusID;
+	rs485_usart.tx_buf[0] = modbus_id;
 	rs485_usart.tx_buf[1] = 0x03;
 	rs485_usart.tx_buf[2] = 0x09;
 	rs485_usart.tx_buf[3] = 0x00;
@@ -69,10 +69,10 @@ void OiW_yushan_rs485_SetSN(PtrToDOProbe ptd,uint8_t *dat)
 }
 
 /*获取软硬件版本号*/
-void OiW_yushan_rs485_GetSHWVersion(PtrToDOProbe ptd)
+void OiW_yushan_rs485_GetSHWVersion(PtrToDOProbe ptd,uint8_t modbus_id)
 {
 	if(ptd == NULL) return;
-	rs485_usart.tx_buf[0] = OiW_yushan_ModbusID;
+	rs485_usart.tx_buf[0] = modbus_id;
 	rs485_usart.tx_buf[1] = 0x03;
 	rs485_usart.tx_buf[2] = 0x07;
 	rs485_usart.tx_buf[3] = 0x00;
@@ -88,10 +88,10 @@ void OiW_yushan_rs485_GetSHWVersion(PtrToDOProbe ptd)
 }
 
 /*获取校准kb值*/
-void OiW_yushan_rs485_GetCal_k_b(PtrToDOProbe ptd)
+void OiW_yushan_rs485_GetCal_k_b(PtrToDOProbe ptd,uint8_t modbus_id)
 {
 	if(ptd == NULL) return;
-	rs485_usart.tx_buf[0] = OiW_yushan_ModbusID;
+	rs485_usart.tx_buf[0] = modbus_id;
 	rs485_usart.tx_buf[1] = 0x03;
 	rs485_usart.tx_buf[2] = 0x11;
 	rs485_usart.tx_buf[3] = 0x00;
@@ -140,70 +140,15 @@ void OiW_yushan_rs485_SetSHWVersion(PtrToDOProbe ptd,uint8_t *dat)
 	ptd->SWV[3] = '\0';
 }
 
-/*K值校准*/
-void OiW_yushan_rs485_Set_OIW_K(PtrToDOProbe ptd,float Value)
-{
-	if(ptd == NULL) return;
-	float_u Cal_Value;
-	Cal_Value.value_f=Value;
-	rs485_usart.tx_buf[0] = OiW_yushan_ModbusID;
-	rs485_usart.tx_buf[1] = 0x10;
-	rs485_usart.tx_buf[2] = 0x11;
-	rs485_usart.tx_buf[3] = 0x00;//地址
-	rs485_usart.tx_buf[4] = 0x00;
-	rs485_usart.tx_buf[5] = 0x02;//数量
-	rs485_usart.tx_buf[6] = 0x04;//字节数
-
-	rs485_usart.tx_buf[7] = Cal_Value.value_arr[0];
-	rs485_usart.tx_buf[8] = Cal_Value.value_arr[1];
-	rs485_usart.tx_buf[9] = Cal_Value.value_arr[2];
-	rs485_usart.tx_buf[10] = Cal_Value.value_arr[3];//数据
-
-	SetCrc(rs485_usart.tx_buf, rs485_usart.tx_size = 13);
-	
-	rs485_SetCircularSentStatus();
-	
-	rs485_SetSentType(DO_SendType_SetKB);
-}
-
-
-
-/*B值校准*/
-void OiW_yushan_rs485_Set_OIW_B(PtrToDOProbe ptd,float Value)
-{
-	if(ptd == NULL) return;
-	float_u Cal_Value;
-	Cal_Value.value_f=Value;
-	rs485_usart.tx_buf[0] = OiW_yushan_ModbusID;
-	rs485_usart.tx_buf[1] = 0x10;
-	rs485_usart.tx_buf[2] = 0x11;
-	rs485_usart.tx_buf[3] = 0x02;//地址
-	rs485_usart.tx_buf[4] = 0x00;
-	rs485_usart.tx_buf[5] = 0x02;//数量
-	rs485_usart.tx_buf[6] = 0x04;//字节数
-
-	rs485_usart.tx_buf[7] = Cal_Value.value_arr[0];
-	rs485_usart.tx_buf[8] = Cal_Value.value_arr[1];
-	rs485_usart.tx_buf[9] = Cal_Value.value_arr[2];
-	rs485_usart.tx_buf[10] = Cal_Value.value_arr[3];//数据
-
-	SetCrc(rs485_usart.tx_buf, rs485_usart.tx_size = 13);
-	
-	rs485_SetCircularSentStatus();
-	
-	rs485_SetSentType(DO_SendType_SetSensorCap);
-}
-
-
 /*Kb值恢复校准系数 k = 1 b = 0*/
-void OiW_yushan_rs485_Set_OIW_K_b_Reset(PtrToDOProbe ptd,float value_1,float value_2)
+void OiW_yushan_rs485_Set_OIW_K_b_Reset(PtrToDOProbe ptd,float value_1,float value_2,uint8_t modbus_id)
 {
 	if(ptd == NULL) return;
 	float_u Cal_Value_k;
 	float_u Cal_Value_b;
 	Cal_Value_k.value_f = value_1;
 	Cal_Value_b.value_f = value_2;
-	rs485_usart.tx_buf[0] = OiW_yushan_ModbusID;
+	rs485_usart.tx_buf[0] = modbus_id;
 	rs485_usart.tx_buf[1] = 0x10;
 	rs485_usart.tx_buf[2] = 0x11;
 	rs485_usart.tx_buf[3] = 0x00;//地址
@@ -228,7 +173,7 @@ void OiW_yushan_rs485_Set_OIW_K_b_Reset(PtrToDOProbe ptd,float value_1,float val
 	rs485_SetSentType(DO_SendType_HyphiveClearCal);
 }
 
-
+// setting_GetSlideAvgTimes_OIW_ppm
 void OiW_yushan_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 {
 	float temperature_temp = 0.0;
@@ -250,6 +195,19 @@ void OiW_yushan_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 	ptd->temperature.value_arr[3] =	dat[3];
 	
 	// ptd->DOmgl.value_f = 123.6;
+	if(setting_Get_Temp_Unit())//温度单位为华氏度时需要做以下换算
+	{
+		ptd->temperature.value_f = ptd->temperature.value_f*1.8+32;//摄氏度转华氏度公式
+		if(ptd->temperature.value_f > 140)
+		{
+			ptd->temperature.value_f = 140;
+		}
+		else if(ptd->temperature.value_f < 32)
+		{
+			ptd->temperature.value_f = 32;
+		}
+	}
+	
 	if(ptd->DOmgl.value_f <=0 )
 	{
 		ptd->DOmgl.value_f = 0;
@@ -290,25 +248,51 @@ void OiW_yushan_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 			temperature_temp = ptd->temperature_sum / ((float)ptd->update_count);
 			DO_mgl_temp = ptd->DOmgl_sum / ((float)ptd->update_count);
 			
-			if(setting_GetIsOpen_SlideAvg_OIW() && setting_GetSlideAvgTimes_OIW()>=2)//开启并且次数最起码为2次
+			if(ptd->modbus_id == OiW_yushan_ModbusID)
 			{
-				if(is_FirstFilter)
+				if(setting_GetIsOpen_SlideAvg_OIW() && setting_GetSlideAvgTimes_OIW()>=2)//开启并且次数最起码为2次
 				{
-					is_FirstFilter = 0;
+					if(is_FirstFilter)
+					{
+						is_FirstFilter = 0;
+						
+						filter_clear(&(ptd->queue_domgl));
+						filter_clear(&(ptd->queue_temp));
+					}
 					
-					filter_clear(&(ptd->queue_domgl));
-					filter_clear(&(ptd->queue_temp));
+					filter_inset2arr(&(ptd->queue_domgl), DO_mgl_temp);
+					filter_inset2arr(&(ptd->queue_temp), temperature_temp);
+					
+					temperature_temp  = filter_get_avg(&(ptd->queue_temp)); 
+					DO_mgl_temp  = filter_get_avg(&(ptd->queue_domgl)); 
 				}
-				
-				filter_inset2arr(&(ptd->queue_domgl), DO_mgl_temp);
-				filter_inset2arr(&(ptd->queue_temp), temperature_temp);
-				
-				temperature_temp  = filter_get_avg(&(ptd->queue_temp)); 
-				DO_mgl_temp  = filter_get_avg(&(ptd->queue_domgl)); 
+				else
+				{
+					is_FirstFilter = 1;
+				}
 			}
 			else
 			{
-				is_FirstFilter = 1;
+				if(setting_GetIsOpen_SlideAvg_OIW_ppm() && setting_GetSlideAvgTimes_OIW_ppm()>=2)//开启并且次数最起码为2次
+				{
+					if(is_FirstFilter)
+					{
+						is_FirstFilter = 0;
+						
+						filter_clear(&(ptd->queue_domgl));
+						filter_clear(&(ptd->queue_temp));
+					}
+					
+					filter_inset2arr(&(ptd->queue_domgl), DO_mgl_temp);
+					filter_inset2arr(&(ptd->queue_temp), temperature_temp);
+					
+					temperature_temp  = filter_get_avg(&(ptd->queue_temp)); 
+					DO_mgl_temp  = filter_get_avg(&(ptd->queue_domgl)); 
+				}
+				else
+				{
+					is_FirstFilter = 1;
+				}
 			}
 			
 			if(!DO_GetValueLocked(ptd))

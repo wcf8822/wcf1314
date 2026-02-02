@@ -97,7 +97,8 @@ void clear_KeyBluCountFlag(void);
 void clear_KeyOffCountFlag(void);
 void clear_KeyOffLongCountFlag(void);
 
-
+uint8_t get_close(void);
+void set_close(void);
 
 
 

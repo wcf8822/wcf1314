@@ -102,6 +102,7 @@ typedef enum{
 	PAGE_4_Set_Mode_Temp,		   //温度模式设置
 	PAGE_4_Temp_k,		   //温度补偿系数
 	PAGE_4_Clear_time,		   //清洁周期
+	PAGE_4_Temp_xiaoshu,		   //温度精度设置
 	PAGE_4_Cal_Info,		   //校准系数
 	PAGE_4_SLIDEAVG,       //滑动平均开启关闭设置
 	

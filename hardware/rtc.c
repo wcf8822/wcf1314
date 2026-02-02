@@ -140,27 +140,30 @@ void RTC_UpdateShutDownTime(uint8_t autoshut)
 
 void RTC_AutoShut(void)
 {
-	if(setting_GetAutoShut() && minute_ShutDown == machine_time.minute)
-	{
-    HAL_GPIO_WritePin(LCD_BLC_GPIO_Port, LCD_BLC_Pin, GPIO_PIN_RESET);  //关闭背光
-		GUI_ClearSCR(0x00);       // 初始化缓冲区为0x00，并输出屏幕(清屏)
-		for(uint8_t i=0; i<200;i++)GUI_UpdateDisplay();//刷新下屏幕
-		
-		if(!HAL_GPIO_ReadPin(USB_JOIN_GPIO_Port, USB_JOIN_Pin)) //充电过程中 关机了 软件复位再次进入充电显示状态
-    { 
-			if(KEY_OFF_STATUS != KEY_BURSTMODE)
-			{
-			  HAL_NVIC_SystemReset();
+	// if(setting_GET_SHUT_FLAG() == 1)
+	// {
+		if(setting_GetAutoShut() && (minute_ShutDown == machine_time.minute))
+		{
+			HAL_GPIO_WritePin(LCD_BLC_GPIO_Port, LCD_BLC_Pin, GPIO_PIN_RESET);  //关闭背光
+			GUI_ClearSCR(0x00);       // 初始化缓冲区为0x00，并输出屏幕(清屏)
+			for(uint8_t i=0; i<200;i++)GUI_UpdateDisplay();//刷新下屏幕
+			
+			if(!HAL_GPIO_ReadPin(USB_JOIN_GPIO_Port, USB_JOIN_Pin)) //充电过程中 关机了 软件复位再次进入充电显示状态
+			{ 
+				if(KEY_OFF_STATUS != KEY_BURSTMODE)
+				{
+					HAL_NVIC_SystemReset();
+				}
 			}
-		}
-    else
-    {
-			SHUTDOWN();		//关闭电源
-			while(1)
+			else
 			{
-			} 		
-		}	
-	}
+				SHUTDOWN();		//关闭电源
+				while(1)
+				{
+				}
+			}	
+		}
+	// }
 }
 
 

@@ -245,12 +245,12 @@ void rs485_ClearRxBuf(void)
 void rs485_send(void)
 {
 	RS485_DE_H();
-	for(uint16_t i=1000;i>0;i--);
+	// for(uint16_t i=1000;i>0;i--);
 	
 	HAL_UART_Transmit(rs485_usart.huart, rs485_usart.tx_buf, rs485_usart.tx_size,200);
 	rs485_usart.tx_flag = 1;
 	
-	for(uint16_t i=1000;i>0;i--);
+	// for(uint16_t i=1000;i>0;i--);
 	RS485_DE_L();
 }
 

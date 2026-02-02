@@ -5,7 +5,7 @@
 #include "rtc.h"
 #include "gps.h"
 #include "rs485.h"
-#define log_count_Max  14
+#define log_count_Max  15
 
 typedef struct{
 	float temperature;                        //温度
@@ -49,7 +49,11 @@ typedef struct{
 
 	float MLSS_mg_L;						//污泥浓度
 
-	float OIW_mg_L;						//水中油
+	float OIW_mg_L;							//水中油
+
+	float TSS_mg_L;							//悬浮物
+
+	float OIW_DA511_mg_L;							//水中油DA511
 	
 }log_FloatData_t;
 
@@ -105,10 +109,10 @@ void log_SendCount(void);
 
 
 extern uint16_t DO_Send_Count ,		pH_Send_Count ,		Tur_Send_Count,
-				FCL_Send_Count ,	EC_Send_Count ,		ORP_Send_Count ,
+				SAL_Send_Count ,	EC_Send_Count ,		ORP_Send_Count ,
 				NH4_Send_Count ,	F_Send_Count,		CL_Send_Count,
 				Chl_Send_Count ,	Bga_Send_Count ,	COD_Send_Count ,
-				MLSS_Send_Count,	OiW_Send_Count;
+				MLSS_Send_Count,	OiW_Send_Count,		TSS_Send_Count;
 
 #endif
 

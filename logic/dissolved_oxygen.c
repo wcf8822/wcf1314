@@ -11,7 +11,7 @@
 #include "log.h"
 #include "logic.h"
 #include "DO_HaiFa_DY12.h"
-
+#include "math.h"
 /////////////////////////////////////////////////////////////////////////////////////////////好像可以直接在485指令里直接改对应设备的值就不用改结构体里的值
 
 const float press_error = 0.3;    //气压差值
@@ -39,7 +39,9 @@ uint8_t is_FirstFilter = 1;
 
 const float DO_AutoLock_eps[3] = {0.1, 0.3, 0.5};//{0.03, 0.05, 0.1};
 
+const float ORP_AutoLock_eps[3] = {1, 3, 5};//{0.03, 0.05, 0.1};
 
+const float DO_702AutoLock_eps[3] = {50, 40, 30};//{0.03, 0.05, 0.1};
 //要不要按照modbusid 来对设备进行操作 就是先find一下然后如果没找到重新创建一个
 
 /*获取当前显示设备的指针*/
@@ -216,6 +218,7 @@ void DO_AddProbe(uint8_t ModbusId)//这里得添加名字
 
 		case EC_shenghui_ModbusID:		
 		case EC_DE26_ModbusID:
+		case EC_DE40_ModbusID:
 			snprintf(p->name, 7, "EC %02d", ModbusId); //生成名字
 		  add_Type=TYPE_EC;
 			if(setting_GetIsOpen_SlideAvg_EC())
@@ -223,6 +226,17 @@ void DO_AddProbe(uint8_t ModbusId)//这里得添加名字
 				filter_init(&(p->queue_domgl), setting_GetSlideAvgTimes_EC());      //初始化一下mg/l 数值指针
 				filter_init(&(p->queue_dopercent), setting_GetSlideAvgTimes_EC());  //初始化一下%    数值指针
 				filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_EC());       //初始化一下℃    数值指针
+			}
+			break;
+
+		case EC_DS46_ModbusID:
+			snprintf(p->name, 7, "SAL %02d", ModbusId); //生成名字
+		  add_Type=TYPE_SAL;
+			if(setting_GetIsOpen_SlideAvg_SAL())
+			{//如果开启了滑动平均就直接添加下 没开的话就等开的时候再初始化
+				filter_init(&(p->queue_domgl), setting_GetSlideAvgTimes_SAL());      //初始化一下mg/l 数值指针
+				filter_init(&(p->queue_dopercent), setting_GetSlideAvgTimes_SAL());  //初始化一下%    数值指针
+				filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_SAL());       //初始化一下℃    数值指针
 			}
 			break;
 		
@@ -306,6 +320,28 @@ void DO_AddProbe(uint8_t ModbusId)//这里得添加名字
 				filter_init(&(p->queue_domgl), setting_GetSlideAvgTimes_OIW());      //初始化一下mg/l 数值指针
 				filter_init(&(p->queue_dopercent), setting_GetSlideAvgTimes_OIW());  //初始化一下%    数值指针
 				filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_OIW());       //初始化一下℃    数值指针			
+			}
+			break;
+
+		case OiW_yushan_DA511_ModbusID:
+			snprintf(p->name, 8, "OiW %02d", ModbusId); //生成名字
+		  add_Type=TYPE_Oiw;
+			if(setting_GetIsOpen_SlideAvg_OIW_ppm())
+			{//如果开启了滑动平均就直接添加下 没开的话就等开的时候再初始化
+				filter_init(&(p->queue_domgl), setting_GetSlideAvgTimes_OIW_ppm());      //初始化一下mg/l 数值指针
+				filter_init(&(p->queue_dopercent), setting_GetSlideAvgTimes_OIW_ppm());  //初始化一下%    数值指针
+				filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_OIW_ppm());       //初始化一下℃    数值指针			
+			}
+			break;
+
+		case LH_DX01_ModbusID:
+			snprintf(p->name, 8, "TSS %02d", ModbusId); //生成名字
+		  add_Type=TYPE_TSS;
+			if(setting_GetIsOpen_SlideAvg_TSS())
+			{//如果开启了滑动平均就直接添加下 没开的话就等开的时候再初始化
+				filter_init(&(p->queue_domgl), setting_GetSlideAvgTimes_TSS());      //初始化一下mg/l 数值指针
+				filter_init(&(p->queue_dopercent), setting_GetSlideAvgTimes_TSS());  //初始化一下%    数值指针
+				filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_TSS());       //初始化一下℃    数值指针			
 			}
 			break;
 		
@@ -986,11 +1022,13 @@ void clear_DOShakeCount(void)
 }
 
 
+uint8_t lock_num=0;//锁定计数值
 void CheckValueLock(PtrToDOProbe ptd)
 {
 	float eps = 0.0;
 	uint8_t GetAutoLock_Flag=0;
 	double difference = 0.0;//差值
+	uint8_t lock_max =0;
 
 	if(interfacial_GetCurPage() == PAGE_5_DO_ONE_First|| 
 		 interfacial_GetCurPage() == PAGE_5_DO_TWO_FIRST||
@@ -1022,18 +1060,18 @@ void CheckValueLock(PtrToDOProbe ptd)
 	   interfacial_GetCurPage() == PAGE_5_MLSS_zero_signal
 		)   //在具体校准界面中，锁定功能失效
 	{
-			clear_DOShakeCount();              //清除抖动计数
-		  if(DO_GetValueLocked(get_CurDo()))
-			{
-				DO_SetValueUnlocked(get_CurDo());  //解锁
-			}	
+		clear_DOShakeCount();              //清除抖动计数
+		if(DO_GetValueLocked(get_CurDo()))
+		{
+			DO_SetValueUnlocked(get_CurDo());  //解锁
+		}	
 	}
 	else
-  {
+  	{
 		switch(rs485_GetSensorType())
 		{
 			case TYPE_DO://如果当前查询的设备是do的话
-				eps = DO_AutoLock_eps[setting_GetAutoLockLevel_DO()];
+				eps = DO_702AutoLock_eps[setting_GetAutoLockLevel_DO()];
 				GetAutoLock_Flag=setting_GetAutoLock_DO();
 				break;		
 			case TYPE_pH:	
@@ -1053,7 +1091,7 @@ void CheckValueLock(PtrToDOProbe ptd)
 				GetAutoLock_Flag=setting_GetAutoLock_EC();						
 				break;
 			case TYPE_ORP:	
-				eps = DO_AutoLock_eps[setting_GetAutoLockLevel_ORP()];
+				eps = ORP_AutoLock_eps[setting_GetAutoLockLevel_ORP()];
 				GetAutoLock_Flag=setting_GetAutoLock_ORP();	
 				break;
 			case TYPE_NH4:
@@ -1088,62 +1126,92 @@ void CheckValueLock(PtrToDOProbe ptd)
 				eps = DO_AutoLock_eps[setting_GetAutoLockLevel_OIW()];
 				GetAutoLock_Flag=setting_GetAutoLock_OIW();	
 				break;
+			case TYPE_TSS:
+				eps = DO_AutoLock_eps[setting_GetAutoLockLevel_TSS()];
+				GetAutoLock_Flag=setting_GetAutoLock_TSS();	
+				break;
+			case TYPE_SAL:
+				eps = DO_AutoLock_eps[setting_GetAutoLockLevel_SAL()];
+				GetAutoLock_Flag=setting_GetAutoLock_SAL();	
+				break;
 			default:
 				break;
 		}					
 		
 		if(GetAutoLock_Flag == AUTOLOCK_AUTO)//如果开启了自动锁定功能
 		{
-			difference = ptd->DOmgl.value_f - ptd->last_DOmgl;//取差值
-			
-			if(difference >= 0)//这次是上涨
+			if(rs485_GetSensorType() ==TYPE_DO)
 			{
-				ptd->down_count = 0;//清连续下降次数
-				
-				if(ptd->last_trend == TREND_UP)//上次是上涨
-				{
-					if(++ptd->up_count >= SAME_TIMES)
-					{
-						ptd->shake_count = 0;
-						ptd->up_count = 0;
-						ptd->down_count = 0;
-					}
-				}
-				else//上次是跌 \/
-				{
-						ptd->shake_count++;
-				}
-				ptd->last_trend = TREND_UP;
-			}
-			else//这次是跌
-			{
-				ptd->up_count = 0;//清连续上涨次数
-				
-				if(ptd->last_trend == TREND_DOWN)//上次是跌的话
-				{
-					if(++ptd->down_count >= SAME_TIMES)
-					{
-						ptd->shake_count = 0;
-						ptd->up_count = 0;
-						ptd->down_count = 0;
-					}
-				}
-				else//上次是涨
+				difference = ptd->DOpercent.value_f - ptd->last_DOmgl;//取差值
+				if(fabs(difference) <= 0.0015)
 				{
 					ptd->shake_count++;
 				}
-				ptd->last_trend = TREND_DOWN;
+				lock_num++;
+				setting_SetAutoLock_num(lock_num);
+
+				if(setting_AutoLock_num() == eps || fabs(difference) > 0.005)
+				{
+					lock_num =0;
+					setting_SetAutoLock_num(0);
+					ptd->shake_count =0;
+				}
+				lock_max= eps*3/4;
 			}
-			
-			
-			if(fabs(difference) >= eps)//如果值变换幅度超过了设定的阈值清除计数
+			else
 			{
-				ptd->shake_count = 0;
-				ptd->up_count = 0;
-				ptd->down_count = 0;
+				difference = ptd->DOmgl.value_f - ptd->last_DOmgl;
+				if(difference >= 0)//这次是上涨
+				{
+					ptd->down_count = 0;//清连续下降次数
+					
+					if(ptd->last_trend == TREND_UP)//上次是上涨
+					{
+						if(++ptd->up_count >= SAME_TIMES)
+						{
+							ptd->shake_count = 0;
+							ptd->up_count = 0;
+							ptd->down_count = 0;
+						}
+					}
+					else//上次是跌 \/
+					{
+							ptd->shake_count++;
+					}
+					ptd->last_trend = TREND_UP;
+				}
+				else//这次是跌
+				{
+					ptd->up_count = 0;//清连续上涨次数
+					
+					if(ptd->last_trend == TREND_DOWN)//上次是跌的话
+					{
+						if(++ptd->down_count >= SAME_TIMES)
+						{
+							ptd->shake_count = 0;
+							ptd->up_count = 0;
+							ptd->down_count = 0;
+						}
+					}
+					else//上次是涨
+					{
+						ptd->shake_count++;
+					}
+					ptd->last_trend = TREND_DOWN;
+				}
+				
+				
+				if(fabs(difference) >= eps)//如果值变换幅度超过了设定的阈值清除计数
+				{
+					ptd->shake_count = 0;
+					ptd->up_count = 0;
+					ptd->down_count = 0;
+				}
+
+				lock_max= SHAKE_TIMES;
 			}
 			
-			if(ptd->shake_count >= SHAKE_TIMES)//如果来回抖动次数累计超过了3次
+			if(ptd->shake_count >=lock_max)
 			{
 				ptd->shake_count = 0;
 				if(setting_GetLockSave() && ptd->is_ValueLocked == 0 )
@@ -1177,7 +1245,7 @@ void CheckValueLock(PtrToDOProbe ptd)
 				ptd->is_ValueLocked = 1;//上锁
 			}
 		} 
-  }
+  	}
 }
 
 void DO_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)//要添加数字滤波
@@ -1222,7 +1290,7 @@ void DO_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)//要添加数字滤波
 	{
 		ptd->is_FirstGetValue = 0;
 		
-		ptd->last_DOmgl = ptd->DOmgl.value_f;
+		ptd->last_DOmgl = ptd->DOpercent.value_f;
 		
 		snprintf(ptd->temperature_arr, 6, "%5.1f", ptd->temperature.value_f);
 		snprintf(ptd->DOpercent_arr,   7, "%6.2f", (ptd->DOpercent.value_f * 100.0));
@@ -1237,7 +1305,7 @@ void DO_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)//要添加数字滤波
 		CheckValueLock(ptd);//自动锁定直接做在读数这里的
 		
 		
-		ptd->last_DOmgl = ptd->DOmgl.value_f;//更新一下上次的值
+		ptd->last_DOmgl = ptd->DOpercent.value_f;//更新一下上次的值
 		
 		if(++ptd->update_count >= 3)
 		{

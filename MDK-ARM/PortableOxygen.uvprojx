@@ -941,6 +941,21 @@
               <FileType>1</FileType>
               <FilePath>..\logic\DO_HaiFa_DY12.c</FilePath>
             </File>
+            <File>
+              <FileName>DX01.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\logic\DX01.c</FilePath>
+            </File>
+            <File>
+              <FileName>MLSS_lanchang.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\logic\MLSS_lanchang.c</FilePath>
+            </File>
+            <File>
+              <FileName>EC_DE40.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\logic\EC_DE40.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -8,6 +8,7 @@
 #include "dissolved_oxygen.h"
 #include "interfacial.h"
 
+
 /*获取探头Modbus通讯ID*/
 void Chl_shenghui_rs485_GetModbusId(void)	
 {
@@ -96,6 +97,26 @@ void Chl_shenghui_rs485_GetSHWVersion(PtrToDOProbe ptd)
 	rs485_SetCircularSentStatus();
 	
 	rs485_SetSentType(DO_SendType_GetSHWVersion);
+	
+}
+
+
+/*获取探头状态*/
+void Chl_shenghui_rs485_GetCal_Status(PtrToDOProbe ptd)
+{
+	if(ptd == NULL) return;
+	rs485_usart.tx_buf[0] = Chl_shenghui_ModbusID;
+	rs485_usart.tx_buf[1] = 0x04;
+	rs485_usart.tx_buf[2] = 0x75;
+	rs485_usart.tx_buf[3] = 0x66;
+	rs485_usart.tx_buf[4] = 0x00;
+	rs485_usart.tx_buf[5] = 0x01;
+	
+	SetCrc(rs485_usart.tx_buf, rs485_usart.tx_size = 8);
+	
+	rs485_SetCircularSentStatus();
+	
+	rs485_SetSentType(DO_SendType_Start);
 	
 }
 
@@ -349,15 +370,15 @@ void Chl_shenghui_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 		snprintf(ptd->temperature_arr, 6, "%5.2f", ptd->temperature.value_f);
 		snprintf(ptd->DOpercent_arr,   7, "%5.2f", (ptd->DOpercent.value_f ));
 
-		if(ptd->DOmgl.value_f >= 0 && ptd->DOmgl.value_f < 10.0)
+		if(ptd->DOmgl.value_f >= 0.0 && ptd->DOmgl.value_f < 10.0)
 		{
 			snprintf(ptd->DOmgl_arr,       7, "%5.1f", ptd->DOmgl.value_f);
 		}
-		else if(ptd->DOmgl.value_f >= 10 && ptd->DOmgl.value_f < 100.0)
+		else if(ptd->DOmgl.value_f >= 10.0 && ptd->DOmgl.value_f < 100.0)
 		{
 			snprintf(ptd->DOmgl_arr,       7, "%5.1f", ptd->DOmgl.value_f);
 		}
-		else if(ptd->DOmgl.value_f >= 100 && ptd->DOmgl.value_f < 9000.0)
+		else if(ptd->DOmgl.value_f >= 100.0 && ptd->DOmgl.value_f < 9000.0)
 		{
 			snprintf(ptd->DOmgl_arr,       7, "%5d", (unsigned int)ptd->DOmgl.value_f);
 		}
@@ -410,15 +431,15 @@ void Chl_shenghui_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 				snprintf(ptd->temperature_arr, 6, "%5.2f", temperature_temp);
 				snprintf(ptd->DOpercent_arr,   7, "%5.2f", DO_Percent_temp);
 
-				if(DO_mgl_temp >= 0 && DO_mgl_temp < 10.0)
+				if(DO_mgl_temp >= 0.0 && DO_mgl_temp < 10.0)
 				{
 					snprintf(ptd->DOmgl_arr,       7, "%5.1f", DO_mgl_temp);
 				}
-				else if(DO_mgl_temp >= 10 && DO_mgl_temp < 100.0)
+				else if(DO_mgl_temp >= 10.0 && DO_mgl_temp < 100.0)
 				{
 					snprintf(ptd->DOmgl_arr,       7, "%5.1f", DO_mgl_temp);
 				}
-				else if(DO_mgl_temp >= 100 && DO_mgl_temp < 9000.0)
+				else if(DO_mgl_temp >= 100.0 && DO_mgl_temp < 9000.0)
 				{
 					snprintf(ptd->DOmgl_arr,       7, "%5d", (unsigned int)DO_mgl_temp);
 				}

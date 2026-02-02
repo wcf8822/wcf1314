@@ -89,6 +89,7 @@ void generate_SlideAverage_Value(PtrToInterfacial interfacial, uint8_t temp);   
 void generate_IntervaSave(PtrToInterfacial interfacial,uint16_t num, uint8_t is_chn);
 void generate_LockSave(PtrToInterfacial interfacial);
 void generate_MLSS_ZERO(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);
+void generate_DX01_Temp_xiaoshu(PtrToInterfacial interfacial);
 
 
 void generate_NH3N_ONE(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type);

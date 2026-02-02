@@ -65,8 +65,8 @@ void gps_UartInit(UART_HandleTypeDef *huart)
 	Clr_Buf();
 #endif
 	Clr_GPSStruct();
-	gps_usart.huart = huart;
-	__HAL_UART_ENABLE_IT(gps_usart.huart, UART_IT_IDLE);      //开启空闲中断
+	// gps_usart.huart = huart;
+	__HAL_UART_ENABLE_IT(huart, UART_IT_IDLE);      //开启空闲中断
 	
 	
 #if GPS_SMALLER
@@ -75,8 +75,8 @@ void gps_UartInit(UART_HandleTypeDef *huart)
 	HAL_UART_Receive_DMA(gps_usart.huart, (uint8_t *)gps_usart.GPS_Buffer, sizeof(gps_usart.GPS_Buffer));//开始dma接收
 	HAL_UART_Transmit(gps_usart.huart, (uint8_t *)GPS_RESET, sizeof(GPS_RESET), 200);//让gps以出厂方式启动
 #else
-	HAL_UART_Receive_DMA(gps_usart.huart, GPS_RX_BUF, USART_REC_LEN);//开始dma接收
-	HAL_UART_Transmit(gps_usart.huart, (uint8_t *)GPS_RESET, sizeof(GPS_RESET), 200);//让gps以出厂方式启动
+	HAL_UART_Receive_DMA(huart, GPS_RX_BUF, USART_REC_LEN);//开始dma接收
+	HAL_UART_Transmit(huart, (uint8_t *)GPS_RESET, sizeof(GPS_RESET), 200);//让gps以出厂方式启动
 #endif
 	
 }

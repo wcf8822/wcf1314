@@ -12,6 +12,9 @@
         "nh3n_dn02.h": "c",
         "vcruntime.h": "c",
         "stdio.h": "c",
-        "rs485.h": "c"
+        "rs485.h": "c",
+        "dx01.h": "c",
+        "tur_shenghui.h": "c",
+        "ec_de40.h": "c"
     }
 }

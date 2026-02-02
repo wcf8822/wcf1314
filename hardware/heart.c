@@ -25,7 +25,7 @@ typedef struct{
 	uint8_t flag_warning    : 1; //报警图标闪烁
 	uint8_t flag_Test       : 1; //测试用定时器
 	uint8_t flag_SinMes     : 1; //单次测试用定时器
-	
+	uint8_t flag_Close     : 1; //定时关机
 }flag_t;
 
 //按键按下时长的结构体变量声明
@@ -119,6 +119,7 @@ static volatile KeyFlag_t key_ClickedFlag={
 #define SET_INTERFACIALFLAG()   MainFlags.flag_interfacial = 1
 #define SET_TESTFLAG()          MainFlags.flag_Test = 1
 #define SET_WARNINGFLAG()       MainFlags.flag_warning = 1
+#define SET_CLOSE()       		MainFlags.flag_Close = 1
 // #define SET_SinMesFLAG()        MainFlags.flag_SinMes = 1
 
 
@@ -153,6 +154,16 @@ uint8_t get_BatFlag(void)
 {
 	return MainFlags.flag_RefreshBat;
 }
+uint8_t get_close(void)
+{
+	return MainFlags.flag_Close;
+}
+
+void set_close(void)
+{
+	SET_CLOSE();
+}
+
 uint8_t get_GPSFlag(void)
 {
 	return MainFlags.flag_RefreshGPS;

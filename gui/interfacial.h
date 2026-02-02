@@ -41,6 +41,8 @@ typedef enum {
 	MESSAGE_SUCCESSFUL,             //成功弹窗
 	MESSAGE_DELETE,		            //删除数据弹窗
 	MESSAGE_tixing,					//提醒信息弹窗
+	MESSAGE_Close,					//关机信息弹窗
+
 }MESSAGE_TYPE;
 
 typedef enum{

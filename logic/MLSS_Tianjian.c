@@ -394,6 +394,20 @@ void MLSS_Tianjian_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 	// 	ptd->DOmgl.value_f = ptd->DOmgl.value_f /100.0f;
 	// }
 
+	if(setting_Get_Temp_Unit())//温度单位为华氏度时需要做以下换算
+	{
+		ptd->temperature.value_f = ptd->temperature.value_f*1.8+32;//摄氏度转华氏度公式
+		if(ptd->temperature.value_f > 140)
+		{
+			ptd->temperature.value_f = 140;
+		}
+		else if(ptd->temperature.value_f < 32)
+		{
+			ptd->temperature.value_f = 32;
+		}
+	}
+	
+
 	if(ptd->is_FirstGetValue)//如果是第一次获取到数据的话给它一个值
 	{
 		ptd->is_FirstGetValue = 0;
@@ -402,24 +416,35 @@ void MLSS_Tianjian_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 		//整数
 		if(setting_GetMesUnit() == 0 || setting_GetMesUnit() == 10)
 		{
-			if(ptd->DOmgl.value_f  >= 10000)
+			if(ptd->DOmgl.value_f  >= 25000)
 			{
-				snprintf(ptd->DOpercent_Vol_arr,   8, "%5d", (int)ptd->DOmgl.value_f);
+				snprintf(ptd->DOpercent_Vol_arr,   8, "%5d", (int)25000);
 			}
 			else
 			{
 				snprintf(ptd->DOpercent_Vol_arr,   8, "%5d", (int)ptd->DOmgl.value_f);
 			}
 		}
-		else
+		else if(setting_GetMesUnit() == 5)
 		{
-			if(ptd->DOmgl.value_f  >= 10000)
+			if(ptd->DOmgl.value_f  >= 25000)
 			{
-				snprintf(ptd->DOpercent_Vol_arr,   8, "%5.2f",ptd->DOmgl.value_f/100.0f);
+				snprintf(ptd->DOpercent_Vol_arr,   8, "%5.3f",25000/1000.0f);
 			}
 			else
 			{
-				snprintf(ptd->DOpercent_Vol_arr,   8, "%5.2f", ptd->DOmgl.value_f/100.0f);
+				snprintf(ptd->DOpercent_Vol_arr,   8, "%5.3f", ptd->DOmgl.value_f/1000.0f);
+			}
+		}
+		else
+                                                                                                           		{
+			if(ptd->DOmgl.value_f  >= 25000)
+			{
+				snprintf(ptd->DOpercent_Vol_arr,   8, "%5.4f",25000/10000.0f);
+			}
+			else
+			{
+				snprintf(ptd->DOpercent_Vol_arr,   8, "%5.4f", ptd->DOmgl.value_f/10000.0f);
 			}
 		}
 	}
@@ -463,24 +488,35 @@ void MLSS_Tianjian_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat)
 				//整数
 				if(setting_GetMesUnit() == 0 || setting_GetMesUnit() == 10)
 				{
-					if(DO_mgl_temp  >= 10000)
+					if(DO_mgl_temp  >= 25000)
 					{
-						snprintf(ptd->DOpercent_Vol_arr,   8, "%5d", (int)DO_mgl_temp);
+						snprintf(ptd->DOpercent_Vol_arr,   8, "%5d", (int)25000);
 					}
 					else
 					{
 						snprintf(ptd->DOpercent_Vol_arr,   8, "%5d", (int)DO_mgl_temp);
 					}
 				}
-				else
+				else if(setting_GetMesUnit() == 5)
 				{
-					if(DO_mgl_temp >= 10000)
+					if(DO_mgl_temp >= 25000)
 					{
-						snprintf(ptd->DOpercent_Vol_arr,   8, "%5.2f", DO_mgl_temp/100.0f);
+						snprintf(ptd->DOpercent_Vol_arr,   8, "%5.3f", 25000/1000.0f);
 					}
 					else
 					{
-						snprintf(ptd->DOpercent_Vol_arr,   8, "%5.2f", DO_mgl_temp/100.0f);
+						snprintf(ptd->DOpercent_Vol_arr,   8, "%5.3f", DO_mgl_temp/1000.0f);
+					}
+				}
+				else
+				{
+					if(DO_mgl_temp >= 25000)
+					{
+						snprintf(ptd->DOpercent_Vol_arr,   8, "%5.4f", 25000/10000.0f);
+					}
+					else
+					{
+						snprintf(ptd->DOpercent_Vol_arr,   8, "%5.4f", DO_mgl_temp/10000.0f);
 					}
 				}
 

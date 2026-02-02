@@ -368,7 +368,7 @@ extern const unsigned char yingwen_cn[8];
 extern const unsigned char zidongsousuozhong_cn[3] ;
 extern const unsigned char zidongsousuozhong_en[] ;
 
-extern const unsigned char sensor_type_str[15][7];
+extern const unsigned char sensor_type_str[17][7];
 
 extern const unsigned char battery_image[6][33];
 extern const unsigned char battery_image_big[4][484];
@@ -395,6 +395,8 @@ extern const unsigned char man_en[];
 extern const unsigned char zhongdeng_cn[2];
 extern const unsigned char zhongdeng_en[];
 
+extern const unsigned char dianliangdizidongguanji_cn[7];
+extern const unsigned char dianliangdizidongguanji_en[];
 
 extern const unsigned char danweishezhi_cn[4] ;      //单位设置
 extern const char danweishezhi_en[] ;
@@ -780,6 +782,32 @@ extern const unsigned char biaoyejiaozhun_Three_en[];
 
 extern const unsigned char manyang_cn[2];
 extern const unsigned char manyang_en[];
+
+extern const unsigned char xuanfuwu_cn[3];
+extern const unsigned char xuanfuwu_en[];
+
+extern const unsigned char zidongqingxijiange_cn[6];        
+extern const unsigned char zidongqingxijiange_en[];
+
+extern const unsigned char wendujingdushezhi_cn[6];           
+extern const unsigned char wendujingdushezhi_en[];
+
+extern const unsigned char wendujingdu_0_en[];
+extern const unsigned char wendujingdu_1_en[];
+extern const unsigned char wendujingdu_2_en[];
+
+extern const unsigned char wendujiaozhun_cn[4];
+extern const unsigned char wendujiaozhun_en[];																  		//温度
+
+extern const unsigned char yandujiaozhun_cn[4];
+extern const unsigned char yandujiaozhun_en[];
+
+
+extern const unsigned char Oiw_ppm_cn[5];
+extern const unsigned char Oiw_ppm_en[];
+
+extern const unsigned char Oiw_ppb_cn[5];
+extern const unsigned char Oiw_ppb_en[];
 #endif
 
 

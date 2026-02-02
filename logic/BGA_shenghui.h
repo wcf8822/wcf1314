@@ -16,6 +16,7 @@ void BGA_shesnghui_rs485_SetTemp(PtrToDOProbe ptd, float temp);
 void BGA_shenghui_cal_rs485_Frist(PtrToDOProbe ptd,float Value);
 void BGA_shenghui_cal_rs485_Second(PtrToDOProbe ptd,float Value);
 void BGA_shenghui_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat);
+void BGA_shenghui_rs485_GetCal_Status(PtrToDOProbe ptd);
 
 #endif
 

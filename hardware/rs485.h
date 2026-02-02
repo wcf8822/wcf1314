@@ -43,9 +43,16 @@
 #define COD_shenghui_ModbusID 95
 
 #define OiW_yushan_ModbusID 78
+#define OiW_yushan_DA511_ModbusID 42
 #define OiW_guohong_ModbusID 29
 
 #define MLSS_Tianjian_ModbusID 77
+
+#define LH_DX01_ModbusID 5
+#define MLSS_Lan_ModbusID 83
+
+#define EC_DE40_ModbusID 3
+#define EC_DS46_ModbusID 85
 /*传感器类型*/
 typedef enum{
 	TYPE_DO = 0,           //溶解氧
@@ -62,6 +69,8 @@ typedef enum{
 	TYPE_CODuv,              //
 	TYPE_MLSS,				//污泥浓度
 	TYPE_Oiw,				//水中油
+	TYPE_TSS,				//悬浮物
+	TYPE_SAL,				//盐度传感器
 	TYPE_NONE              //未接传感器
 	
 }SENSOR_TYPE;
@@ -98,6 +107,7 @@ typedef struct DO_struct{
 	float DOpercent_sum ;
 	float temperature_sum ;
   	float last_DOmgl;	
+	float tdsvalue;
 	
 	manufacturer_enum manufacturer; //生产厂商
 	char SWV[5];

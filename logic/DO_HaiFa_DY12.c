@@ -125,7 +125,14 @@ void DO_HaiFa_DY12_rs485_GetModbusId(void)
 	rs485_usart.tx_buf[5] = 0x01;
 	
 	SetCrc(rs485_usart.tx_buf, rs485_usart.tx_size = 8);
-	
+	// rs485_usart.tx_buf[0] = DO_HF_DY12_ModbusID;
+	// rs485_usart.tx_buf[1] = 0x03;
+	// rs485_usart.tx_buf[2] = 0x00;
+	// rs485_usart.tx_buf[3] = 0x03;
+	// rs485_usart.tx_buf[4] = 0x00;
+	// rs485_usart.tx_buf[5] = 0x08;
+
+	// SetCrc(rs485_usart.tx_buf, rs485_usart.tx_size = 8);
 	rs485_SetSentType(DO_SendType_GetModbusId);
 }
 

@@ -40,6 +40,9 @@
 #include "OiW_Guohong.h"
 #include "OiW_yushan.h"
 #include "DO_HaiFa_DY12.h"
+#include "DX01.h"
+#include "MLSS_lanchang.h"
+#include "EC_DE40.h"
 /***************************************************************任何指针操作记得加安全性判断是否为空指针！！！！！！！！！！！！！！！！！！！！！！！！！！！*/
 typedef struct{
 	uint8_t* content_cn;
@@ -92,7 +95,9 @@ STATIC uint8_t AncestorPage_OptionIndex = 0;//阿太界面所选的标签下标
 STATIC uint8_t flag_NeedWarning = 0;
 
 HARDWARE_VERSION hardware_version; //硬件版本
-const uint8_t software_version[] = "V2.1.6";  //软件版本
+const uint8_t software_version[] = "V2.2.1";  //软件版本
+
+//SETTING_FIRSTRUN_JUDGE 维护这个变量,清除历史记录和恢复初始化数值
 
 void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack);//通过枚举变量设置显示的界面
 
@@ -264,6 +269,19 @@ void generate_MessageBox(MESSAGE_TYPE msg_type, uint8_t is_successful)
 				btnOkEscFunc_register(btn_OkEscMode_ChangePage);
 			}
 			break;
+
+		case MESSAGE_Close:
+			msg_content.content_cn = (uint8_t *)dianliangdizidongguanji_cn;
+			msg_content.content_en = (uint8_t *)dianliangdizidongguanji_en;
+			msg_content.content_cn_len = sizeof(dianliangdizidongguanji_cn);
+
+			set_SuccessfulTimStartFlag();
+			if(interfacial_GetCurPage() != PAGE_0_START)
+			{
+				btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
+				btnOkEscFunc_register(btn_OkEscMode_ChangePage);
+			}
+			break;
 	}
 }
 
@@ -351,6 +369,7 @@ void show_MessageBox(void)
 			break;
 
 		case MESSAGE_tixing:
+		case MESSAGE_Close:
 			if(setting_GetIsChn())                                                                  //状态栏文字标签
 			{
 				GUI_PutChnStr(24, 80, msg_content.content_cn, msg_content.content_cn_len, MENU_FONT_CHN_LSIZE, MENU_FONT_CHN_RSIZE, LOADBIT_NORMAL);
@@ -425,10 +444,6 @@ void global_key(void)
 		clear_KeyBluFlag();
 		HAL_GPIO_TogglePin(LCD_BLC_GPIO_Port, LCD_BLC_Pin);
 		
-		//log_PrintBytes(0);
-//		log_PrintfLogOffset();
-		
-		//log_SetLogCount(0);/////////////////////////////////////////////////////////////////////////////////////////////这里记得改
 	}
 	if(get_KeyCalFlag())//校准键
 	{
@@ -677,6 +692,22 @@ void AutoShutOption_init(uint8_t selected)
 	}
 }
 
+void SAL_UNIT_init(uint8_t selected)
+{
+	cur_option = cur_interfacial.option_head;
+	switch (selected)
+	{
+		case 0:
+			cur_option->IsSelected = SELECTED; //是被选中
+			break;
+		
+		case 1:
+			cur_option = cur_option->next_option;
+			cur_option->IsSelected = SELECTED; //否被选中
+			break;
+	}
+}
+
 void AutoLockOption_init(uint8_t selected)
 {
 	cur_option = cur_interfacial.option_head;
@@ -783,7 +814,12 @@ void StatusBar_Update(void)
 		case TYPE_Oiw:
 			GUI_PutEngStr(60, 0, (uint8_t *)&(sensor_type_str[TYPE_Oiw]), MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_REVERSE);
 			break;
-	
+		case TYPE_TSS:
+			GUI_PutEngStr(60, 0, (uint8_t *)&(sensor_type_str[TYPE_TSS]), MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_REVERSE);
+			break;
+		case TYPE_SAL:
+			GUI_PutEngStr(60, 0, (uint8_t *)&(sensor_type_str[TYPE_SAL]), MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_REVERSE);
+			break;
 		default:
 			break;
 	}
@@ -855,6 +891,7 @@ void btn_OkEscMode_NULL(void)
 								{
 									clear_DOShakeCount();              //清除抖动计数
 									DO_SetValueUnlocked(get_CurDo());  //解锁
+									setting_SetAutoLock_num(0);
 								}
 							break;
 						
@@ -1068,7 +1105,45 @@ void btn_OkEscMode_NULL(void)
 							}	
 							break;
 						case TYPE_Oiw:
-							if(setting_GetAutoLock_OIW() == AUTOLOCK_MANUAL && !DO_GetValueLocked(get_CurDo()))//如果是手动锁定模式的话 值没被锁的话
+							if(cur_DO.DO_list->modbus_id == OiW_yushan_ModbusID)
+							{
+								if(setting_GetAutoLock_OIW() == AUTOLOCK_MANUAL && !DO_GetValueLocked(get_CurDo()))//如果是手动锁定模式的话 值没被锁的话
+								{
+									DO_SetValueLocked(get_CurDo());    //锁住
+									if(setting_GetLockSave())
+									{
+											generate_MessageBox(MESSAGE_SAVELOG, log_SaveData(rs485_GetSensorType()));
+									}
+									break;
+								}							
+								if(setting_GetAutoLock_OIW() != AUTOLOCK_OFF && DO_GetValueLocked(get_CurDo())) //如果是有锁定功能无论自动还是手动就给它开锁
+								{
+									clear_DOShakeCount();              //清除抖动计数
+									DO_SetValueUnlocked(get_CurDo());  //解锁
+								}	
+							}
+							else
+							{
+								if(setting_GetAutoLock_OIW_ppm() == AUTOLOCK_MANUAL && !DO_GetValueLocked(get_CurDo()))//如果是手动锁定模式的话 值没被锁的话
+								{
+									DO_SetValueLocked(get_CurDo());    //锁住
+									if(setting_GetLockSave())
+									{
+											generate_MessageBox(MESSAGE_SAVELOG, log_SaveData(rs485_GetSensorType()));
+									}
+									break;
+								}							
+								if(setting_GetAutoLock_OIW_ppm() != AUTOLOCK_OFF && DO_GetValueLocked(get_CurDo())) //如果是有锁定功能无论自动还是手动就给它开锁
+								{
+									clear_DOShakeCount();              //清除抖动计数
+									DO_SetValueUnlocked(get_CurDo());  //解锁
+								}
+							}
+							
+							break;
+
+						case TYPE_TSS:
+							if(setting_GetAutoLock_TSS() == AUTOLOCK_MANUAL && !DO_GetValueLocked(get_CurDo()))//如果是手动锁定模式的话 值没被锁的话
 							{
 								DO_SetValueLocked(get_CurDo());    //锁住
 								if(setting_GetLockSave())
@@ -1077,7 +1152,24 @@ void btn_OkEscMode_NULL(void)
 								}
 								break;
 							}							
-							if(setting_GetAutoLock_OIW() != AUTOLOCK_OFF && DO_GetValueLocked(get_CurDo())) //如果是有锁定功能无论自动还是手动就给它开锁
+							if(setting_GetAutoLock_TSS() != AUTOLOCK_OFF && DO_GetValueLocked(get_CurDo())) //如果是有锁定功能无论自动还是手动就给它开锁
+							{
+								clear_DOShakeCount();              //清除抖动计数
+								DO_SetValueUnlocked(get_CurDo());  //解锁
+							}	
+							break;
+								
+						case TYPE_SAL:
+							if(setting_GetAutoLock_SAL() == AUTOLOCK_MANUAL && !DO_GetValueLocked(get_CurDo()))//如果是手动锁定模式的话 值没被锁的话
+							{
+								DO_SetValueLocked(get_CurDo());    //锁住
+								if(setting_GetLockSave())
+								{
+										generate_MessageBox(MESSAGE_SAVELOG, log_SaveData(rs485_GetSensorType()));
+								}
+								break;
+							}							
+							if(setting_GetAutoLock_SAL() != AUTOLOCK_OFF && DO_GetValueLocked(get_CurDo())) //如果是有锁定功能无论自动还是手动就给它开锁
 							{
 								clear_DOShakeCount();              //清除抖动计数
 								DO_SetValueUnlocked(get_CurDo());  //解锁
@@ -1108,13 +1200,13 @@ void Search_History_Type_KeyUpFlag(void){
 		{
 			 if(datashow_SensorType == TYPE_DO)
 			 {
-				 if(log_GetLogCount(TYPE_Oiw)	!= 0)
+				 if(log_GetLogCount(TYPE_TSS)	!= 0)
 				 {
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_Oiw;
+					 datashow_SensorType=TYPE_TSS;
            return;					 
 				 }else{
-					 datashow_SensorType=TYPE_Oiw;
+					 datashow_SensorType=TYPE_TSS;
 				 }
 			 }
 
@@ -1267,6 +1359,18 @@ void Search_History_Type_KeyUpFlag(void){
 				 {
 					 Get_Search_Flag=1;
 					 datashow_SensorType=TYPE_MLSS;
+           return;
+				 }else{
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-TYPE_pH);	
+				 }
+			 }
+
+			 if(datashow_SensorType == TYPE_TSS)
+			 {	
+				 if(log_GetLogCount(TYPE_Oiw) != 0)							 
+				 {
+					 Get_Search_Flag=1;
+					 datashow_SensorType=TYPE_Oiw;
            return;
 				 }else{
 					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-TYPE_pH);	
@@ -1440,6 +1544,18 @@ void Search_History_Type_KeyDownFlag(void){
 			 
 			 if(datashow_SensorType == TYPE_Oiw)
 			 {	
+				 if(log_GetLogCount(TYPE_TSS) != 0)							 
+				 {
+					 Get_Search_Flag=1;
+					 datashow_SensorType=TYPE_TSS;
+           return;
+				 }else{
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+TYPE_pH);
+				 }
+			 }	
+
+			 if(datashow_SensorType == TYPE_TSS)
+			 {	
 				 if(log_GetLogCount(TYPE_DO) != 0)							 
 				 {
 					 Get_Search_Flag=1;
@@ -1448,7 +1564,7 @@ void Search_History_Type_KeyDownFlag(void){
 				 }else{
 					 datashow_SensorType=TYPE_DO;	
 				 }
-			 }	
+			 }
 		 
 		}
 					
@@ -1472,7 +1588,7 @@ void btn_UpDownMode_ChangeOption(void)
 		//遍历找到上一个可以被选中的标签如果找不到的话就保持不变
 		if(interfacial_GetCurPage() == PAGE_2_HISTORY_ShowOPTION || interfacial_GetCurPage() == PAGE_2_HISTORY_DeleteOPTION)
 		{
-        Search_History_Type_KeyUpFlag();				
+        	Search_History_Type_KeyUpFlag();				
 		}		
 		
 		if(interfacial_GetCurPage() == PAGE_0_START)
@@ -1500,7 +1616,7 @@ void btn_UpDownMode_ChangeOption(void)
 	
 		if(interfacial_GetCurPage() == PAGE_2_HISTORY_ShowOPTION || interfacial_GetCurPage() == PAGE_2_HISTORY_DeleteOPTION)
 		{
-      Search_History_Type_KeyDownFlag();
+      		Search_History_Type_KeyDownFlag();
 		}			
 		do
 		{
@@ -1682,21 +1798,58 @@ void btn_OkEscMode_ChangePage(void)
 								{
 									STD_value =STD_temp;
 									snprintf(cal_arr, 8, "%5d", STD_temp);
+									LabelList_Add(60, 56,  
+														NULL, 0, (uint8_t *)cal_arr, 
+														LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, 
+														&(interfacial_GetCurrentInterfacial()->label_head));//将校准值变成label显示
+
+								}
+								else if(setting_GetMesUnit() == 5)
+								{
+									STD_value =STD_temp;
+									snprintf(cal_arr, 8, "%6.3f", STD_value / 1000);
+									LabelList_Add(60, 56,  
+														NULL, 0, (uint8_t *)cal_arr, 
+														LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, 
+														&(interfacial_GetCurrentInterfacial()->label_head));//将校准值变成label显示
+
 								}
 								else
 								{
 									STD_value =STD_temp;
-									snprintf(cal_arr, 8, "%5.2f", STD_value / 100);
-								}
-								LabelList_Add(60, 56,  
+									snprintf(cal_arr, 8, "%6.4f", STD_value / 10000);
+									if(STD_value >= 100000)
+									{
+										LabelList_Add(60, 56,  
 														NULL, 0, (uint8_t *)cal_arr, 
 														LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, 
 														&(interfacial_GetCurrentInterfacial()->label_head));//将校准值变成label显示
+
+									}
+									else
+									{
+										LabelList_Add(68, 56,  
+														NULL, 0, (uint8_t *)cal_arr, 
+														LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, 
+														&(interfacial_GetCurrentInterfacial()->label_head));//将校准值变成label显示
+
+
+									}
+								}
 							}
 							else if(get_CurDo()->modbus_id == OiW_guohong_ModbusID)
 							{
 								STD_value =STD_temp;
 								snprintf(cal_arr, 8, "%5.3f", STD_value / 1000);
+								LabelList_Add(52, 56,  
+														NULL, 0, (uint8_t *)cal_arr, 
+														LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, 
+														&(interfacial_GetCurrentInterfacial()->label_head));//将校准值变成label显示
+							}
+							else if(get_CurDo()->modbus_id == LH_DX01_ModbusID)
+							{
+								STD_value =STD_temp;
+								snprintf(cal_arr, 8, "%6.2f", STD_value / 100);
 								LabelList_Add(52, 56,  
 														NULL, 0, (uint8_t *)cal_arr, 
 														LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, 
@@ -1729,7 +1882,8 @@ void btn_OkEscMode_ChangePage(void)
 														LABEL_NORMAL,  LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS,
 														&(interfacial_GetCurrentInterfacial()->label_head)); 
 							}
-							else if(get_CurDo()->modbus_id == OiW_guohong_ModbusID)
+							else if(get_CurDo()->modbus_id == OiW_guohong_ModbusID
+							|| get_CurDo()->modbus_id == LH_DX01_ModbusID)
 							{
 								LabelList_Add(56, 136,
 														NULL, 0, (uint8_t *)get_CurDo()->DOmgl_arr,
@@ -1987,7 +2141,8 @@ void btn_OkEscMode_ChangePage(void)
 								{
 									snprintf(cal_arr, 8, "%4.2f",STD_value/100.0f);//将校准值写入校准文字buff
 								}
-								else if(get_CurDo()->modbus_id == OiW_yushan_ModbusID)
+								else if(get_CurDo()->modbus_id == OiW_yushan_ModbusID
+								|| get_CurDo()->modbus_id ==OiW_yushan_DA511_ModbusID)
 								{
 									STD_value = ORP_CAL_value;
 									snprintf(cal_arr, 10, "%7.2f",fabsf((float)ORP_CAL_value/100.0f));//将校准值写入校准文字buff
@@ -2107,11 +2262,16 @@ void btn_OkEscMode_ChangePage(void)
 								}
 								else if(get_CurDo()->modbus_id == Bga_shenghui_ModbusID)
 								{
-									STD_value = STD_temp / 10.0;//计算校准的值
-							   	  	snprintf(cal_BGA_arr, 9, "%8.1f", STD_value);//将校准值写入校准文字buff								
+									STD_value = STD_temp / 10.0 *1000;
+							   	  	snprintf(cal_BGA_arr, 6, "%5.1f", STD_temp/10.0f);//将校准值写入校准文字buff								
+									
 								}
 								else if(get_CurDo()->modbus_id == OiW_guohong_ModbusID ||
-								get_CurDo()->modbus_id == OiW_yushan_ModbusID)
+								get_CurDo()->modbus_id == OiW_yushan_ModbusID ||
+								get_CurDo()->modbus_id == OiW_yushan_DA511_ModbusID||
+								get_CurDo()->modbus_id == EC_DE40_ModbusID ||
+								get_CurDo()->modbus_id == EC_DS46_ModbusID ||
+								get_CurDo()->modbus_id == LH_DX01_ModbusID)
 								{
 									STD_value = STD_temp / 100.0;//计算校准的值
 							   	  	snprintf(cal_arr, 9, "%6.2f", STD_value);//将校准值写入校准文字buff			
@@ -2122,9 +2282,13 @@ void btn_OkEscMode_ChangePage(void)
 									{
 										snprintf(cal_arr, 8, "%4d", (int)STD_value);												
 									}
+									else if((setting_GetMesUnit() == 5))
+									{
+										snprintf(cal_arr, 8, "%6.3f", STD_value/1000);
+									}
 									else
 									{
-										snprintf(cal_arr, 8, "%5.2f", STD_value/100);
+										snprintf(cal_arr, 8, "%6.4f", STD_value/10000);
 									}
 								}
 								else
@@ -2134,10 +2298,19 @@ void btn_OkEscMode_ChangePage(void)
 								gui_ClearLines(75, 93, 0);//清开始校准的选项
 								if(get_CurDo()->modbus_id == Bga_shenghui_ModbusID)
 								{
-									LabelList_Add(44, 56,  
+									LabelList_Add(60, 56,  
 															NULL, 0, (uint8_t *)cal_BGA_arr, 
 															LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, 
 															&(interfacial_GetCurrentInterfacial()->label_head));//将校准值变成label显示
+								}
+								else if(get_CurDo()->modbus_id == EC_DE40_ModbusID 
+								|| get_CurDo()->modbus_id == EC_DS46_ModbusID)
+								{
+									LabelList_Add(60, 56,  
+															NULL, 0, (uint8_t *)cal_arr, 
+															LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, 
+															&(interfacial_GetCurrentInterfacial()->label_head));//将校准值变成label显示
+
 								}
 								else if(get_CurDo()->modbus_id == MLSS_Tianjian_ModbusID)
 								{
@@ -2181,7 +2354,7 @@ void btn_OkEscMode_ChangePage(void)
 																LABEL_NORMAL,  LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS,
 																&(interfacial_GetCurrentInterfacial()->label_head));  //叶绿素 电压									
 								}
-								else if(get_CurDo()->modbus_id == MLSS_Tianjian_ModbusID)
+								else if(get_CurDo()->modbus_id == MLSS_Tianjian_ModbusID || get_CurDo()->modbus_id == EC_DS46_ModbusID)
                					{
 									LabelList_Add(56, 136,
 																NULL, 0, (uint8_t *)get_CurDo()->DOpercent_Vol_arr,
@@ -2727,7 +2900,10 @@ void btn_OkEscMode_MsgBox(void)
 	if(get_KeyEscFlag())
 	{
 		clear_KeyEscFlag();
-		if (interfacial_GetCurPage() == PAGE_5_shenghui_Tur_ONE || interfacial_GetCurPage() == PAGE_5_shenghui_Tur_TWO || interfacial_GetCurPage() == PAGE_5_shenghui_Tur_THREE)
+		if (interfacial_GetCurPage() == PAGE_5_shenghui_Tur_ONE || interfacial_GetCurPage() == PAGE_5_shenghui_Tur_TWO 
+		|| interfacial_GetCurPage() == PAGE_5_shenghui_Tur_THREE || interfacial_GetCurPage() == PAGE_5_shenghui_BGA_ONE
+		|| interfacial_GetCurPage() == PAGE_5_shenghui_BGA_TWO || interfacial_GetCurPage() == PAGE_5_DE26_EC_Zero
+		|| interfacial_GetCurPage() == PAGE_5_shenghui_EC_ONE)
 		{
 			interfacial_SetPage(cur_interfacial.page_father, PAGE_IS_BACK);
 		}
@@ -2840,6 +3016,14 @@ void save_setting(void)
 			    EC_DE26_rs485_SetMode(get_CurDo(),0x30);
 					break;
 
+				case EC_DE40_ModbusID:
+				EC_DE40_rs485_SetMode(get_CurDo(),0x30,EC_DE40_ModbusID);
+					break;
+
+				case EC_DS46_ModbusID:
+				EC_DE40_rs485_SetMode(get_CurDo(),0x30,EC_DS46_ModbusID);
+					break;
+
 				case pH_DpH07_ModbusID:  
 			    pH_DpH07_rs485_ClearCal(get_CurDo());
 					break;
@@ -2865,11 +3049,19 @@ void save_setting(void)
 					break;
 
 				case OiW_yushan_ModbusID:
-				OiW_yushan_rs485_Set_OIW_K_b_Reset(get_CurDo(),1,0);
+				OiW_yushan_rs485_Set_OIW_K_b_Reset(get_CurDo(),1,0,OiW_yushan_ModbusID);
+					break;
+					
+				case OiW_yushan_DA511_ModbusID:
+				OiW_yushan_rs485_Set_OIW_K_b_Reset(get_CurDo(),1,0,OiW_yushan_DA511_ModbusID);
 					break;
 					
 				case DO_HF_DY12_ModbusID:
 					DO_HaiFa_DY12_rs485_ClearCal(get_CurDo());
+					break;
+
+				case LH_DX01_ModbusID:
+					DX01_rs485_ClearCal(get_CurDo());
 					break;
 				default:
 					break;
@@ -2906,19 +3098,24 @@ void save_setting(void)
 			break;
 
 		case PAGE_3_Set_Sal_uint://盐度单位设置
+			uint8_t unit_value;
 			if(cur_option == cur_interfacial.option_head)
 			{
-				setting_SetSal_Unit(0);
+				// setting_SetSal_Unit(0);
+				unit_value = 0;
 			}
 			else if(cur_option == cur_interfacial.option_head->next_option)
 			{
-				setting_SetSal_Unit(5);
+				unit_value = 1;
+				// setting_SetSal_Unit(5);
 			}
-			else if(cur_option == cur_interfacial.option_head->next_option->next_option)
+			destory_MessageBox();
+			switch(get_CurDo()->modbus_id)
 			{
-				setting_SetSal_Unit(10);
+				case EC_DS46_ModbusID:  
+					EC_DE40_rs485_Set_sal_unit(get_CurDo(),unit_value,EC_DS46_ModbusID); //清除溶解氧的校准参数					
+					break;
 			}
-			SettingToFlash();//保存一波设置
 			break;
 	
 
@@ -2959,6 +3156,22 @@ void save_setting(void)
 			SettingToFlash();//保存一波设置
 			break;
 		
+		case PAGE_4_Temp_xiaoshu:
+			if(cur_option == cur_interfacial.option_head)
+			{
+				setting_SetTemp_jingdu(0);
+			}
+			else if(cur_option == cur_interfacial.option_head->next_option)
+			{
+				setting_SetTemp_jingdu(5);
+			}
+			else if(cur_option == cur_interfacial.option_head->next_option->next_option)
+			{
+				setting_SetTemp_jingdu(10);
+			}
+			
+			SettingToFlash();//保存一波设置
+			break;
 		
 		
 		case PAGE_3_PRESSURE://设置当前气压值
@@ -3074,7 +3287,18 @@ void save_setting(void)
 			double_value = ((double)temp_value/1000.0);
 			if(get_CurDo() != NULL )
 			{						
-				EC_DE26_SetTds_value(get_CurDo(),double_value);
+				switch (get_CurDo()->modbus_id)
+				{
+				case EC_DE26_ModbusID:
+					EC_DE26_SetTds_value(get_CurDo(),double_value);
+					break;
+				case EC_DE40_ModbusID:
+					EC_DE40_SetTds_value(get_CurDo(),double_value);
+					break;
+				
+				default:
+					break;
+				}
 			}
 			else
 		 	{
@@ -3088,7 +3312,17 @@ void save_setting(void)
 			double_value = ((double)temp_value/10000.0);
 			if(get_CurDo() != NULL )
 			{						
-				EC_DE26_SetTemp_value(get_CurDo(),double_value);
+				switch (get_CurDo()->modbus_id)
+				{
+				case EC_DE26_ModbusID:
+					EC_DE26_SetTemp_value(get_CurDo(),double_value);
+					break;
+				case EC_DE40_ModbusID:
+					EC_DE40_SetTemp_value(get_CurDo(),double_value);
+					break;
+				default:
+					break;
+				}
 			}
 			else
 		 	{
@@ -3198,9 +3432,19 @@ void save_setting(void)
 					break;		
 
 				case TYPE_Oiw:
-					setting_SetIsAlarm_OIW(0);
+					if(cur_DO.DO_list->modbus_id == OiW_yushan_ModbusID)
+					{
+						setting_SetIsAlarm_OIW(0);
+					}
+					else
+					{
+						setting_SetIsAlarm_OIW_ppm(0);
+					}
 
-					break;				
+					break;			
+				case TYPE_SAL:
+					setting_SetIsAlarm_SAL(0);
+					break;	
 				
 				default:
 					break;
@@ -3356,14 +3600,49 @@ void save_setting(void)
 					}			
 					break;
 				case TYPE_Oiw:
+					if(cur_DO.DO_list->modbus_id == OiW_yushan_ModbusID)
+					{
+						if(cur_option == cur_interfacial.option_head)
+						{
+							setting_SetAutoLock_OIW(AUTOLOCK_OFF);
+						}
+						else if(cur_option == cur_interfacial.option_head->prev_option)
+						{
+							setting_SetAutoLock_OIW(AUTOLOCK_MANUAL);
+						}
+					}
+					else
+					{
+						if(cur_option == cur_interfacial.option_head)
+						{
+							setting_SetAutoLock_OIW_ppm(AUTOLOCK_OFF);
+						}
+						else if(cur_option == cur_interfacial.option_head->prev_option)
+						{
+							setting_SetAutoLock_OIW_ppm(AUTOLOCK_MANUAL);
+						}
+					}
+					
+					break;
+				case TYPE_TSS:
 					if(cur_option == cur_interfacial.option_head)
 					{
-						setting_SetAutoLock_OIW(AUTOLOCK_OFF);
+						setting_SetAutoLock_TSS(AUTOLOCK_OFF);
 					}
 					else if(cur_option == cur_interfacial.option_head->prev_option)
 					{
-						setting_SetAutoLock_OIW(AUTOLOCK_MANUAL);
+						setting_SetAutoLock_TSS(AUTOLOCK_MANUAL);
 					}			
+					break;
+				case TYPE_SAL:
+					if(cur_option == cur_interfacial.option_head)
+					{
+						setting_SetAutoLock_SAL(AUTOLOCK_OFF);
+					}
+					else if(cur_option == cur_interfacial.option_head->prev_option)
+					{
+						setting_SetAutoLock_SAL(AUTOLOCK_MANUAL);
+					}		
 					break;
 				default:
 					break;
@@ -3385,6 +3664,7 @@ void save_setting(void)
 				case TYPE_DO:
 					setting_SetAutoLock_DO(AUTOLOCK_AUTO);//设置成自动锁定
 					setting_SetAutoLockLevel_DO(cur_option->option_index);
+					setting_SetAutoLock_num(0);
 					break;	
 				case TYPE_pH:	
 					setting_SetAutoLock_pH(AUTOLOCK_AUTO);//设置成自动锁定
@@ -3435,8 +3715,24 @@ void save_setting(void)
 					setting_SetAutoLockLevel_MLSS(cur_option->option_index);				
 					break;
 				case TYPE_Oiw:
-					setting_SetAutoLock_OIW(AUTOLOCK_AUTO);//设置成自动锁定
-					setting_SetAutoLockLevel_OIW(cur_option->option_index);				
+					if(cur_DO.DO_list->modbus_id == OiW_yushan_ModbusID)
+					{
+						setting_SetAutoLock_OIW(AUTOLOCK_AUTO);//设置成自动锁定
+						setting_SetAutoLockLevel_OIW(cur_option->option_index);	
+					}
+					else
+					{
+						setting_SetAutoLock_OIW_ppm(AUTOLOCK_AUTO);//设置成自动锁定
+						setting_SetAutoLockLevel_OIW_ppm(cur_option->option_index);	
+					}			
+					break;
+				case TYPE_TSS:
+					setting_SetAutoLock_TSS(AUTOLOCK_AUTO);//设置成自动锁定
+					setting_SetAutoLockLevel_TSS(cur_option->option_index);				
+					break;
+				case TYPE_SAL:
+					setting_SetAutoLock_SAL(AUTOLOCK_AUTO);//设置成自动锁定
+					setting_SetAutoLockLevel_SAL(cur_option->option_index);				
 					break;
 				default:
 					break;
@@ -3699,13 +3995,49 @@ void save_setting(void)
 					break;
 
 				case TYPE_Oiw:
-					setting_SetIsAlarm_OIW(1);
+					if(cur_DO.DO_list->modbus_id == OiW_yushan_ModbusID)
+					{
+						setting_SetIsAlarm_OIW(1);
+						if(checked_AlarmValueLegal())
+						{
+							temp_value = NanoOptionList_GetValue(cur_interfacial.option_head->son_option, 10);//低门限
+							setting_SetLowThreshold_OIW((value_type)temp_value/10.0);
+							temp_value = NanoOptionList_GetValue(cur_interfacial.option_head->next_option->son_option, 10);//高门限制
+							setting_SetHighThreshold_OIW((value_type)temp_value/10.0);		
+						}
+					}
+					else
+					{
+						setting_SetIsAlarm_OIW_ppm(1);
+						if(checked_AlarmValueLegal())
+						{
+							temp_value = NanoOptionList_GetValue(cur_interfacial.option_head->son_option, 10);//低门限
+							setting_SetLowThreshold_OIW_ppm((value_type)temp_value/10.0);
+							temp_value = NanoOptionList_GetValue(cur_interfacial.option_head->next_option->son_option, 10);//高门限制
+							setting_SetHighThreshold_OIW_ppm((value_type)temp_value/10.0);		
+						}
+					}
+					break;
+
+				case TYPE_TSS:
+					setting_SetIsAlarm_TSS(1);
 					if(checked_AlarmValueLegal())
 					{
 						temp_value = NanoOptionList_GetValue(cur_interfacial.option_head->son_option, 10);//低门限
-						setting_SetLowThreshold_OIW((value_type)temp_value/10.0);
+						setting_SetLowThreshold_TSS((value_type)temp_value/10.0);
 						temp_value = NanoOptionList_GetValue(cur_interfacial.option_head->next_option->son_option, 10);//高门限制
-						setting_SetHighThreshold_OIW((value_type)temp_value/10.0);		
+						setting_SetHighThreshold_TSS((value_type)temp_value/10.0);		
+					}
+					break;
+
+				case TYPE_SAL:
+					setting_SetIsAlarm_SAL(1);
+					if(checked_AlarmValueLegal())
+					{
+						temp_value = NanoOptionList_GetValue(cur_interfacial.option_head->son_option, 10);//低门限
+						setting_SetLowThreshold_SAL((value_type)temp_value/10.0);
+						temp_value = NanoOptionList_GetValue(cur_interfacial.option_head->next_option->son_option, 10);//高门限制
+						setting_SetHighThreshold_SAL((value_type)temp_value/10.0);	
 					}
 					break;
 					
@@ -3814,6 +4146,9 @@ void save_setting(void)
 							break;
 					}		
 					break;
+				case TYPE_TSS:
+					DX01_rs485_Set_Clear_time(get_CurDo(),temp_value);
+					break;
 				default:
 					break;				
 			}	
@@ -3823,6 +4158,19 @@ void save_setting(void)
 		case PAGE_5_TEMP:
 			destory_MessageBox();			
 			temp_value = NanoOptionList_GetValue(cur_interfacial.option_head->next_option->son_option, 10);		
+			
+			if(get_CurDo()->modbus_id == LH_DX01_ModbusID)
+			{
+				if(setting_GetTemp_jingdu() == 0)
+				{
+					temp_value *=100;
+				}	
+				else if(setting_GetTemp_jingdu() == 5)
+				{
+					temp_value *=10;
+				}
+			}
+			
 			if(setting_Get_Temp_Unit())
 			{
 				switch(get_CurDo()->modbus_id)
@@ -3834,6 +4182,7 @@ void save_setting(void)
 					case Chl_shenghui_ModbusID:
 					case NH3N_shenghui_ModbusID:
 					case Tur_shenghui_ModbusID:		
+					case LH_DX01_ModbusID:
             			temp_value=(temp_value-3200)/1.8;
 						break;
 					default:
@@ -3888,11 +4237,25 @@ void save_setting(void)
 						case EC_DE26_ModbusID:
 							EC_DE26_rs485_SetTemp(get_CurDo(), temp_value / 10.0);
 							break;
+						case EC_DE40_ModbusID:
+							EC_DE40_rs485_SetTemp(get_CurDo(), temp_value / 10.0,EC_DE40_ModbusID);
+							break;
 						default:
 							break;
 					}		
 					break;
-					
+				
+				case TYPE_SAL:
+					switch(get_CurDo()->modbus_id)
+            		{
+						case EC_DS46_ModbusID:
+							EC_DE40_rs485_SetTemp(get_CurDo(), temp_value / 10.0,EC_DS46_ModbusID);
+							break;
+						default:
+							break;
+					}		
+					break;
+
 				case TYPE_ORP:
 
 					break;
@@ -3993,7 +4356,18 @@ void save_setting(void)
 					Setting_MLSS_Temp_B((float)temp_int_value /10.0);
 					generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
 					break;
-					
+
+				case TYPE_TSS:
+					if(setting_Get_Temp_Unit())
+					{
+						DX01_rs485_Set_Temp_Cal(get_CurDo(), (int16_t)(temp_value - ((uint32_t)(get_CurDo()->temperature.value_f*100)-3200)/1.8));
+					}
+					else
+					{
+						DX01_rs485_Set_Temp_Cal(get_CurDo(), (int16_t)(temp_value - (uint32_t)(get_CurDo()->temperature.value_f*100)));
+					}
+
+					break;
 				default:
 					break;				
 			}			
@@ -4082,6 +4456,46 @@ void save_setting(void)
 							{
 								case OiW_guohong_ModbusID:
 									OiW_Guohong_rs485_Set_Clear_move(get_CurDo(),1);
+									break;
+								default:
+									break;
+							}
+						}
+					}
+					else//如果这个时候断开设备的话
+					{
+						interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunshibai_cn; //提示校准失败
+						interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)shibai_en;         //英文
+						interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunshibai_cn);
+			
+						generate_MessageBox(MESSAGE_SUCCESSFUL, 0);
+						cur_interfacial.page_father = ((temp_FatherPage == PAGE_0_START) ? PAGE_0_START : PAGE_2_SENSORMANAGE);//
+					}
+					break;
+
+				case TYPE_TSS:
+					//这里的话是判断哪个do设备，可能多个do然后就在列表中校准的就不是当前主界面上的do设备
+					OptionList_Destory(&(interfacial_GetCurrentInterfacial()->option_head));  //销毁选项链表
+				
+					gui_ClearLines(115, 133, 0);//清除选项
+					if(temp_FatherPage == PAGE_0_START)
+					{
+						p = get_CurDo();
+					}
+					else if(temp_FatherPage == PAGE_3_SENSORS)
+					{
+						p = DO_FindByName(interfacial_GetOptionSensorName(),rs485_GetDoList());
+					}
+					
+					destory_MessageBox();
+					if(get_CurDo() != NULL )
+					{		
+						if(DO_ValueCheckFirst(p, STD_value)) //如果数据符合要求的话
+						{
+							switch(p->modbus_id)
+							{
+								case LH_DX01_ModbusID:
+									DX01_rs485_Set_Zero_Cal(get_CurDo(),(int16_t)STD_value);
 									break;
 								default:
 									break;
@@ -4569,7 +4983,20 @@ void save_setting(void)
 					setting_SetIsOpen_SlideAvg_MLSS(0);
 					break;
 				case TYPE_Oiw:
-					setting_SetIsOpen_SlideAvg_OIW(0);
+					if(cur_DO.DO_list->modbus_id == OiW_yushan_ModbusID)
+					{
+						setting_SetIsOpen_SlideAvg_OIW(0);
+					}
+					else
+					{
+						setting_SetIsOpen_SlideAvg_OIW_ppm(0);
+					}
+					break;
+				case TYPE_TSS:
+					setting_SetIsOpen_SlideAvg_TSS(0);
+					break;
+				case TYPE_SAL:
+					setting_SetIsOpen_SlideAvg_SAL(0);
 					break;
 				default:
 					break;
@@ -4690,11 +5117,39 @@ void save_setting(void)
 						filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_MLSS());       //初始化一下℃    数值指针
 						break;
 					case TYPE_Oiw:
-						setting_SetSlideAvgTimes_OIW(temp_value);
-						setting_SetIsOpen_SlideAvg_OIW(1);
-					  filter_init(&(p->queue_domgl), setting_GetSlideAvgTimes_OIW());      //初始化一下mg/l 数值指针
-						filter_init(&(p->queue_dopercent), setting_GetSlideAvgTimes_OIW());  //初始化一下%    数值指针
-						filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_OIW());       //初始化一下℃    数值指针
+						if(cur_DO.DO_list->modbus_id == OiW_yushan_DA511_ModbusID)
+						{
+							setting_SetSlideAvgTimes_OIW_ppm(temp_value);
+							setting_SetIsOpen_SlideAvg_OIW_ppm(1);
+							filter_init(&(p->queue_domgl), setting_GetSlideAvgTimes_OIW_ppm());      //初始化一下mg/l 数值指针
+							filter_init(&(p->queue_dopercent), setting_GetSlideAvgTimes_OIW_ppm());  //初始化一下%    数值指针
+							filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_OIW_ppm());       //初始化一下℃    数值指针
+
+						}
+						else
+						{
+							setting_SetSlideAvgTimes_OIW(temp_value);
+							setting_SetIsOpen_SlideAvg_OIW(1);
+							filter_init(&(p->queue_domgl), setting_GetSlideAvgTimes_OIW());      //初始化一下mg/l 数值指针
+							filter_init(&(p->queue_dopercent), setting_GetSlideAvgTimes_OIW());  //初始化一下%    数值指针
+							filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_OIW());       //初始化一下℃    数值指针
+						}
+						break;
+					case TYPE_TSS:
+						setting_SetSlideAvgTimes_TSS(temp_value);
+						setting_SetIsOpen_SlideAvg_TSS(1);
+					  filter_init(&(p->queue_domgl), setting_GetSlideAvgTimes_TSS());      //初始化一下mg/l 数值指针
+						filter_init(&(p->queue_dopercent), setting_GetSlideAvgTimes_TSS());  //初始化一下%    数值指针
+						filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_TSS());       //初始化一下℃    数值指针
+						break;
+
+					case TYPE_SAL:
+						setting_SetSlideAvgTimes_SAL(temp_value);
+						setting_SetIsOpen_SlideAvg_SAL(1);
+					  filter_init(&(p->queue_domgl), setting_GetSlideAvgTimes_SAL());      //初始化一下mg/l 数值指针
+						filter_init(&(p->queue_dopercent), setting_GetSlideAvgTimes_SAL());  //初始化一下%    数值指针
+						filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_SAL());       //初始化一下℃    数值指针
+	
 						break;
 					
 					default:
@@ -5606,7 +6061,6 @@ void save_setting(void)
 						}
 					}
 				break;
-
 			case PAGE_5_shenghui_EC_ONE:	
 			case PAGE_5_DR31_ORP_ONE:	
 					OptionList_Destory(&(interfacial_GetCurrentInterfacial()->option_head));  //销毁选项链表
@@ -5633,13 +6087,21 @@ void save_setting(void)
 								switch(get_CurDo()->modbus_id)
 								{									
 									case EC_DE26_ModbusID:  
-	              					    EC_DE26_rs485_Frist(get_CurDo(),STD_value);		
+	              					    EC_DE26_rs485_Frist(get_CurDo(),STD_value,EC_DE26_ModbusID);		
 										break;	
+
+									case EC_DE40_ModbusID:
+										EC_DE26_rs485_Frist(get_CurDo(),STD_value,EC_DE40_ModbusID);
+										break;
 									
 									case EC_shenghui_ModbusID:  
 	                  					EC_shenghui_rs485_Frist(get_CurDo(),STD_value);	
 										break;	
 									
+									case EC_DS46_ModbusID:
+										EC_DE40_rs485_SAL_cal(get_CurDo(),STD_value,EC_DS46_ModbusID);
+										break;
+
 									case Chl_shenghui_ModbusID:  
 										Chl_shenghui_rs485_Second(get_CurDo(),STD_value);	
 										break;			
@@ -5654,9 +6116,11 @@ void save_setting(void)
 										OiW_Guohong_rs485_Set_OIW_B(get_CurDo(),STD_value/1000);	
 										break;
 									case OiW_yushan_ModbusID:
-										OiW_yushan_rs485_Set_OIW_K_b_Reset(get_CurDo(),get_CurDo()->sal.value_f,(STD_value/100)-(get_CurDo()->DOmgl.value_f - get_CurDo()->press.value_f));	
+										OiW_yushan_rs485_Set_OIW_K_b_Reset(get_CurDo(),get_CurDo()->sal.value_f,(STD_value/100)-(get_CurDo()->DOmgl.value_f -get_CurDo()->press.value_f ),OiW_yushan_ModbusID);	
 										break;
-
+									case OiW_yushan_DA511_ModbusID:
+										OiW_yushan_rs485_Set_OIW_K_b_Reset(get_CurDo(),get_CurDo()->sal.value_f,(STD_value/100)-(get_CurDo()->DOmgl.value_f -get_CurDo()->press.value_f ),OiW_yushan_DA511_ModbusID);	
+										break;
 									default:
 										break;
 								}
@@ -5702,9 +6166,14 @@ void save_setting(void)
 										OiW_Guohong_rs485_Set_OIW_K(get_CurDo(),STD_value);	
 										break;
 									case OiW_yushan_ModbusID:
-										OiW_yushan_rs485_Set_OIW_K_b_Reset(get_CurDo(),(STD_value / (get_CurDo()->DOmgl.value_f / get_CurDo()->sal.value_f)),get_CurDo()->press.value_f);
+										OiW_yushan_rs485_Set_OIW_K_b_Reset(get_CurDo(),((STD_value - get_CurDo()->press.value_f )/((get_CurDo()->DOmgl.value_f - get_CurDo()->press.value_f)/ get_CurDo()->sal.value_f)),get_CurDo()->press.value_f,OiW_yushan_ModbusID);
 										break;
-
+									case OiW_yushan_DA511_ModbusID:
+										OiW_yushan_rs485_Set_OIW_K_b_Reset(get_CurDo(),((STD_value - get_CurDo()->press.value_f )/((get_CurDo()->DOmgl.value_f - get_CurDo()->press.value_f)/ get_CurDo()->sal.value_f)),get_CurDo()->press.value_f,OiW_yushan_DA511_ModbusID);
+										break;
+									case LH_DX01_ModbusID:
+										DX01_rs485_Set_Slp_Cal(get_CurDo(),STD_value);	
+										break;
 									default:
 										break;
 								}
@@ -5749,6 +6218,10 @@ void save_setting(void)
                   					EC_DE26_rs485_Zero(get_CurDo(),STD_value);				
 									break;	
 								
+								case EC_DE40_ModbusID:
+									EC_DE40_rs485_Zero(get_CurDo(),STD_value);		
+									break;
+									
 								case Chl_shenghui_ModbusID:  
 									Chl_shenghui_rs485_Frist(get_CurDo(),STD_value);	
 									break;	
@@ -6066,7 +6539,7 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 			generate_Sal_set_uint(&cur_interfacial);
 			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
 			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
-			AutoShutOption_init(setting_GetSal_Uni());
+			SAL_UNIT_init(get_CurDo()->Measure_Range.value_f);
 			break;
 
 		case PAGE_4_ALARMTONE://报警提示音
@@ -6129,7 +6602,20 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 					BinaryOption_init(setting_GetIsAlarm_MLSS());
 					break;
 				case TYPE_Oiw:
-					BinaryOption_init(setting_GetIsAlarm_OIW());
+					if(cur_DO.DO_list->modbus_id == OiW_yushan_ModbusID)
+					{
+						BinaryOption_init(setting_GetIsAlarm_OIW());
+					}
+					else
+					{
+						BinaryOption_init(setting_GetIsAlarm_OIW_ppm());
+					}
+					break;
+				case TYPE_TSS:
+					BinaryOption_init(setting_GetIsAlarm_TSS());
+					break;
+				case TYPE_SAL:
+					BinaryOption_init(setting_GetIsAlarm_SAL());
 					break;
 				default:
 					break;
@@ -6197,6 +6683,13 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 			btnUpDownFunc_register(btn_UpDownMode_ChangeValue);
 			btnOkEscFunc_register(btn_OkEscMode_ChangeOption);
 			NanoOption_init();	
+			break;
+
+		case PAGE_4_Temp_xiaoshu:
+			generate_DX01_Temp_xiaoshu(&cur_interfacial);
+			btnUpDownFunc_register(btn_UpDownMode_ChangeOption);
+			btnOkEscFunc_register(btn_OkEscMode_ChangePage);
+			AutoShutOption_init(setting_GetTemp_jingdu());
 			break;
 
 			//标定点数设置
@@ -6510,7 +7003,20 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 					AutoLockOption_init(setting_GetAutoLock_MLSS());
 					break;
 				case TYPE_Oiw:
-					AutoLockOption_init(setting_GetAutoLock_OIW());
+					if(cur_DO.DO_list->modbus_id == OiW_yushan_ModbusID)
+					{
+						AutoLockOption_init(setting_GetAutoLock_OIW());
+					}
+					else
+					{
+						AutoLockOption_init(setting_GetAutoLock_OIW_ppm());
+					}
+					break;
+				case TYPE_TSS:
+					AutoLockOption_init(setting_GetAutoLock_TSS());
+					break;
+				case TYPE_SAL:
+					AutoLockOption_init(setting_GetAutoLock_SAL());
 					break;
 				default:
 					break;
@@ -6563,7 +7069,20 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 					AutoLockOption_init(setting_GetAutoLockLevel_MLSS());
 					break;
 				case TYPE_Oiw:
-					AutoLockOption_init(setting_GetAutoLockLevel_OIW());
+					if(cur_DO.DO_list->modbus_id == OiW_yushan_ModbusID)
+					{
+						AutoLockOption_init(setting_GetAutoLockLevel_OIW());
+					}
+					else
+					{
+						AutoLockOption_init(setting_GetAutoLockLevel_OIW_ppm());
+					}
+					break;
+				case TYPE_TSS:
+					AutoLockOption_init(setting_GetAutoLockLevel_TSS());
+					break;
+				case TYPE_SAL:
+					AutoLockOption_init(setting_GetAutoLockLevel_SAL());
 					break;
 				
 				default:
@@ -6625,7 +7144,20 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 						BinaryOption_init(setting_GetIsOpen_SlideAvg_MLSS());	
 						break;
 					case TYPE_Oiw:
-						BinaryOption_init(setting_GetIsOpen_SlideAvg_OIW());	
+						if(cur_DO.DO_list->modbus_id == OiW_yushan_ModbusID)
+						{
+							BinaryOption_init(setting_GetIsOpen_SlideAvg_OIW());	
+						}
+						else
+						{
+							BinaryOption_init(setting_GetIsOpen_SlideAvg_OIW_ppm());	
+						}
+						break;
+					case TYPE_TSS:
+						BinaryOption_init(setting_GetIsOpen_SlideAvg_TSS());
+						break;
+					case TYPE_SAL:
+						BinaryOption_init(setting_GetIsOpen_SlideAvg_SAL());
 						break;
 					
 					default:
@@ -6676,9 +7208,21 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 						generate_SlideAverage_Value(&cur_interfacial, setting_GetSlideAvgTimes_MLSS());
 						break;
 					case TYPE_Oiw:
-						generate_SlideAverage_Value(&cur_interfacial, setting_GetSlideAvgTimes_OIW());
+						if(cur_DO.DO_list->modbus_id == OiW_yushan_ModbusID)
+						{
+							generate_SlideAverage_Value(&cur_interfacial, setting_GetSlideAvgTimes_OIW());
+						}
+						else
+						{
+							generate_SlideAverage_Value(&cur_interfacial, setting_GetSlideAvgTimes_OIW_ppm());
+						}
 						break;
-					
+					case TYPE_TSS:
+						generate_SlideAverage_Value(&cur_interfacial, setting_GetSlideAvgTimes_TSS());
+						break;
+					case TYPE_SAL:
+						generate_SlideAverage_Value(&cur_interfacial, setting_GetSlideAvgTimes_SAL());
+						break;
 					default:
 						break;
 				}
@@ -6959,7 +7503,7 @@ void interfacial_SetOptionSensorName(uint8_t* value)
 	option_sensor_name = value;
 }
 
-#define Sersor_Number 20    //支持搜索 传感器的数量
+#define Sersor_Number 24    //支持搜索 传感器的数量
 uint8_t CircularSent_Count=1;
 uint8_t GetCircularSent_Flag=0;
 uint8_t TwoCircular_Flag=0;
@@ -7028,6 +7572,14 @@ void rs485_Search_Sensor(void){
 						EC_DE26_rs485_GetValue(get_CurDo());
 						break;
 					
+					case EC_DE40_ModbusID:
+						EC_DE40_rs485_GetValue(get_CurDo(),EC_DE40_ModbusID);
+						break;
+
+					case EC_DS46_ModbusID:
+						EC_DE40_rs485_GetValue(get_CurDo(),EC_DS46_ModbusID);
+						break;
+					
 					case pH_DpH07_ModbusID:
 						pH_DpH07_rs485_GetValue(get_CurDo());
 						break;
@@ -7059,11 +7611,17 @@ void rs485_Search_Sensor(void){
 						break;
 					
 					case OiW_yushan_ModbusID:
-						OiW_yushan_rs485_GetValue(get_CurDo());
+						OiW_yushan_rs485_GetValue(get_CurDo(),OiW_yushan_ModbusID);
 						break;
-
+					case OiW_yushan_DA511_ModbusID:
+						OiW_yushan_rs485_GetValue(get_CurDo(),OiW_yushan_DA511_ModbusID);
+						break;
 					case DO_HF_DY12_ModbusID:
 						DO_HaiFa_DY12_rs485_GetValue(get_CurDo());
+						break;
+
+					case LH_DX01_ModbusID:
+						DX01_rs485_GetValue(get_CurDo());
 						break;
 
 					default:
@@ -7123,6 +7681,14 @@ void rs485_Search_Sensor(void){
 					case EC_DE26_ModbusID:
 						EC_DE26_rs485_GetValue(get_CurDo());
 						break;
+
+					case EC_DE40_ModbusID:
+						EC_DE40_rs485_GetValue(get_CurDo(),EC_DE40_ModbusID);
+						break;
+
+					case EC_DS46_ModbusID:
+						EC_DE40_rs485_GetValue(get_CurDo(),EC_DS46_ModbusID);
+						break;
 					
 					case pH_DpH07_ModbusID:
 						pH_DpH07_rs485_GetValue(get_CurDo());
@@ -7155,11 +7721,18 @@ void rs485_Search_Sensor(void){
 						break;
 
 					case OiW_yushan_ModbusID:
-						OiW_yushan_rs485_GetValue(get_CurDo());
+						OiW_yushan_rs485_GetValue(get_CurDo(),OiW_yushan_ModbusID);
+						break;
+					case OiW_yushan_DA511_ModbusID:
+						OiW_yushan_rs485_GetValue(get_CurDo(),OiW_yushan_DA511_ModbusID);
 						break;
 
 					case DO_HF_DY12_ModbusID:
 						DO_HaiFa_DY12_rs485_GetValue(get_CurDo());
+						break;
+
+					case LH_DX01_ModbusID:
+						DX01_rs485_GetValue(get_CurDo());
 						break;
 					default:
 						break;
@@ -7232,6 +7805,14 @@ void rs485_Search_Sensor(void){
 					case EC_DE26_ModbusID:
 						EC_DE26_rs485_GetValue(get_CurDo());
 						break;
+
+					case EC_DE40_ModbusID:
+						EC_DE40_rs485_GetValue(get_CurDo(),EC_DE40_ModbusID);
+						break;
+
+					case EC_DS46_ModbusID:
+						EC_DE40_rs485_GetValue(get_CurDo(),EC_DS46_ModbusID);
+						break;
 					
 					case pH_DpH07_ModbusID:
 						pH_DpH07_rs485_GetValue(get_CurDo());
@@ -7267,11 +7848,18 @@ void rs485_Search_Sensor(void){
 						break;
 
 					case OiW_yushan_ModbusID:
-						OiW_yushan_rs485_GetValue(get_CurDo());
+						OiW_yushan_rs485_GetValue(get_CurDo(),OiW_yushan_ModbusID);
+						break;
+					case OiW_yushan_DA511_ModbusID:
+						OiW_yushan_rs485_GetValue(get_CurDo(),OiW_yushan_DA511_ModbusID);
 						break;
 
 					case DO_HF_DY12_ModbusID:
 						DO_HaiFa_DY12_rs485_GetValue(get_CurDo());
+						break;
+
+					case LH_DX01_ModbusID:
+						DX01_rs485_GetValue(get_CurDo());
 						break;
 
 					default:
@@ -7426,7 +8014,7 @@ void rs485_Search_Sensor(void){
 
 						if(get_COMADo()->modbus_id != OiW_yushan_ModbusID ){
 						CircularSent_isSelect=1;			
-							OiW_yushan_rs485_GetModbusId();
+							OiW_yushan_rs485_GetModbusId(OiW_yushan_ModbusID);
 						}					
 					}
 
@@ -7435,6 +8023,35 @@ void rs485_Search_Sensor(void){
 						CircularSent_isSelect=1;			
 							DO_HaiFa_DY12_rs485_GetModbusId();
 						}
+					}
+
+					if( CircularSent_Count ==20){
+						if(get_COMADo()->modbus_id != LH_DX01_ModbusID ){
+						CircularSent_isSelect=1;			
+							DX01_rs485_GetModbusId();
+						}
+					}
+
+					if( CircularSent_Count ==21){
+						if(get_COMADo()->modbus_id != EC_DE40_ModbusID ){
+						CircularSent_isSelect=1;			
+							EC_DE40_rs485_GetModbusId(EC_DE40_ModbusID);
+						}
+					}
+
+					if( CircularSent_Count ==22){
+						if(get_COMADo()->modbus_id != EC_DS46_ModbusID ){
+						CircularSent_isSelect=1;			
+							EC_DE40_rs485_GetModbusId(EC_DS46_ModbusID);
+						}
+					}
+
+					if( CircularSent_Count ==23){
+
+						if(get_COMADo()->modbus_id != OiW_yushan_DA511_ModbusID ){
+						CircularSent_isSelect=1;			
+							OiW_yushan_rs485_GetModbusId(OiW_yushan_DA511_ModbusID);
+						}					
 					}
 
 					if(CircularSent_Count == Sersor_Number){
@@ -7541,14 +8158,33 @@ void rs485_Search_Sensor(void){
 
 				if( CircularSent_Count ==18){
 					CircularSent_isSelect=1;			
-					OiW_yushan_rs485_GetModbusId();
+					OiW_yushan_rs485_GetModbusId(OiW_yushan_ModbusID);
 				}
 
 				if( CircularSent_Count ==19){
 					CircularSent_isSelect=1;			
 					DO_HaiFa_DY12_rs485_GetModbusId();
 				}
+
+				if( CircularSent_Count ==20){
+					CircularSent_isSelect=1;			
+					DX01_rs485_GetModbusId();
+				}
 				
+				if( CircularSent_Count ==21){
+					CircularSent_isSelect=1;		
+					EC_DE40_rs485_GetModbusId(EC_DE40_ModbusID);						
+				}
+
+				if( CircularSent_Count ==22){
+					CircularSent_isSelect=1;		
+					EC_DE40_rs485_GetModbusId(EC_DS46_ModbusID);						
+				}
+
+				if( CircularSent_Count ==23){
+					CircularSent_isSelect=1;			
+					OiW_yushan_rs485_GetModbusId(OiW_yushan_DA511_ModbusID);
+				}
 				
 				if(CircularSent_Count == Sersor_Number){
 					CircularSent_Count=0;
@@ -7722,25 +8358,25 @@ void interfacial_refresh(void)                                                  
 							{
 								case EC_DE26_ModbusID:  	
 									LabelList_Add( 0, 48, (uint8_t *)diandao_cn, sizeof(diandao_cn), (uint8_t *)diandaolv_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
-									LabelList_Add( 32,  36, NULL, 0, (uint8_t *)get_CurDo()->DOmgl_arr,       LABEL_LARGE, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //EC
+									LabelList_Add( 62,  48, NULL, 0, (uint8_t *)get_CurDo()->DOmgl_arr,       LABEL_MEDIUM, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //EC
 
-									LabelList_Add( 0, 84, (uint8_t *)TDS_cn, sizeof(TDS_cn), (uint8_t *)TDS_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
-									LabelList_Add( 32,  72, NULL, 0, (uint8_t *)get_CurDo()->DOpercent_arr,       LABEL_LARGE, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //EC
+									LabelList_Add( 0, 69, (uint8_t *)TDS_cn, sizeof(TDS_cn), (uint8_t *)TDS_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+									LabelList_Add( 62,  69, NULL, 0, (uint8_t *)get_CurDo()->DOpercent_arr,       LABEL_MEDIUM, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //EC
 
-									// LabelList_Add( 0, 104, (uint8_t *)yandu_cn, sizeof(yandu_cn), (uint8_t *)yandu_zhu_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
-									// LabelList_Add( 32,  92, NULL, 0, (uint8_t *)get_CurDo()->DOpercent_Vol_arr,       LABEL_LARGE, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //EC
+									LabelList_Add( 0, 90, (uint8_t *)yandu_cn, sizeof(yandu_cn), (uint8_t *)yandu_zhu_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+									LabelList_Add( 62,  90, NULL, 0, (uint8_t *)get_CurDo()->DOpercent_Vol_arr,       LABEL_MEDIUM, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //EC
 
 									// if(setting_GetSal_Uni() == 0)
 									// {
-									// 	LabelList_Add( 120, 106, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_PPT, DONT_HAVE_PARENTHESIS, &label_head);//ppt									
+										LabelList_Add( 120, 92, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_PPT, DONT_HAVE_PARENTHESIS, &label_head);//ppt									
 									// }
 									// else if(setting_GetSal_Uni() == 5)
 									// {
-									// 	LabelList_Add( 120, 106, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_PERCENT, DONT_HAVE_PARENTHESIS, &label_head);//ppt									
+									// 	LabelList_Add( 120, 92, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_PERCENT, DONT_HAVE_PARENTHESIS, &label_head);//ppt									
 									// }
 									// else if(setting_GetSal_Uni() == 10)
 									// {
-									// 	LabelList_Add( 120, 106, (uint8_t *)qianfenhao1_cn, sizeof(qianfenhao1_cn), (uint8_t *)qianfenhao_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+									// 	LabelList_Add( 120, 92, (uint8_t *)qianfenhao1_cn, sizeof(qianfenhao1_cn), (uint8_t *)qianfenhao_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
 									// }
 
 									LabelList_Add( 0, 112, (uint8_t *)wendu_cn, sizeof(wendu_cn), (uint8_t *)wendu_en, LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //temperature						
@@ -7749,12 +8385,12 @@ void interfacial_refresh(void)                                                  
 									if(get_CurDo()->DOmgl.value_f >= 10000)
 									{
                   						LabelList_Add( 120, 50, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_mSCM, DONT_HAVE_PARENTHESIS, &label_head);//ms/cm										
-										LabelList_Add( 120, 86, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_GL, DONT_HAVE_PARENTHESIS, &label_head);//g/l									
+										LabelList_Add( 120, 71, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_GL, DONT_HAVE_PARENTHESIS, &label_head);//g/l									
 									}
 									else
 									{
                   						LabelList_Add( 120, 50, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_USCM, DONT_HAVE_PARENTHESIS, &label_head);//us/cm										
-										LabelList_Add( 120, 86, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_MGL, DONT_HAVE_PARENTHESIS, &label_head);//mg/l							
+										LabelList_Add( 120, 71, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_MGL, DONT_HAVE_PARENTHESIS, &label_head);//mg/l							
 									}
 
 									if(setting_Get_Temp_Unit())
@@ -7791,6 +8427,32 @@ void interfacial_refresh(void)                                                  
 										LabelList_Add( 120, 114, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_CELSIUS, DONT_HAVE_PARENTHESIS, &label_head);//℃						 
 									}
 									break;
+
+								case EC_DE40_ModbusID: 
+									LabelList_Add( 0, 48, (uint8_t *)diandao_cn, sizeof(diandao_cn), (uint8_t *)diandaolv_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+									LabelList_Add( 62,  48, NULL, 0, (uint8_t *)get_CurDo()->DOmgl_arr,       LABEL_MEDIUM, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //EC
+
+									LabelList_Add( 0, 69, (uint8_t *)TDS_cn, sizeof(TDS_cn), (uint8_t *)TDS_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+									LabelList_Add( 62,  69, NULL, 0, (uint8_t *)get_CurDo()->DOpercent_arr,       LABEL_MEDIUM, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //EC
+
+									LabelList_Add( 0, 90, (uint8_t *)yandu_cn, sizeof(yandu_cn), (uint8_t *)yandu_zhu_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+									LabelList_Add( 62,  90, NULL, 0, (uint8_t *)get_CurDo()->DOpercent_Vol_arr,       LABEL_MEDIUM, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //EC
+
+									LabelList_Add( 120, 92, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_PPT, DONT_HAVE_PARENTHESIS, &label_head);//ppt									
+									LabelList_Add( 0, 112, (uint8_t *)wendu_cn, sizeof(wendu_cn), (uint8_t *)wendu_en, LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //temperature						
+									LabelList_Add( 62, 112, NULL, 0, (uint8_t *)get_CurDo()->temperature_arr, LABEL_MEDIUM, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //temperature
+									
+									LabelList_Add( 120, 50, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_mSCM, DONT_HAVE_PARENTHESIS, &label_head);//ms/cm										
+									LabelList_Add( 120, 71, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_GL, DONT_HAVE_PARENTHESIS, &label_head);//g/l									
+									if(setting_Get_Temp_Unit())
+									{
+										LabelList_Add( 120, 114, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_FAHRENHEIT, DONT_HAVE_PARENTHESIS, &label_head);//°F								 
+									}
+									else
+									{
+										LabelList_Add( 120, 114, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_CELSIUS, DONT_HAVE_PARENTHESIS, &label_head);//℃						 
+									}
+									break;
 								
 								default:
 									break;
@@ -7799,6 +8461,38 @@ void interfacial_refresh(void)                                                  
 						
 							break;
 						
+						case TYPE_SAL:
+							switch (get_CurDo()->modbus_id)
+							{
+							case EC_DS46_ModbusID:
+								LabelList_Add( 0, 66, (uint8_t *)yandu_cn, sizeof(yandu_cn), (uint8_t *)yandu_zhu_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+								LabelList_Add( 32,  56, NULL, 0, (uint8_t *)get_CurDo()->DOpercent_Vol_arr,       LABEL_LARGE, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //EC
+
+								if(get_CurDo()->Measure_Range.value_f == 0)
+								{
+								LabelList_Add( 128, 65, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_PPT, DONT_HAVE_PARENTHESIS, &label_head);//ppt									
+								}
+								else if(get_CurDo()->Measure_Range.value_f == 1)
+								{
+								LabelList_Add( 128, 65, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_PERCENT, DONT_HAVE_PARENTHESIS, &label_head);//ppt									
+								}			
+								LabelList_Add( 0, 112, (uint8_t *)wendu_cn, sizeof(wendu_cn), (uint8_t *)wendu_en, LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //temperature						
+								LabelList_Add( 62, 112, NULL, 0, (uint8_t *)get_CurDo()->temperature_arr, LABEL_MEDIUM, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //temperature
+								
+								if(setting_Get_Temp_Unit())
+								{
+									LabelList_Add( 120, 114, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_FAHRENHEIT, DONT_HAVE_PARENTHESIS, &label_head);//°F								 
+								}
+								else
+								{
+									LabelList_Add( 120, 114, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_CELSIUS, DONT_HAVE_PARENTHESIS, &label_head);//℃						 
+								}
+								break;
+							default:
+								break;
+							}
+							break;
+
 						case TYPE_ORP:
 							switch(get_CurDo()->modbus_id)
 							{
@@ -7814,7 +8508,7 @@ void interfacial_refresh(void)                                                  
 							LabelList_Add( 0, 48, (uint8_t *)pH_cn, sizeof(pH_cn), (uint8_t *)pH_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//pH
 							LabelList_Add( 32,  36, NULL, 0, (uint8_t *)get_CurDo()->DOpercent_arr,   LABEL_LARGE,  LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //pH
 							
-							LabelList_Add( 0, 84, (uint8_t *)andan_cn, sizeof(andan_cn), (uint8_t *)rongjieyang_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//NH4N
+							LabelList_Add( 0, 84, (uint8_t *)andan_cn, sizeof(andan_cn), (uint8_t *)andan_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//NH4N
 							LabelList_Add( 32,  72, NULL, 0, (uint8_t *)get_CurDo()->DOmgl_arr,       LABEL_LARGE, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //NH4N
 	
 							LabelList_Add( 0, 112, (uint8_t *)wendu_cn, sizeof(wendu_cn), (uint8_t *)wendu_en, LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //temperature						
@@ -7864,52 +8558,12 @@ void interfacial_refresh(void)                                                  
 							break;
 						
 						case TYPE_Bga:
-							// LabelList_Add( 0, 66, (uint8_t *)Bga_cn, sizeof(Bga_cn), (uint8_t *)Bga_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//叶绿素名称
-							// LabelList_Add( 32,  54, NULL, 0, (uint8_t *)get_CurDo()->DOmgl_arr,       LABEL_LARGE, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //测量值
-							// LabelList_Add( 0, 112, (uint8_t *)wendu_cn, sizeof(wendu_cn), (uint8_t *)wendu_en, LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //temperature						
-							// LabelList_Add( 38, 112, NULL, 0, (uint8_t *)get_CurDo()->temperature_arr, LABEL_MEDIUM, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //temperature
-							
-							// if (get_CurDo()->DOmgl.value_f >= 10000.0)
-							// {
-							// 	LabelList_Add( 88, 68, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_Kcells_mL, DONT_HAVE_PARENTHESIS, &label_head);//Kcells/mL
-							// }
-							// else
-							// {
-							// 	LabelList_Add( 96, 68, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_Cells_mL, DONT_HAVE_PARENTHESIS, &label_head);//Cells/mL
-							// }
-							// LabelList_Add( 96, 114, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_CELSIUS, DONT_HAVE_PARENTHESIS, &label_head);//℃
-
-
-
-							// LabelList_Add( 0, 50, (uint8_t *)Bga_cn, sizeof(Bga_cn), (uint8_t *)Bga_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//叶绿素名称
-							// LabelList_Add( 32,  62, NULL, 0, (uint8_t *)get_CurDo()->DOmgl_arr,       LABEL_LARGE, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //测量值
-							// LabelList_Add( 0, 112, (uint8_t *)wendu_cn, sizeof(wendu_cn), (uint8_t *)wendu_en, LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //temperature						
-							// LabelList_Add( 38, 112, NULL, 0, (uint8_t *)get_CurDo()->temperature_arr, LABEL_MEDIUM, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //temperature
-							
-							// if (get_CurDo()->DOmgl.value_f >= 10000.0)
-							// {
-							// 	LabelList_Add( 88, 76, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_Kcells_mL, DONT_HAVE_PARENTHESIS, &label_head);//Kcells/mL
-							// }
-							// else
-							// {
-							// 	LabelList_Add( 96, 76, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_Cells_mL, DONT_HAVE_PARENTHESIS, &label_head);//Cells/mL
-							// }
-							// LabelList_Add( 96, 114, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_CELSIUS, DONT_HAVE_PARENTHESIS, &label_head);//℃
-
-
 							LabelList_Add( 0, 66, (uint8_t *)Bga_cn, sizeof(Bga_cn), (uint8_t *)Bga_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//叶绿素名称
 							LabelList_Add( 48,  54, NULL, 0, (uint8_t *)get_CurDo()->DOmgl_arr,       LABEL_LARGE, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //测量值
 							LabelList_Add( 0, 112, (uint8_t *)wendu_cn, sizeof(wendu_cn), (uint8_t *)wendu_en, LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //temperature						
 							LabelList_Add( 38, 112, NULL, 0, (uint8_t *)get_CurDo()->temperature_arr, LABEL_MEDIUM, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //temperature
 							
-							if (get_CurDo()->DOmgl.value_f >= 10000.0)
-							{
-								LabelList_Add( 88, 88, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_Kcells_mL, DONT_HAVE_PARENTHESIS, &label_head);//Kcells/mL
-							}
-							else
-							{
-								LabelList_Add( 96, 88, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_Cells_mL, DONT_HAVE_PARENTHESIS, &label_head);//Cells/mL
-							}
+							LabelList_Add( 88, 88, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_Kcells_mL, DONT_HAVE_PARENTHESIS, &label_head);//Kcells/mL
 							LabelList_Add( 96, 114, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_CELSIUS, DONT_HAVE_PARENTHESIS, &label_head);//℃
 
 							break;
@@ -7991,7 +8645,7 @@ void interfacial_refresh(void)                                                  
 							LabelList_Add( 0, 112, (uint8_t *)wendu_cn, sizeof(wendu_cn), (uint8_t *)wendu_en, LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //temperature						
 							LabelList_Add( 62, 112, NULL, 0, (uint8_t *)get_CurDo()->temperature_arr, LABEL_MEDIUM, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //temperature
 							
-							if(get_CurDo()->modbus_id == OiW_guohong_ModbusID)
+							if(get_CurDo()->modbus_id == OiW_guohong_ModbusID || get_CurDo()->modbus_id == OiW_yushan_DA511_ModbusID)
 							{
 								LabelList_Add( 128, 68, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_PPM, DONT_HAVE_PARENTHESIS, &label_head);//mg/L							
 							}
@@ -8009,7 +8663,26 @@ void interfacial_refresh(void)                                                  
 							  LabelList_Add( 120, 114, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_CELSIUS, DONT_HAVE_PARENTHESIS, &label_head);//℃						 
 						  	}
 							break;
+						
+						case TYPE_TSS:
+							LabelList_Add( 0, 66, (uint8_t *)xuanfuwu_cn, sizeof(xuanfuwu_cn), (uint8_t *)xuanfuwu_en,  LABEL_NORMAL, LABEL_xinziku, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
 
+							LabelList_Add( 32,  54, NULL, 0, (uint8_t *)get_CurDo()->DOmgl_arr,       LABEL_LARGE, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+	
+							LabelList_Add( 0, 112, (uint8_t *)wendu_cn, sizeof(wendu_cn), (uint8_t *)wendu_en, LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //temperature						
+							LabelList_Add( 62, 112, NULL, 0, (uint8_t *)get_CurDo()->temperature_arr, LABEL_MEDIUM, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //temperature
+							
+							LabelList_Add( 128, 68, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_MGL, DONT_HAVE_PARENTHESIS, &label_head);//mg/L							
+	
+							if(setting_Get_Temp_Unit())
+	            			{
+							  LabelList_Add( 120, 114, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_FAHRENHEIT, DONT_HAVE_PARENTHESIS, &label_head);//°F								 
+						  	}
+						  	else
+              				{
+							  LabelList_Add( 120, 114, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_CELSIUS, DONT_HAVE_PARENTHESIS, &label_head);//℃						 
+						  	}
+							break;
 						default:
 							break;
 						
@@ -8033,82 +8706,100 @@ void interfacial_refresh(void)                                                  
 								
 								case TYPE_pH:
 									Enable_warning=setting_GetIsAlarm_pH();
-							  	high = float_format(setting_GetHighThreshold_pH());
+							  		high = float_format(setting_GetHighThreshold_pH());
 									low = float_format(setting_GetLowThreshold_pH());			
 									break;
 								
 								case TYPE_Tur:
 									Enable_warning=setting_GetIsAlarm_Tur();
-							  	high = float_format(setting_GetHighThreshold_Tur());
+							  		high = float_format(setting_GetHighThreshold_Tur());
 									low = float_format(setting_GetLowThreshold_Tur());		
 									break;
 								
 								case TYPE_FCL:
 									Enable_warning=setting_GetIsAlarm_FCL();
-							  	high = float_format(setting_GetHighThreshold_FCL());
+							  		high = float_format(setting_GetHighThreshold_FCL());
 									low = float_format(setting_GetLowThreshold_FCL());		
 									break;
 								
 								case TYPE_EC:
 									Enable_warning=setting_GetIsAlarm_EC();
-							  	high = float_format(setting_GetHighThreshold_EC());
+							  		high = float_format(setting_GetHighThreshold_EC());
 									low = float_format(setting_GetLowThreshold_EC());		
 									break;
 								
 								case TYPE_ORP:
 									Enable_warning=setting_GetIsAlarm_ORP();
-							  	high = float_format(setting_GetHighThreshold_ORP());
+							  		high = float_format(setting_GetHighThreshold_ORP());
 									low = float_format(setting_GetLowThreshold_ORP());		
 									break;
 								
 								case TYPE_NH4:
 									Enable_warning=setting_GetIsAlarm_NH4();
-							  	high = float_format(setting_GetHighThreshold_NH4());
+							  		high = float_format(setting_GetHighThreshold_NH4());
 									low = float_format(setting_GetLowThreshold_NH4());							
 									break;
 								
 								case TYPE_F:
 									Enable_warning=setting_GetIsAlarm_F();
-							  	high = float_format(setting_GetHighThreshold_F());
+							  		high = float_format(setting_GetHighThreshold_F());
 									low = float_format(setting_GetLowThreshold_F());		
 									break;
 								
 								case TYPE_CL:
 									Enable_warning=setting_GetIsAlarm_CL();
-							  	high = float_format(setting_GetHighThreshold_CL());
+							  		high = float_format(setting_GetHighThreshold_CL());
 									low = float_format(setting_GetLowThreshold_CL());		
 									break;
 								
 								case TYPE_Chl:
 									Enable_warning=setting_GetIsAlarm_Chl();
-							  	high = float_format(setting_GetHighThreshold_Chl());
+							  		high = float_format(setting_GetHighThreshold_Chl());
 									low = float_format(setting_GetLowThreshold_Chl());		
 									break;
 								
 								case TYPE_Bga:
 									Enable_warning=setting_GetIsAlarm_Bga();
-							  	high = float_format(setting_GetHighThreshold_Bga());
+							  		high = float_format(setting_GetHighThreshold_Bga());
 									low = float_format(setting_GetLowThreshold_Bga());		
 									break;
 								
 								case TYPE_CODuv:
 									Enable_warning=setting_GetIsAlarm_COD();
-							  	high = float_format(setting_GetHighThreshold_COD());
+							  		high = float_format(setting_GetHighThreshold_COD());
 									low = float_format(setting_GetLowThreshold_COD());		
 									break;
 
 								case TYPE_MLSS:
 									Enable_warning=setting_GetIsAlarm_MLSS();
-							  	high = float_format(setting_GetHighThreshold_MLSS());
+							  		high = float_format(setting_GetHighThreshold_MLSS());
 									low = float_format(setting_GetLowThreshold_MLSS());		
 									break;
 
 								case TYPE_Oiw:
-									Enable_warning=setting_GetIsAlarm_OIW();
-							  	high = float_format(setting_GetHighThreshold_OIW());
-									low = float_format(setting_GetLowThreshold_OIW());		
+									if(cur_DO.DO_list->modbus_id == OiW_yushan_ModbusID)
+									{
+										Enable_warning=setting_GetIsAlarm_OIW();
+										high = float_format(setting_GetHighThreshold_OIW());
+										low = float_format(setting_GetLowThreshold_OIW());
+									}
+									else
+									{
+										Enable_warning=setting_GetIsAlarm_OIW_ppm();
+										high = float_format(setting_GetHighThreshold_OIW_ppm());
+										low = float_format(setting_GetLowThreshold_OIW_ppm());
+									}	
 									break;
-								
+								case TYPE_TSS:
+									Enable_warning=setting_GetIsAlarm_TSS();
+							  		high = float_format(setting_GetHighThreshold_TSS());
+									low = float_format(setting_GetLowThreshold_TSS());		
+									break;
+								case TYPE_SAL:
+									Enable_warning=setting_GetIsAlarm_SAL();
+							  		high = float_format(setting_GetHighThreshold_SAL());
+									low = float_format(setting_GetLowThreshold_SAL());	
+									break;
 								default:
 									break;
 								

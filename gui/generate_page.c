@@ -471,20 +471,28 @@ void generate_Temp_Clear_Time(PtrToInterfacial interfacial, PAGE_NUM cur_PageNum
 	list_NanoOption NanoPress = NULL;    //子选项  就一串数字
 	list_label label_head     = NULL;    //标签项  显示单位 实时数值 和一些标签
 
-	if(cur_PageNum == PAGE_4_Clear_time)
+	if(get_CurDo()->modbus_id == LH_DX01_ModbusID)
 	{
 		LabelList_Add( 80, other_y, NULL, 0, (uint8_t *)get_CurDo()->DOmgl_Vol_arr, LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
 	}
 	else
 	{
-		LabelList_Add( 80, other_y, NULL, 0, (uint8_t *)get_CurDo()->tocmgl_Vol_arr, LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+		if(cur_PageNum == PAGE_4_Clear_time)
+		{
+			LabelList_Add( 80, other_y, NULL, 0, (uint8_t *)get_CurDo()->DOmgl_Vol_arr, LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+		}
+		else
+		{
+			LabelList_Add( 80, other_y, NULL, 0, (uint8_t *)get_CurDo()->tocmgl_Vol_arr, LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+		}
 	}
 	OptionList_Add(0, (uint8_t *)dangqianzhi_cn, sizeof(dangqianzhi_cn), (uint8_t *)dangqianzhi_en, NONE_PAGE, OPTION_SMALL, CANNOT_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL,      &option_head);//当前值
 	
 	other_y += 16 + get_RowSpacing();
-	if(cur_PageNum == PAGE_4_Clear_time)
+
+	if(get_CurDo()->modbus_id == LH_DX01_ModbusID)
 	{
-		temp = Get_OIW_Clear_Time();
+		temp =  get_CurDo()->Measure_Range.value_f;
 		temp_int = (int)((temp) + 0.5);
 		NanoOptionList_Add( 80, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%10000/1000), 0, 1, IS_SINGLE,  &NanoPress);
 		NanoOptionList_Add( 88, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%1000/100),   0, 3, IS_SINGLE,  &NanoPress);
@@ -497,17 +505,33 @@ void generate_Temp_Clear_Time(PtrToInterfacial interfacial, PAGE_NUM cur_PageNum
 	}
 	else
 	{
-		temp = atof(get_CurDo()->tocmgl_Vol_arr);
-		temp_int = (int)((temp*100) + 0.5);
-		NanoOptionList_Add( 88, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  68, 67, 68, IS_SINGLE,  &NanoPress);
-		NanoOptionList_Add( 96, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%10000/1000), 0, 1, IS_SINGLE,  &NanoPress);
-		NanoOptionList_Add( 104, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%1000/100),   0, 9, IS_SINGLE,  &NanoPress);
-		NanoOptionList_Add(120, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%100/10),     0, 9, IS_SINGLE,  &NanoPress);//小数点后1位			
-		LabelList_Add(112, other_y, NULL, 0, (uint8_t *)XIAOSHUDIAN, LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+		if(cur_PageNum == PAGE_4_Clear_time)
+		{
+			temp = Get_OIW_Clear_Time();
+			temp_int = (int)((temp) + 0.5);
+			NanoOptionList_Add( 80, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%10000/1000), 0, 1, IS_SINGLE,  &NanoPress);
+			NanoOptionList_Add( 88, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%1000/100),   0, 3, IS_SINGLE,  &NanoPress);
+			NanoOptionList_Add(96, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%100/10),     0, 9, IS_SINGLE,  &NanoPress);//小数点后1位			
+			NanoOptionList_Add(104, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%10),         0, 9, IS_SINGLE,  &NanoPress);//小数点后两位
 
-		interfacial->content_chn = (uint8_t *)wendubuchangxishushezhi_cn ;
-		interfacial->ChnContent_size = sizeof(wendubuchangxishushezhi_cn);
-		interfacial->content_eng = (uint8_t *)wendubuchangxishushezhi_en;
+			interfacial->content_chn = (uint8_t *)qingjiezhouqishezhi_cn ;
+			interfacial->ChnContent_size = sizeof(qingjiezhouqishezhi_cn);
+			interfacial->content_eng = (uint8_t *)qingjiezhouqishezhi_en;
+		}
+		else
+		{
+			temp = atof(get_CurDo()->tocmgl_Vol_arr);
+			temp_int = (int)((temp*100) + 0.5);
+			NanoOptionList_Add( 88, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  68, 67, 68, IS_SINGLE,  &NanoPress);
+			NanoOptionList_Add( 96, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%10000/1000), 0, 1, IS_SINGLE,  &NanoPress);
+			NanoOptionList_Add( 104, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%1000/100),   0, 9, IS_SINGLE,  &NanoPress);
+			NanoOptionList_Add(120, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%100/10),     0, 9, IS_SINGLE,  &NanoPress);//小数点后1位			
+			LabelList_Add(112, other_y, NULL, 0, (uint8_t *)XIAOSHUDIAN, LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+
+			interfacial->content_chn = (uint8_t *)wendubuchangxishushezhi_cn ;
+			interfacial->ChnContent_size = sizeof(wendubuchangxishushezhi_cn);
+			interfacial->content_eng = (uint8_t *)wendubuchangxishushezhi_en;
+		}
 	}
 	OptionList_Add(1, (uint8_t *)shezhizhi_cn, sizeof(shezhizhi_cn), (uint8_t *)shezhizhi_en, NONE_PAGE, OPTION_SMALL, CAN_BE_SELECTED,    NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NanoPress, &option_head);//实际值
 	
@@ -518,6 +542,28 @@ void generate_Temp_Clear_Time(PtrToInterfacial interfacial, PAGE_NUM cur_PageNum
 	
 	interfacial->page_father = PAGE_4_PARASET;//设定父界面
 	
+}
+
+
+/*DX01温度精度设置*/
+void generate_DX01_Temp_xiaoshu(PtrToInterfacial interfacial)
+{
+	set_RowSpacing(ROWSPACING_FOUR);
+	CurInterfacial_Destory();           //清空当前界面所有的链表
+	
+	list_option option_head = NULL;     //生成一个临时的选项链表头
+	
+	OptionList_Add(0, NULL, 0,   (uint8_t *)wendujingdu_0_en,   NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, IS_ENG_ONLY, NULL, &option_head);
+	OptionList_Add(1, NULL, 0,  (uint8_t *)wendujingdu_1_en,  NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, IS_ENG_ONLY, NULL, &option_head);
+	OptionList_Add(2, NULL, 0, (uint8_t *)wendujingdu_2_en, NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, IS_ENG_ONLY, NULL, &option_head);
+	
+	interfacial->page_father = PAGE_4_PARASET;//设定父界面
+	
+	interfacial->content_chn = (uint8_t *)wendujingdushezhi_cn ;
+	interfacial->ChnContent_size = sizeof(wendujingdushezhi_cn);
+	interfacial->content_eng = (uint8_t *)wendujingdushezhi_en;
+	
+	interfacial->option_head = option_head;
 }
 
 /*生成单次测量时间设置界面*/
@@ -690,85 +736,6 @@ void generate_Unit(PtrToInterfacial interfacial, uint8_t Unit)
 }
 
 
-///*报警界面显示已连接的设备类型*/
-//void generate_AlarmType(PtrToInterfacial interfacial)//////////////////////////////////////////有新设备添加进来要改这里
-//{
-//	uint8_t option_index = 0;
-//	list_option option_head = NULL;     //生成一个临时的选项链表头
-//	
-//	set_RowSpacing(ROWSPACING_TWO);
-//	CurInterfacial_Destory();           //清空当前界面所有的链表
-//	if(*(rs485_GetDoList())!=NULL)         //如果do设备列表中有设备的话添加DO设备
-//	{
-//    switch(rs485_GetSensorType())
-//		{
-//			case TYPE_DO:					
-//	    	OptionList_Add(option_index++, (uint8_t *)rongjieyang_cn, sizeof(rongjieyang_cn), (uint8_t *)rongjieyang_en, PAGE_4_ALARM, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);			
-
-//				break;				
-//			case TYPE_pH:
-//				OptionList_Add(option_index++, (uint8_t *)pH_cn, sizeof(pH_cn), (uint8_t *)pH_en, PAGE_4_ALARM, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);			
-//				break;
-//			
-//			case TYPE_Tur:
-//				OptionList_Add(option_index++, (uint8_t *)zhuodu_cn, sizeof(zhuodu_cn), (uint8_t *)zhuodu_en, PAGE_4_ALARM, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);			
-//				break;
-//			
-//			case TYPE_FCL:
-//				OptionList_Add(option_index++, (uint8_t *)FCL_cn, sizeof(FCL_cn), (uint8_t *)FCL_en, PAGE_4_ALARM, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);			
-//				break;
-//			
-//			case TYPE_EC:
-//				OptionList_Add(option_index++, (uint8_t *)diandaolv_cn, sizeof(diandaolv_cn), (uint8_t *)diandaolv_en, PAGE_4_ALARM, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);			
-//				break;
-//			
-//			case TYPE_ORP:
-//				OptionList_Add(option_index++, (uint8_t *)ORP_cn, sizeof(ORP_cn), (uint8_t *)ORP_en, PAGE_4_ALARM, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);			
-//				break;
-//			
-//			case TYPE_NH4:
-//				OptionList_Add(option_index++, (uint8_t *)andan_cn, sizeof(andan_cn), (uint8_t *)andan_en, PAGE_4_ALARM, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	
-//	      break;		
-//			case TYPE_F:
-//				OptionList_Add(option_index++, (uint8_t *)F_cn, sizeof(F_cn), (uint8_t *)F_en, PAGE_4_ALARM, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);			
-//				break;
-//			
-//			case TYPE_CL:
-//				OptionList_Add(option_index++, (uint8_t *)CL_cn, sizeof(CL_cn), (uint8_t *)CL_en, PAGE_4_ALARM, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);			
-//				break;
-//			
-//			case TYPE_Chl:
-//				OptionList_Add(option_index++, (uint8_t *)Chl_cn, sizeof(Chl_cn), (uint8_t *)Chl_en, PAGE_4_ALARM, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);			
-//				break;
-//			
-//			case TYPE_Bga:
-//				OptionList_Add(option_index++, (uint8_t *)Bga_cn, sizeof(Bga_cn), (uint8_t *)COD_en, PAGE_4_ALARM, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);			
-//				break;
-//			
-//			case TYPE_CODuv:
-//				OptionList_Add(option_index++, (uint8_t *)COD_cn, sizeof(COD_cn), (uint8_t *)COD_en, PAGE_4_ALARM, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);						
-//				break;
-//			
-//			default:
-//				break;
-//				
-//		}	
-
-//	}
-//	else{
-//		OptionList_Add(option_index++, (uint8_t *)wuchuanganqi_cn, sizeof(wuchuanganqi_cn), (uint8_t *)wuchuanganqi_en, NONE_PAGE, OPTION_LARGE, CANNOT_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);			
-//	}
-//	
-//	interfacial->page_father = PAGE_4_PARASET;//设定父界面
-//	
-//	interfacial->content_chn = (uint8_t *)baojingshezhi_cn ;
-//	interfacial->ChnContent_size = sizeof(baojingshezhi_cn);
-//	interfacial->content_eng = (uint8_t *)baojingshezhi_en;
-//	
-//	interfacial->option_head = option_head;
-//	
-//}
-
 /*报警设置是否开启*/
 void generate_AlarmSetting(PtrToInterfacial interfacial)
 {
@@ -876,15 +843,33 @@ void generate_AlarmValueSetting(PtrToInterfacial interfacial)
 			break;
 
 		case TYPE_Oiw:
-			temp_high = setting_GetHighThreshold_OIW();
-			temp_low = setting_GetLowThreshold_OIW();		
+			if(cur_DO.DO_list->modbus_id == OiW_yushan_ModbusID)
+			{
+				temp_high = setting_GetHighThreshold_OIW();
+				temp_low = setting_GetLowThreshold_OIW();
+			}
+			else
+			{
+				temp_high = setting_GetHighThreshold_OIW_ppm();
+				temp_low = setting_GetLowThreshold_OIW_ppm();
+			}
 			break;
-		
+
+		case TYPE_TSS:
+			temp_high = setting_GetHighThreshold_TSS();
+			temp_low = setting_GetLowThreshold_TSS();
+			break;
+		case TYPE_SAL:
+			temp_high = setting_GetHighThreshold_SAL();
+			temp_low = setting_GetLowThreshold_SAL();
+			break;
 		default:
 			break;
 	}		
 
-	if(get_CurDo()->modbus_id == Bga_shenghui_ModbusID || get_CurDo()->modbus_id == MLSS_Tianjian_ModbusID)
+	if(get_CurDo()->modbus_id == Bga_shenghui_ModbusID 
+	|| get_CurDo()->modbus_id == MLSS_Tianjian_ModbusID
+	|| get_CurDo()->modbus_id == LH_DX01_ModbusID)
 	{
 		NanoOptionList_Add( 88, other_y, NULL, 0, NULL, NANOOPTION_NUMBER, (uint32_t)(temp_low/100000),0, 9, IS_SINGLE, &NanoLow);//十万
 		NanoOptionList_Add( 96, other_y, NULL, 0, NULL, NANOOPTION_NUMBER, (uint32_t)(temp_low/10000)%10,0, 9, IS_SINGLE, &NanoLow);//万
@@ -1076,6 +1061,7 @@ void generate_ParameterSetting(PtrToInterfacial interfacial)
 				switch(get_CurDo()->modbus_id)
 				{
 					case EC_DE26_ModbusID:  
+					case EC_DE40_ModbusID:
 						OptionList_Add(index++,  (uint8_t *)tds_trans_value_cn,    sizeof(tds_trans_value_cn),    (uint8_t *)tds_trans_value_en,    PAGE_3_Set_TDS_coefficient,       OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);		//tds系数设置
 						OptionList_Add(index++,  (uint8_t *)wenduxishushezhi_cn,    sizeof(wenduxishushezhi_cn),    (uint8_t *)wenduxishushezhi_en,    PAGE_3_Set_Temp_coefficient,       OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	//温度设置
 					break;	
@@ -1085,6 +1071,10 @@ void generate_ParameterSetting(PtrToInterfacial interfacial)
 				}
 				break;
 			
+			case TYPE_SAL:
+				OptionList_Add(index++,  (uint8_t *)yandudanweishezhi_cn,     sizeof(yandudanweishezhi_cn),     (uint8_t *)yandudanweishezhi_en,     PAGE_3_Set_Sal_uint,   OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
+				break;
+
 			case TYPE_ORP:
 
 				break;
@@ -1153,12 +1143,17 @@ void generate_ParameterSetting(PtrToInterfacial interfacial)
 	
 						break;
 					case OiW_yushan_ModbusID:
+					case OiW_yushan_DA511_ModbusID:
 						OptionList_Add(index++,  (uint8_t *)jiaozhunxishu_cn,     sizeof(jiaozhunxishu_cn),     (uint8_t *)jiaozhunxishu_en,     PAGE_4_Cal_Info,   OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
 
 						break;
 					default:
 						break;
 				}
+				break;
+			case TYPE_TSS:
+				OptionList_Add(index++,  (uint8_t *)zidongqingxijiange_cn,     sizeof(zidongqingxijiange_cn),     (uint8_t *)zidongqingxijiange_en,     PAGE_4_Clear_time,   OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
+				OptionList_Add(index++,  (uint8_t *)wendujingdushezhi_cn,     sizeof(wendujingdushezhi_cn),     (uint8_t *)wendujingdushezhi_en,     PAGE_4_Temp_xiaoshu,   OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
 				break;
 			default:
 				break;
@@ -1296,7 +1291,7 @@ void generate_Sensor_Cal_Info(PtrToInterfacial interfacial)
 		OptionList_Add(4, (uint8_t *)wendu_cn,     sizeof(wendu_cn),             (uint8_t *)wendu_en,          NONE_PAGE, OPTION_SMALL, CANNOT_BE_SELECTED,    NOT_LANGUAGE_OPTION, NOT_ENG_ONLY,  NanoModbusId, &option_head);
 		OptionList_Add(5, (uint8_t *)kongbaidianweizhi_cn,     sizeof(kongbaidianweizhi_cn),             (uint8_t *)kongbaidianweizhi_en,          NONE_PAGE, OPTION_SMALL, CANNOT_BE_SELECTED,    NOT_LANGUAGE_OPTION, NOT_ENG_ONLY,  NanoModbusId, &option_head);
 	}
-	else if(probe_do->modbus_id == OiW_yushan_ModbusID)
+	else if(probe_do->modbus_id == OiW_yushan_ModbusID||probe_do->modbus_id == OiW_yushan_DA511_ModbusID)
 	{
 		//水中油b值
 		// probe_do->DOmgl_Vol_arr
@@ -1388,7 +1383,8 @@ void generate_cal_DO(PtrToInterfacial interfacial, list_option* option_head, man
 				OptionList_Add(option_index++, (uint8_t *)wendu_cn,     sizeof(wendu_cn),     (uint8_t *)wendu_en, PAGE_5_TEMP,     OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &(*option_head));
 			
 				switch(get_CurDo()->modbus_id)
-				{									
+				{								
+					case EC_DE40_ModbusID:		
 					case EC_DE26_ModbusID:  
 					  OptionList_Add(option_index++, (uint8_t *)COD_Zero_cn,   sizeof(COD_Zero_cn),   (uint8_t *)COD_Zero_en,       PAGE_5_DE26_EC_Zero,      OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &(*option_head));	
 					  OptionList_Add(option_index++, (uint8_t *)dandian_cn,   sizeof(dandian_cn),   (uint8_t *)dandian_en,       PAGE_5_shenghui_EC_ONE,      OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &(*option_head));	
@@ -1408,6 +1404,12 @@ void generate_cal_DO(PtrToInterfacial interfacial, list_option* option_head, man
 				interfacial->content_eng = (uint8_t *)diandaolv_jiaozhun_en;
 				break;
 			
+			case TYPE_SAL:
+				OptionList_Add(option_index++, (uint8_t *)wendujiaozhun_cn,     sizeof(wendujiaozhun_cn),     (uint8_t *)wendujiaozhun_en, PAGE_5_TEMP,     OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &(*option_head));
+				OptionList_Add(option_index++, (uint8_t *)yandujiaozhun_cn,     sizeof(yandujiaozhun_cn),     (uint8_t *)yandujiaozhun_en, PAGE_5_shenghui_EC_ONE,     OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &(*option_head));
+
+				break;
+
 			case TYPE_ORP:
 				OptionList_Add(option_index++, (uint8_t *)dandian_cn,   sizeof(dandian_cn),   (uint8_t *)dandian_en,       PAGE_5_DR31_ORP_ONE,      OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &(*option_head));	
 				break;
@@ -1445,8 +1447,8 @@ void generate_cal_DO(PtrToInterfacial interfacial, list_option* option_head, man
 			
 			case TYPE_Bga:
 				OptionList_Add(option_index++, (uint8_t *)wendu_cn,     sizeof(wendu_cn),     (uint8_t *)wendu_en, PAGE_5_TEMP,     OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &(*option_head));
-				OptionList_Add(option_index++, (uint8_t *)Bga_jiaozhun1_cn,   sizeof(Bga_jiaozhun1_cn),   (uint8_t *)Bga_jiaozhun1_en,       PAGE_5_shenghui_BGA_ONE,      OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &(*option_head));
-				OptionList_Add(option_index++, (uint8_t *)Bga_jiaozhun2_cn,   sizeof(Bga_jiaozhun2_cn),   (uint8_t *)Bga_jiaozhun2_en,       PAGE_5_shenghui_BGA_TWO,      OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &(*option_head));	
+				OptionList_Add(option_index++, (uint8_t *)lingdianjiaozhun_cn,   sizeof(lingdianjiaozhun_cn),   (uint8_t *)lingdianjiaozhun_en,       PAGE_5_shenghui_BGA_ONE,      OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &(*option_head));
+				OptionList_Add(option_index++, (uint8_t *)xielvjiaozhun_cn,   sizeof(xielvjiaozhun_cn),   (uint8_t *)xielvjiaozhun_en,       PAGE_5_shenghui_BGA_TWO,      OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &(*option_head));	
 				
 				interfacial->content_chn = (uint8_t *)Bga_cn;
 				interfacial->ChnContent_size = sizeof(Bga_cn);
@@ -1514,6 +1516,7 @@ void generate_cal_DO(PtrToInterfacial interfacial, list_option* option_head, man
 				switch(get_CurDo()->modbus_id)
 				{									
 					case OiW_yushan_ModbusID:  
+					case OiW_yushan_DA511_ModbusID:
 						OptionList_Add(option_index++, (uint8_t *)dandianjiaozhun_cn,   	sizeof(dandianjiaozhun_cn),   	(uint8_t *)dandianjiaozhun_en,       	PAGE_5_DR31_ORP_ONE,      	OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &(*option_head));
 						OptionList_Add(option_index++, (uint8_t *)xielvjiaozhun_cn,   		sizeof(xielvjiaozhun_cn),   	(uint8_t *)xielvjiaozhun_en,       		PAGE_5_OIW_K_CAL,      		OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &(*option_head));
 						break;	
@@ -1532,6 +1535,16 @@ void generate_cal_DO(PtrToInterfacial interfacial, list_option* option_head, man
 				interfacial->content_chn = (uint8_t *)Oiw_cn;
 				interfacial->ChnContent_size = sizeof(Oiw_cn);
 				interfacial->content_eng = (uint8_t *)Oiw_en;
+				break;
+
+			case TYPE_TSS:
+				OptionList_Add(option_index++, (uint8_t *)wendu_cn,   sizeof(wendu_cn),   (uint8_t *)wendu_en,       PAGE_5_TEMP,      OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &(*option_head));
+				OptionList_Add(option_index++, (uint8_t *)lingdianjiaozhun_cn,   sizeof(lingdianjiaozhun_cn),   (uint8_t *)lingdianjiaozhun_en,       PAGE_5_MLSS_zero_signal,      OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &(*option_head));
+				OptionList_Add(option_index++, (uint8_t *)xielvjiaozhun_cn,   sizeof(xielvjiaozhun_cn),   (uint8_t *)xielvjiaozhun_en,       PAGE_5_OIW_K_CAL,      OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &(*option_head));
+
+				interfacial->content_chn = (uint8_t *)xuanfuwu_cn;
+				interfacial->ChnContent_size = sizeof(xuanfuwu_cn);
+				interfacial->content_eng = (uint8_t *)xuanfuwu_en;
 				break;
 			
 			default:
@@ -1616,6 +1629,17 @@ void generate_OnePoint(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type)
 				NanoOptionList_Add(92, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
 
 			}
+			else if(setting_GetMesUnit() == 5)
+			{
+				LabelList_Add(76, 56, NULL, 0, (uint8_t *)XIAOSHUDIAN,  LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+
+				NanoOptionList_Add(60, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent); //数值
+				NanoOptionList_Add(68, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent); //数值
+				NanoOptionList_Add(84, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+				NanoOptionList_Add(92, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+				NanoOptionList_Add(100, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+
+			}
 			else
 			{
 				LabelList_Add(76, 56, NULL, 0, (uint8_t *)XIAOSHUDIAN,  LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
@@ -1624,6 +1648,9 @@ void generate_OnePoint(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type)
 				NanoOptionList_Add(68, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent); //数值
 				NanoOptionList_Add(84, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
 				NanoOptionList_Add(92, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+				NanoOptionList_Add(100, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+				NanoOptionList_Add(108, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+
 			}
 		
 			OptionList_Add(0, (uint8_t *)jinrujiaozhunmoshi_cn, sizeof(jinrujiaozhunmoshi_cn), (uint8_t *)jinrujiaozhunmoshi_en, NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NanoPercent, &option_head);
@@ -1692,6 +1719,17 @@ void generate_MLSS_ZERO(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type)
 				NanoOptionList_Add(92, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
 
 			}
+			else if(setting_GetMesUnit() == 5)
+			{
+				LabelList_Add(76, 56, NULL, 0, (uint8_t *)XIAOSHUDIAN,  LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+
+				NanoOptionList_Add(60, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent); //数值
+				NanoOptionList_Add(68, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent); //数值
+				NanoOptionList_Add(84, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+				NanoOptionList_Add(92, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+				NanoOptionList_Add(100, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+
+			}
 			else
 			{
 				LabelList_Add(76, 56, NULL, 0, (uint8_t *)XIAOSHUDIAN,  LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
@@ -1700,6 +1738,9 @@ void generate_MLSS_ZERO(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type)
 				NanoOptionList_Add(68, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent); //数值
 				NanoOptionList_Add(84, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
 				NanoOptionList_Add(92, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+				NanoOptionList_Add(100, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+				NanoOptionList_Add(108, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+
 			}
 		
 			OptionList_Add(0, (uint8_t *)jinrujiaozhunmoshi_cn, sizeof(jinrujiaozhunmoshi_cn), (uint8_t *)jinrujiaozhunmoshi_en, NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NanoPercent, &option_head);
@@ -1714,6 +1755,21 @@ void generate_MLSS_ZERO(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type)
 			NanoOptionList_Add(84, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
 
 			LabelList_Add(60, 56, NULL, 0, (uint8_t *)XIAOSHUDIAN,  LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+
+			OptionList_Add(0, (uint8_t *)jinrujiaozhunmoshi_cn, sizeof(jinrujiaozhunmoshi_cn), (uint8_t *)jinrujiaozhunmoshi_en, NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NanoPercent, &option_head);
+
+			break;
+
+		case TYPE_TSS:
+			LabelList_Add( 0, 36, (uint8_t *)lingdian_cn, sizeof(lingdian_cn), (uint8_t *)lingdian_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head); //第一点
+
+			NanoOptionList_Add(52, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent); //数值
+			NanoOptionList_Add(60, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent); //数值
+			NanoOptionList_Add(68, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+			NanoOptionList_Add(84, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+			NanoOptionList_Add(92, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+
+			LabelList_Add(76, 56, NULL, 0, (uint8_t *)XIAOSHUDIAN,  LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
 
 			OptionList_Add(0, (uint8_t *)jinrujiaozhunmoshi_cn, sizeof(jinrujiaozhunmoshi_cn), (uint8_t *)jinrujiaozhunmoshi_en, NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NanoPercent, &option_head);
 
@@ -1786,6 +1842,17 @@ void generate_TwoPointFirst(PtrToInterfacial interfacial, SENSOR_TYPE sensor_typ
 				NanoOptionList_Add(92, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
 
 			}
+			else if(setting_GetMesUnit() == 5)
+			{
+				LabelList_Add(76, 56, NULL, 0, (uint8_t *)XIAOSHUDIAN,  LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+
+				NanoOptionList_Add(60, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent); //数值
+				NanoOptionList_Add(68, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent); //数值
+				NanoOptionList_Add(84, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+				NanoOptionList_Add(92, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+				NanoOptionList_Add(100, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+
+			}
 			else
 			{
 				LabelList_Add(76, 56, NULL, 0, (uint8_t *)XIAOSHUDIAN,  LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
@@ -1794,6 +1861,9 @@ void generate_TwoPointFirst(PtrToInterfacial interfacial, SENSOR_TYPE sensor_typ
 				NanoOptionList_Add(68, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent); //数值
 				NanoOptionList_Add(84, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
 				NanoOptionList_Add(92, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+				NanoOptionList_Add(100, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+				NanoOptionList_Add(108, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+
 			}
 		
 			OptionList_Add(0, (uint8_t *)jinrujiaozhunmoshi_cn, sizeof(jinrujiaozhunmoshi_cn), (uint8_t *)jinrujiaozhunmoshi_en, NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NanoPercent, &option_head);
@@ -1950,7 +2020,7 @@ void generate_Histor_ShowOption(PtrToInterfacial interfacial)
 	{
 		if(datashow_SensorType == TYPE_NONE)
 		datashow_SensorType=TYPE_FCL;
-	//   OptionList_Add(option_index++, (uint8_t *)FCL_cn, sizeof(FCL_cn), (uint8_t *)FCL_en, PAGE_3_DATASHOW, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);		
+	  OptionList_Add(option_index++, (uint8_t *)yandu_cn, sizeof(yandu_cn), (uint8_t *)yandu_en, PAGE_3_DATASHOW, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);		
 	}
 	if(log_GetLogCount(TYPE_EC)	> 0)
 	{
@@ -1981,7 +2051,8 @@ void generate_Histor_ShowOption(PtrToInterfacial interfacial)
 	{
 		if(datashow_SensorType == TYPE_NONE)
 		datashow_SensorType=TYPE_CL;
-	  OptionList_Add(option_index++, (uint8_t *)CL_cn, sizeof(CL_cn), (uint8_t *)CL_en, PAGE_3_DATASHOW, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	
+		OptionList_Add(option_index++, (uint8_t *)Oiw_ppm_cn, sizeof(Oiw_ppm_cn), (uint8_t *)Oiw_ppm_en, PAGE_3_DATASHOW, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, DisplayWord_xin, NULL, &option_head);
+	//   OptionList_Add(option_index++, (uint8_t *)CL_cn, sizeof(CL_cn), (uint8_t *)CL_en, PAGE_3_DATASHOW, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	
   }
 	if(log_GetLogCount(TYPE_Chl)	> 0)
 	{
@@ -2011,8 +2082,15 @@ void generate_Histor_ShowOption(PtrToInterfacial interfacial)
 	{
 		if(datashow_SensorType == TYPE_NONE)
 		datashow_SensorType = TYPE_Oiw;
-		OptionList_Add(option_index++, (uint8_t *)Oiw_cn, sizeof(Oiw_cn), (uint8_t *)Oiw_en, PAGE_3_DATASHOW, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
+		OptionList_Add(option_index++, (uint8_t *)Oiw_ppb_cn, sizeof(Oiw_ppb_cn), (uint8_t *)Oiw_ppb_en, PAGE_3_DATASHOW, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, DisplayWord_xin, NULL, &option_head);
 	}
+	if(log_GetLogCount(TYPE_TSS)	> 0)
+	{
+		if(datashow_SensorType == TYPE_NONE)
+		datashow_SensorType = TYPE_TSS;
+		OptionList_Add(option_index++, (uint8_t *)xuanfuwu_cn, sizeof(xuanfuwu_cn), (uint8_t *)xuanfuwu_en, PAGE_3_DATASHOW, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, DisplayWord_xin, NULL, &option_head);
+	}
+
 	interfacial->option_head = option_head;
 	
 	interfacial->page_father = PAGE_2_HISTORY;//设定父界面
@@ -2054,7 +2132,7 @@ void generate_Histor_DeleteOption(PtrToInterfacial interfacial)
 	{
 		if(datashow_SensorType == TYPE_NONE)
 		datashow_SensorType=TYPE_FCL;
-	//   OptionList_Add(option_index++, (uint8_t *)FCL_cn, sizeof(FCL_cn), (uint8_t *)FCL_en, PAGE_3_DATADELETE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);		
+	  OptionList_Add(option_index++, (uint8_t *)yandu_cn, sizeof(yandu_cn), (uint8_t *)yandu_en, PAGE_3_DATADELETE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);		
 	}
 	if(log_GetLogCount(TYPE_EC)	> 0)
 	{
@@ -2085,7 +2163,8 @@ void generate_Histor_DeleteOption(PtrToInterfacial interfacial)
 	{
 		if(datashow_SensorType == TYPE_NONE)
 		datashow_SensorType=TYPE_CL;
-	  OptionList_Add(option_index++, (uint8_t *)CL_cn, sizeof(CL_cn), (uint8_t *)CL_en, PAGE_3_DATADELETE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	
+		OptionList_Add(option_index++, (uint8_t *)Oiw_ppm_cn, sizeof(Oiw_ppm_cn), (uint8_t *)Oiw_ppm_en, PAGE_3_DATADELETE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, DisplayWord_xin, NULL, &option_head);
+	//   OptionList_Add(option_index++, (uint8_t *)CL_cn, sizeof(CL_cn), (uint8_t *)CL_en, PAGE_3_DATADELETE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);	
   }
 	if(log_GetLogCount(TYPE_Chl)	> 0)
 	{
@@ -2115,7 +2194,13 @@ void generate_Histor_DeleteOption(PtrToInterfacial interfacial)
 	{
 		if(datashow_SensorType == TYPE_NONE)
 		datashow_SensorType=TYPE_Oiw;
-		OptionList_Add(option_index++, (uint8_t *)Oiw_cn, sizeof(Oiw_cn), (uint8_t *)Oiw_en, PAGE_3_DATADELETE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &option_head);
+		OptionList_Add(option_index++, (uint8_t *)Oiw_ppb_cn, sizeof(Oiw_ppb_cn), (uint8_t *)Oiw_ppb_en, PAGE_3_DATADELETE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, DisplayWord_xin, NULL, &option_head);
+	}
+	if(log_GetLogCount(TYPE_TSS)	> 0)
+	{
+		if(datashow_SensorType == TYPE_NONE)
+		datashow_SensorType=TYPE_TSS;
+		OptionList_Add(option_index++, (uint8_t *)xuanfuwu_cn, sizeof(xuanfuwu_cn), (uint8_t *)xuanfuwu_en, PAGE_3_DATADELETE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, DisplayWord_xin, NULL, &option_head);
 	}
 	
 	interfacial->option_head = option_head;
@@ -2177,7 +2262,7 @@ void generate_DataView(PtrToInterfacial interfacial, uint16_t data_index)
 			break;
 		
 		case TYPE_FCL:	
-	    // LabelList_Add( 48, 32, (uint8_t *)FCL_cn, sizeof(FCL_cn), (uint8_t *)FCL_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);				
+	    LabelList_Add( 48, 32, (uint8_t *)yandu_cn, sizeof(yandu_cn), (uint8_t *)yandu_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);				
 			break;
 		
 		case TYPE_EC:
@@ -2196,7 +2281,8 @@ void generate_DataView(PtrToInterfacial interfacial, uint16_t data_index)
 			break;
 		
 		case TYPE_CL:	
-	    LabelList_Add( 48, 32, (uint8_t *)CL_cn, sizeof(CL_cn), (uint8_t *)CL_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);				
+		LabelList_Add( 48, 32, (uint8_t *)Oiw_ppm_cn, sizeof(Oiw_ppm_cn), (uint8_t *)Oiw_ppm_en,  LABEL_NORMAL, LABEL_xinziku, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);				
+	    // LabelList_Add( 48, 32, (uint8_t *)CL_cn, sizeof(CL_cn), (uint8_t *)CL_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);				
 			break;
 		
 		case TYPE_Chl:
@@ -2216,7 +2302,11 @@ void generate_DataView(PtrToInterfacial interfacial, uint16_t data_index)
 			break;
 
 		case TYPE_Oiw:
-	    LabelList_Add( 48, 32, (uint8_t *)Oiw_cn, sizeof(Oiw_cn), (uint8_t *)Oiw_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);				
+	    LabelList_Add( 48, 32, (uint8_t *)Oiw_ppb_cn, sizeof(Oiw_ppb_cn), (uint8_t *)Oiw_ppb_en,  LABEL_NORMAL, LABEL_xinziku, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);				
+			break;
+
+		case TYPE_TSS:
+	    LabelList_Add( 48, 32, (uint8_t *)xuanfuwu_cn, sizeof(xuanfuwu_cn), (uint8_t *)xuanfuwu_en,  LABEL_NORMAL, LABEL_xinziku, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);				
 			break;
 		
 		default:
@@ -2231,7 +2321,14 @@ void generate_DataView(PtrToInterfacial interfacial, uint16_t data_index)
 	
 	if(data_index != 0)
 	{
-		log_ReadData(&log_u_generate, data_index - 1,datashow_SensorType);
+		if(datashow_SensorType == TYPE_FCL)
+		{
+			log_ReadData(&log_u_generate, data_index - 1,TYPE_SAL);
+		}
+		else
+		{
+			log_ReadData(&log_u_generate, data_index - 1,datashow_SensorType);
+		}
 		
 		update_LogTitle(&log_u_generate, data_index);
 		
@@ -2343,6 +2440,8 @@ void generate_DE26_EC_temp_data_value(PtrToInterfacial interfacial)
 	LabelList_Add( 88, other_y, NULL, 0, (uint8_t *)get_CurDo()->DOmgl_Vol_arr, LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//显示溶解氧的温度
 	OptionList_Add(0, (uint8_t *)dangqianzhi_cn, sizeof(dangqianzhi_cn), (uint8_t *)dangqianzhi_en, NONE_PAGE, OPTION_SMALL, CANNOT_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL,      &option_head);//当前值
 	
+	LabelList_Add(128, other_y, NULL, 0, (uint8_t *)BAIFENGHAO, LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);		
+
 	other_y += 16 + get_RowSpacing();
 	temp_int = (int)((temp*100) + 0.5);	
 	NanoOptionList_Add( 88, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int/100), 0, 9, IS_SINGLE,  &NanoPress);
@@ -2350,7 +2449,9 @@ void generate_DE26_EC_temp_data_value(PtrToInterfacial interfacial)
 	NanoOptionList_Add(112, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%10),     0, 9, IS_SINGLE,  &NanoPress);//小数点后1位			
 	
 	LabelList_Add(96, other_y, NULL, 0, (uint8_t *)XIAOSHUDIAN, LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);		
-	
+
+	LabelList_Add(128, other_y, NULL, 0, (uint8_t *)BAIFENGHAO, LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);		
+
 	OptionList_Add(1, (uint8_t *)shezhizhi_cn, sizeof(shezhizhi_cn), (uint8_t *)shezhizhi_en, NONE_PAGE, OPTION_SMALL, CAN_BE_SELECTED,    NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NanoPress, &option_head);//实际值
 	
 	OptionList_Add(2, (uint8_t *)baocun_cn,      sizeof(baocun_cn),      (uint8_t *)baocun_en,      NONE_PAGE, OPTION_SMALL, CAN_BE_SELECTED,    NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL,      &option_head);//保存
@@ -2377,7 +2478,6 @@ void generate_Sal_set_uint(PtrToInterfacial interfacial)
 
 	OptionList_Add(0, (uint8_t *)PPT_cn, sizeof(PPT_cn), (uint8_t *)PPT_en, NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, DisplayWord_xin, NULL, &option_head);
 	OptionList_Add(1, (uint8_t *)baifenhao_cn,  sizeof(baifenhao_cn),  (uint8_t *)baifenhao_en, NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, DisplayWord_xin, NULL, &option_head); 
-	OptionList_Add(2, (uint8_t *)qianfenhao_cn, sizeof(qianfenhao_cn), (uint8_t *)qianfenhao_en, NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, LANGUAGE_OPTION, DisplayWord_xin, NULL, &option_head); 
 
 	interfacial->page_father = PAGE_4_PARASET;//设定父界面
 	
@@ -2502,47 +2602,67 @@ void generate_DataLog(PtrToInterfacial interfacial)
 			break;
 		
 		case TYPE_FCL:
-			if(log_u_generate.log.log_data.FCL_mg_L >= 10000.0)
+			//盐度
+			if(log_u_generate.log.log_data.EC_salinity >= 0 && log_u_generate.log.log_data.EC_salinity < 100.0)//0.00 - 99.99 us
 			{
-			 snprintf((char *)value3_arr, 7, "%d", (unsigned int)log_u_generate.log.log_data.FCL_mg_L);	
-			}else{
-			 snprintf((char *)value3_arr, 7, "%6.2f", log_u_generate.log.log_data.FCL_mg_L);	
+				snprintf((char *)value4_arr, 7, "%6.2f", log_u_generate.log.log_data.EC_salinity);	
 			}
+			else if(log_u_generate.log.log_data.EC_salinity >= 100.0 && log_u_generate.log.log_data.EC_salinity < 1000.0)//100.0 - 999.9 us
+			{
+				snprintf((char *)value4_arr, 7, "%6.1f", log_u_generate.log.log_data.EC_salinity);	
+			}
+			else if(log_u_generate.log.log_data.EC_salinity >= 1000.0)//1000 - 9999 
+			{
+				snprintf((char *)value4_arr, 7, "%6.0f", log_u_generate.log.log_data.EC_salinity);	
+			}
+
+			LabelList_Add( 0, 80, (uint8_t *)wendu_cn, sizeof(wendu_cn), (uint8_t *)wendu_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//温度
+			LabelList_Add( 32, 80, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_CELSIUS, DONT_HAVE_PARENTHESIS, &label_head);//(℃):
+			LabelList_Add( 112, 80, NULL, 0, (uint8_t *)value1_arr,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+
+			LabelList_Add( 0,96, (uint8_t *)yandu_cn, sizeof(yandu_cn), (uint8_t *)yandu_zhu_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//温度
+			LabelList_Add( 32, 96, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_PPT, DONT_HAVE_PARENTHESIS, &label_head);//ppt
 			
+			LabelList_Add( 112, 96, NULL, 0, (uint8_t *)value4_arr,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+
 			break;
 		
 		case TYPE_EC:
-			if(log_u_generate.log.log_data.EC_us_cm >= 0 && log_u_generate.log.log_data.EC_us_cm < 100.0)//0.00 - 99.99 us
+
+			if(get_CurDo()->modbus_id == EC_DE40_ModbusID)
 			{
-				snprintf((char *)value3_arr, 7, "%6.2f", log_u_generate.log.log_data.EC_us_cm);	
-				snprintf((char *)value2_arr, 7, "%6.2f", log_u_generate.log.log_data.EC_TDS);	
+				log_u_generate.log.log_data.EC_us_cm /= 1000.0f; 
 			}
-			else if(log_u_generate.log.log_data.EC_us_cm >= 100.0 && log_u_generate.log.log_data.EC_us_cm < 1000.0)//100.0 - 999.9 us
-			{
-				snprintf((char *)value3_arr, 7, "%6.1f", log_u_generate.log.log_data.EC_us_cm);	
-				snprintf((char *)value2_arr, 7, "%6.1f", log_u_generate.log.log_data.EC_TDS);	
-			}
-			else if(log_u_generate.log.log_data.EC_us_cm >= 1000.0 && log_u_generate.log.log_data.EC_us_cm < 10000.0)//1000 - 9999 us
-			{
-				snprintf((char *)value3_arr, 7, "%6d", (unsigned int)log_u_generate.log.log_data.EC_us_cm);
-				snprintf((char *)value2_arr, 7, "%6d", (unsigned int)log_u_generate.log.log_data.EC_TDS);		
-			}
-			else if(log_u_generate.log.log_data.EC_us_cm >= 10000.0 && log_u_generate.log.log_data.EC_us_cm < 100000.0)//10.00ms - 99.99 ms
-			{
-				snprintf((char *)value3_arr, 7, "%6.2f", log_u_generate.log.log_data.EC_us_cm / 1000);
-				snprintf((char *)value2_arr, 7, "%6.2f", log_u_generate.log.log_data.EC_TDS / 1000);
-			}
-			else if(log_u_generate.log.log_data.EC_us_cm >= 100000.0 && log_u_generate.log.log_data.EC_us_cm < 1000000.0)//100.00ms - 999.99 ms
-			{
-				snprintf((char *)value3_arr, 7, "%6.1f", log_u_generate.log.log_data.EC_us_cm / 1000);	
-				snprintf((char *)value2_arr, 7, "%6.1f", log_u_generate.log.log_data.EC_TDS / 1000);
-			}
-			else if(log_u_generate.log.log_data.EC_us_cm >= 1000000.0)//1000 ms
-			{
-				snprintf((char *)value3_arr, 7, "%6d", 1000);	
-				snprintf((char *)value2_arr, 7, "%6d", (unsigned int)log_u_generate.log.log_data.EC_TDS / 1000);
-			}
-			
+				if(log_u_generate.log.log_data.EC_us_cm >= 0 && log_u_generate.log.log_data.EC_us_cm < 100.0)//0.00 - 99.99 us
+				{
+					snprintf((char *)value3_arr, 7, "%6.2f", log_u_generate.log.log_data.EC_us_cm);	
+					snprintf((char *)value2_arr, 7, "%6.2f", log_u_generate.log.log_data.EC_TDS);	
+				}
+				else if(log_u_generate.log.log_data.EC_us_cm >= 100.0 && log_u_generate.log.log_data.EC_us_cm < 1000.0)//100.0 - 999.9 us
+				{
+					snprintf((char *)value3_arr, 7, "%6.1f", log_u_generate.log.log_data.EC_us_cm);	
+					snprintf((char *)value2_arr, 7, "%6.1f", log_u_generate.log.log_data.EC_TDS);	
+				}
+				else if(log_u_generate.log.log_data.EC_us_cm >= 1000.0 && log_u_generate.log.log_data.EC_us_cm < 10000.0)//1000 - 9999 us
+				{
+					snprintf((char *)value3_arr, 7, "%6d", (unsigned int)log_u_generate.log.log_data.EC_us_cm);
+					snprintf((char *)value2_arr, 7, "%6d", (unsigned int)log_u_generate.log.log_data.EC_TDS);		
+				}
+				else if(log_u_generate.log.log_data.EC_us_cm >= 10000.0 && log_u_generate.log.log_data.EC_us_cm < 100000.0)//10.00ms - 99.99 ms
+				{
+					snprintf((char *)value3_arr, 7, "%6.2f", log_u_generate.log.log_data.EC_us_cm / 1000);
+					snprintf((char *)value2_arr, 7, "%6.2f", log_u_generate.log.log_data.EC_TDS / 1000);
+				}
+				else if(log_u_generate.log.log_data.EC_us_cm >= 100000.0 && log_u_generate.log.log_data.EC_us_cm < 1000000.0)//100.00ms - 999.99 ms
+				{
+					snprintf((char *)value3_arr, 7, "%6.1f", log_u_generate.log.log_data.EC_us_cm / 1000);	
+					snprintf((char *)value2_arr, 7, "%6.1f", log_u_generate.log.log_data.EC_TDS / 1000);
+				}
+				else if(log_u_generate.log.log_data.EC_us_cm >= 1000000.0)//1000 ms
+				{
+					snprintf((char *)value3_arr, 7, "%6d", 1000);	
+					snprintf((char *)value2_arr, 7, "%6d", (unsigned int)log_u_generate.log.log_data.EC_TDS / 1000);
+				}			
 			// //tds
 			// if(log_u_generate.log.log_data.EC_TDS >= 0 && log_u_generate.log.log_data.EC_TDS < 100.0)//0.00 - 99.99 us
 			// {
@@ -2558,11 +2678,67 @@ void generate_DataLog(PtrToInterfacial interfacial)
 			// }
 
 			//盐度
-			if(setting_GetSal_Uni() == 5)
+			// if(setting_GetSal_Uni() == 5)
+			// {
+			// 	log_u_generate.log.log_data.EC_salinity = log_u_generate.log.log_data.EC_salinity / 10.0;
+			// }
+			if(get_CurDo()->modbus_id == EC_DE40_ModbusID)
 			{
-				log_u_generate.log.log_data.EC_salinity = log_u_generate.log.log_data.EC_salinity / 10.0;
+				if(log_u_generate.log.log_data.EC_salinity >= 0 && log_u_generate.log.log_data.EC_salinity < 100.0)//0.00 - 99.99 us
+				{
+					snprintf((char *)value4_arr, 7, "%6.2f", log_u_generate.log.log_data.EC_salinity);	
+				}
+				else if(log_u_generate.log.log_data.EC_salinity >= 100.0 && log_u_generate.log.log_data.EC_salinity < 1000.0)//100.0 - 999.9 us
+				{
+					snprintf((char *)value4_arr, 7, "%6.1f", log_u_generate.log.log_data.EC_salinity);	
+				}
+				else if(log_u_generate.log.log_data.EC_salinity >= 1000.0)//1000 - 9999 
+				{
+					snprintf((char *)value4_arr, 7, "%6d", (unsigned int)log_u_generate.log.log_data.EC_salinity);	
+				}
+
+			LabelList_Add( 0, 80, (uint8_t *)wendu_cn, sizeof(wendu_cn), (uint8_t *)wendu_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//温度
+			LabelList_Add( 32, 80, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_CELSIUS, DONT_HAVE_PARENTHESIS, &label_head);//(℃):
+			LabelList_Add( 112, 80, NULL, 0, (uint8_t *)value1_arr,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+
+			LabelList_Add( 0, 96, (uint8_t *)diandaolv_cn, sizeof(diandaolv_cn), (uint8_t *)diandaolv_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//电导率
+      		
+			// if(log_u_generate.log.log_data.EC_us_cm >= 10000.0)  
+			{
+				LabelList_Add( (setting_GetIsChn() ? 48 : 24), 96, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_mSCM, DONT_HAVE_PARENTHESIS, &label_head);//ms/cm
+				LabelList_Add( 32, 112, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_GL, DONT_HAVE_PARENTHESIS, &label_head);//g
+			}							
+			// else
+			// {
+			// 	LabelList_Add( (setting_GetIsChn() ? 48 : 24), 96, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_USCM, DONT_HAVE_PARENTHESIS, &label_head);//us/cm
+			// 	LabelList_Add( 32, 112, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_MGL, DONT_HAVE_PARENTHESIS, &label_head);//mg
+			// }
+			LabelList_Add( 112, 96, NULL, 0, (uint8_t *)value3_arr,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+			
+			LabelList_Add( 0, 112, (uint8_t *)TDS_cn, sizeof(TDS_cn), (uint8_t *)TDS_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//温度
+			// LabelList_Add( 32, 112, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_MGL, DONT_HAVE_PARENTHESIS, &label_head);//mg
+			LabelList_Add( 112, 112, NULL, 0, (uint8_t *)value2_arr,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+
+			LabelList_Add( 0, 128, (uint8_t *)yandu_cn, sizeof(yandu_cn), (uint8_t *)yandu_zhu_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//温度
+			// if(setting_GetSal_Uni() == 0)
+			// {
+				LabelList_Add( 32, 128, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_PPT, DONT_HAVE_PARENTHESIS, &label_head);//ppt
+			// }
+			// else if(setting_GetSal_Uni() == 5)
+			// {
+			// 	LabelList_Add( 32, 128, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_PERCENT, DONT_HAVE_PARENTHESIS, &label_head);//%
+			// }
+			// else if(setting_GetSal_Uni() == 10)
+			// {
+			// 	LabelList_Add( 32, 128, (uint8_t *)qianfenhao1_cn, sizeof(qianfenhao1_cn), (uint8_t *)qianfenhao_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+			// }
+			
+			LabelList_Add( 112, 128, NULL, 0, (uint8_t *)value4_arr,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+
 			}
-			if(log_u_generate.log.log_data.EC_salinity >= 0 && log_u_generate.log.log_data.EC_salinity < 100.0)//0.00 - 99.99 us
+			else if(get_CurDo()->modbus_id == EC_DE26_ModbusID)
+			{
+				if(log_u_generate.log.log_data.EC_salinity >= 0 && log_u_generate.log.log_data.EC_salinity < 100.0)//0.00 - 99.99 us
 			{
 				snprintf((char *)value4_arr, 7, "%6.2f", log_u_generate.log.log_data.EC_salinity);	
 			}
@@ -2597,10 +2773,10 @@ void generate_DataLog(PtrToInterfacial interfacial)
 			// LabelList_Add( 32, 112, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_MGL, DONT_HAVE_PARENTHESIS, &label_head);//mg
 			LabelList_Add( 112, 112, NULL, 0, (uint8_t *)value2_arr,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
 
-			// LabelList_Add( 0, 128, (uint8_t *)yandu_cn, sizeof(yandu_cn), (uint8_t *)yandu_zhu_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//温度
+			LabelList_Add( 0, 128, (uint8_t *)yandu_cn, sizeof(yandu_cn), (uint8_t *)yandu_zhu_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//温度
 			// if(setting_GetSal_Uni() == 0)
 			// {
-			// 	LabelList_Add( 32, 128, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_PPT, DONT_HAVE_PARENTHESIS, &label_head);//ppt
+				LabelList_Add( 32, 128, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_PPT, DONT_HAVE_PARENTHESIS, &label_head);//ppt
 			// }
 			// else if(setting_GetSal_Uni() == 5)
 			// {
@@ -2611,7 +2787,9 @@ void generate_DataLog(PtrToInterfacial interfacial)
 			// 	LabelList_Add( 32, 128, (uint8_t *)qianfenhao1_cn, sizeof(qianfenhao1_cn), (uint8_t *)qianfenhao_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
 			// }
 			
-			// LabelList_Add( 112, 128, NULL, 0, (uint8_t *)value4_arr,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+			LabelList_Add( 112, 128, NULL, 0, (uint8_t *)value4_arr,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+
+			}
 
 			break;
 		
@@ -2646,7 +2824,7 @@ void generate_DataLog(PtrToInterfacial interfacial)
 			LabelList_Add( 112, 128, NULL, 0, (uint8_t *)value2_arr,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
 		
 			LabelList_Add( 0, 144, (uint8_t *)andan_cn, sizeof(andan_cn), (uint8_t *)andan_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//DO mg/L
-			LabelList_Add( (setting_GetIsChn() ? 48 : 16), 144, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_MGL, HAVE_PARENTHESIS, &label_head);//(mg/L)
+			LabelList_Add( (setting_GetIsChn() ? 48 : 32), 144, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_MGL, HAVE_PARENTHESIS, &label_head);//(mg/L)
 			LabelList_Add( 112, 144, NULL, 0, (uint8_t *)value3_arr,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
       break;	
 			
@@ -2662,12 +2840,28 @@ void generate_DataLog(PtrToInterfacial interfacial)
 		
 		case TYPE_CL:
 
-			if(log_u_generate.log.log_data.Cl_mg_L >= 10000.0)
+			snprintf((char *)value1_arr, 7, "%6.1f", log_u_generate.log.log_data.temperature);//先初始化一下
+			if(log_u_generate.log.log_data.OIW_DA511_mg_L >= 100.0f)
 			{
-			 snprintf((char *)value3_arr, 7, "%d", (unsigned int)log_u_generate.log.log_data.Cl_mg_L);	
-			}else{
-			 snprintf((char *)value3_arr, 7, "%6.2f", log_u_generate.log.log_data.Cl_mg_L);	
+				snprintf((char *)value4_arr, 8, "%7.1f", log_u_generate.log.log_data.OIW_DA511_mg_L);
 			}
+			else if(log_u_generate.log.log_data.OIW_DA511_mg_L >= 10.0f)
+			{
+				snprintf((char *)value4_arr, 8, "%7.2f", log_u_generate.log.log_data.OIW_DA511_mg_L);
+			}
+			else
+			{
+				snprintf((char *)value4_arr, 8, "%7.2f", log_u_generate.log.log_data.OIW_DA511_mg_L);
+			}
+			LabelList_Add( 0, 96, (uint8_t *)Oiw_cn, sizeof(Oiw_cn), (uint8_t *)Oiw_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//水中油
+			LabelList_Add( 104, 96, NULL, 0, (uint8_t *)value4_arr,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);			
+			
+			LabelList_Add( (setting_GetIsChn() ? 64 : 40), 96, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_PPM, DONT_HAVE_PARENTHESIS, &label_head);//(mg/L):
+
+			LabelList_Add( 0, 80, (uint8_t *)wendu_cn, sizeof(wendu_cn), (uint8_t *)wendu_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//温度
+			LabelList_Add( 32, 80, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_CELSIUS, HAVE_PARENTHESIS, &label_head);//(℃):
+			LabelList_Add( 112, 80, NULL, 0, (uint8_t *)value1_arr,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+
 			break;
 		
 		case TYPE_Chl:
@@ -2695,50 +2889,29 @@ void generate_DataLog(PtrToInterfacial interfacial)
 			break;
 		
 		case TYPE_Bga:
-			if(log_u_generate.log.log_data.Bga_cells_mL >= 10000.0)
+			if (log_u_generate.log.log_data.Bga_cells_mL <= 0.0)
 			{
-				if ((log_u_generate.log.log_data.Bga_cells_mL / 1000.0) < 10.0)
-				{
-					snprintf((char *)value3_arr,       7, "%6.1f", (log_u_generate.log.log_data.Bga_cells_mL / 1000.0));
-				}
-				else if((log_u_generate.log.log_data.Bga_cells_mL / 1000.0) < 100.0)
-				{
-					snprintf((char *)value3_arr,       7, "%6d", (unsigned int)(log_u_generate.log.log_data.Bga_cells_mL / 1000.0));
-				}
-				else if((log_u_generate.log.log_data.Bga_cells_mL / 1000.0) < 1000.0)
-				{
-					snprintf((char *)value3_arr,       7, "%6d", (unsigned int)(log_u_generate.log.log_data.Bga_cells_mL / 1000.0));
-				}
+				snprintf(value3_arr,       7, "%6.4f", log_u_generate.log.log_data.Bga_cells_mL);
 			}
-			else
+			else if((log_u_generate.log.log_data.Bga_cells_mL) <= 100.0)
 			{
-				if(log_u_generate.log.log_data.Bga_cells_mL < 10.0)
-				{
-					snprintf((char *)value3_arr,       7, "%6.2f", log_u_generate.log.log_data.Bga_cells_mL);
-				}
-				else if(log_u_generate.log.log_data.Bga_cells_mL < 100.0)
-				{
-					snprintf((char *)value3_arr,       7, "%6.1f", log_u_generate.log.log_data.Bga_cells_mL);
-				}
-				else
-				{
-					snprintf((char *)value3_arr,       7, "%6d", (unsigned int)(log_u_generate.log.log_data.Bga_cells_mL));
-				}			
+				snprintf(value3_arr,       7, "%6.3f",log_u_generate.log.log_data.Bga_cells_mL);
 			}
-			LabelList_Add( 0, 112, (uint8_t *)wendu_cn, sizeof(wendu_cn), (uint8_t *)wendu_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//温度
-			LabelList_Add( 32, 112, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_CELSIUS, HAVE_PARENTHESIS, &label_head);//(℃):
-			LabelList_Add( 112, 112, NULL, 0, (uint8_t *)value1_arr,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+			else if((log_u_generate.log.log_data.Bga_cells_mL) <= 1000.0)
+			{
+				snprintf(value3_arr,       7, "%6.2f", log_u_generate.log.log_data.Bga_cells_mL);
+			}
+			else if((log_u_generate.log.log_data.Bga_cells_mL) <= 10000.0)
+			{
+				snprintf(value3_arr,       7, "%6.1f", log_u_generate.log.log_data.Bga_cells_mL);
+			}
+			LabelList_Add( 0, 80, (uint8_t *)wendu_cn, sizeof(wendu_cn), (uint8_t *)wendu_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//温度
+			LabelList_Add( 32, 80, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_CELSIUS, HAVE_PARENTHESIS, &label_head);//(℃):
+			LabelList_Add( 112, 80, NULL, 0, (uint8_t *)value1_arr,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
 
-			LabelList_Add( 0, 128, (uint8_t *)Bga_cn, sizeof(Bga_cn), (uint8_t *)Bga_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//bga
-			if(log_u_generate.log.log_data.Bga_cells_mL >= 10000.0)
-			{
-				LabelList_Add( (setting_GetIsChn() ? 0 : 0), 144, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_Kcells_mL, HAVE_PARENTHESIS, &label_head);
-			}
-			else
-			{
-				LabelList_Add( (setting_GetIsChn() ? 0 : 0), 144, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_Cells_mL, HAVE_PARENTHESIS, &label_head);
-			}
-			LabelList_Add( 112, 144, NULL, 0, (uint8_t *)value3_arr,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+			LabelList_Add( 0, 96, (uint8_t *)Bga_cn, sizeof(Bga_cn), (uint8_t *)Bga_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//bga
+			LabelList_Add( (setting_GetIsChn() ? 0 : 0), 112, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_Kcells_mL, HAVE_PARENTHESIS, &label_head);
+			LabelList_Add( 112, 112, NULL, 0, (uint8_t *)value3_arr,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
 
 			break;
 		
@@ -2786,9 +2959,14 @@ void generate_DataLog(PtrToInterfacial interfacial)
 			{
 				snprintf((char *)value4_arr, 8, "%7d", (int)log_u_generate.log.log_data.MLSS_mg_L);
 			}
+			else if(setting_GetMesUnit() == 5)
+			{
+				snprintf((char *)value4_arr, 8, "%7.3f", log_u_generate.log.log_data.MLSS_mg_L/1000.0);
+
+			}
 			else
 			{
-				snprintf((char *)value4_arr, 8, "%7.2f", log_u_generate.log.log_data.MLSS_mg_L/100.0);
+				snprintf((char *)value4_arr, 8, "%7.4f", log_u_generate.log.log_data.MLSS_mg_L/10000.0);
 			}
 				
 			LabelList_Add( 0, 80, (uint8_t *)MLSS_cn, sizeof(MLSS_cn), (uint8_t *)MLSS_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//污泥浓度
@@ -2827,17 +3005,17 @@ void generate_DataLog(PtrToInterfacial interfacial)
 			}
 			else
 			{
-				snprintf((char *)value4_arr, 8, "%7.3f", log_u_generate.log.log_data.OIW_mg_L);
+				snprintf((char *)value4_arr, 8, "%7.2f", log_u_generate.log.log_data.OIW_mg_L);
 			}
 			LabelList_Add( 0, 96, (uint8_t *)Oiw_cn, sizeof(Oiw_cn), (uint8_t *)Oiw_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//水中油
 			LabelList_Add( 104, 96, NULL, 0, (uint8_t *)value4_arr,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);			
 			
-			if(get_CurDo()->modbus_id == OiW_guohong_ModbusID)
-			{
-				LabelList_Add( (setting_GetIsChn() ? 64 : 40), 96, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_PPM, DONT_HAVE_PARENTHESIS, &label_head);//(mg/L):
+			// if(get_CurDo()->modbus_id == OiW_guohong_ModbusID||get_CurDo()->modbus_id == OiW_yushan_DA511_ModbusID)
+			// {
+			// 	LabelList_Add( (setting_GetIsChn() ? 64 : 40), 96, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_PPM, DONT_HAVE_PARENTHESIS, &label_head);//(mg/L):
 
-			}
-			else
+			// }
+			// else
 			{
 				LabelList_Add( (setting_GetIsChn() ? 64 : 40), 96, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_PPB, DONT_HAVE_PARENTHESIS, &label_head);//(mg/L):
 
@@ -2845,6 +3023,41 @@ void generate_DataLog(PtrToInterfacial interfacial)
 			LabelList_Add( 0, 80, (uint8_t *)wendu_cn, sizeof(wendu_cn), (uint8_t *)wendu_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//温度
 			LabelList_Add( 32, 80, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_CELSIUS, HAVE_PARENTHESIS, &label_head);//(℃):
 			LabelList_Add( 112, 80, NULL, 0, (uint8_t *)value1_arr,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+
+			break;
+
+		case TYPE_TSS:
+			if(log_u_generate.log.log_data.TSS_mg_L >= 10000.0)
+			{
+				snprintf((char *)value3_arr, 7, "%d", (unsigned int)log_u_generate.log.log_data.TSS_mg_L);	
+			}
+			else
+			{
+				snprintf((char *)value3_arr, 7, "%6.2f", log_u_generate.log.log_data.TSS_mg_L);	
+			}		
+			if(get_COMADo()->modbus_id == LH_DX01_ModbusID )
+			{
+				if(setting_GetTemp_jingdu() == 0)
+				{
+					snprintf((char *)value1_arr, 7, "%6d", (uint16_t)log_u_generate.log.log_data.temperature);
+				}
+				else if(setting_GetTemp_jingdu() == 5)
+				{
+					snprintf((char *)value1_arr, 7, "%6.1f", log_u_generate.log.log_data.temperature);
+				}
+				else
+				{
+					snprintf((char *)value1_arr, 7, "%6.2f", log_u_generate.log.log_data.temperature);
+				}	
+			}
+
+			LabelList_Add( 0, 80, (uint8_t *)xuanfuwu_cn, sizeof(xuanfuwu_cn), (uint8_t *)xuanfuwu_en,  LABEL_NORMAL, LABEL_xinziku, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//浊度
+			LabelList_Add( 112, 80, NULL, 0, (uint8_t *)value3_arr,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);	
+			LabelList_Add( (setting_GetIsChn() ? 56 : 32), 80, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_MGL, HAVE_PARENTHESIS, &label_head);
+
+			LabelList_Add( 0, 96, (uint8_t *)wendu_cn, sizeof(wendu_cn), (uint8_t *)wendu_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);//温度
+			LabelList_Add( 32, 96, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_CELSIUS, HAVE_PARENTHESIS, &label_head);//(℃):
+			LabelList_Add( 112, 96, NULL, 0, (uint8_t *)value1_arr,  LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
 
 			break;
 		
@@ -2938,6 +3151,36 @@ void generate_Cal_temp(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type)
 				NanoOptionList_Add(112, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%10),         0, 9, IS_SINGLE,  &NanoPress);//小数点后两位
 				LabelList_Add(96, other_y, NULL, 0, (uint8_t *)XIAOSHUDIAN, LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
 				break;
+
+			case LH_DX01_ModbusID:
+				if(setting_GetTemp_jingdu() == 0)
+				{
+					temp_int = (int)((temp*100) + 0.5);
+					NanoOptionList_Add( 96, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int/10000), 0, 1, IS_SINGLE,  &NanoPress);		
+					NanoOptionList_Add( 104, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%10000/1000), 0, 9, IS_SINGLE,  &NanoPress);
+					NanoOptionList_Add( 112, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%1000/100),   0, 9, IS_SINGLE,  &NanoPress);	
+				}
+				else if(setting_GetTemp_jingdu() == 5)
+				{
+					temp_int = (int)((temp*100) + 0.5);
+					NanoOptionList_Add( 80, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int/10000), 0, 1, IS_SINGLE,  &NanoPress);		
+					NanoOptionList_Add( 88, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%10000/1000), 0, 9, IS_SINGLE,  &NanoPress);
+					NanoOptionList_Add( 96, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%1000/100),   0, 9, IS_SINGLE,  &NanoPress);
+					NanoOptionList_Add(112, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%100/10),     0, 9, IS_SINGLE,  &NanoPress);//小数点后1位			
+					LabelList_Add(104, other_y, NULL, 0, (uint8_t *)XIAOSHUDIAN, LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+				}
+				else
+				{
+					temp_int = (int)((temp*100) + 0.5);
+					NanoOptionList_Add( 72, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int/10000), 0, 1, IS_SINGLE,  &NanoPress);		
+					NanoOptionList_Add( 80, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%10000/1000), 0, 9, IS_SINGLE,  &NanoPress);
+					NanoOptionList_Add( 88, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%1000/100),   0, 9, IS_SINGLE,  &NanoPress);
+					NanoOptionList_Add(104, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%100/10),     0, 9, IS_SINGLE,  &NanoPress);//小数点后1位			
+					NanoOptionList_Add(112, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%10),         0, 9, IS_SINGLE,  &NanoPress);//小数点后两位
+					LabelList_Add(96, other_y, NULL, 0, (uint8_t *)XIAOSHUDIAN, LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+				} 
+				break;
+
 			default:
 				temp_int = (int)(temp*100);		
 				NanoOptionList_Add( 80, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int/10000), 0, 1, IS_SINGLE,  &NanoPress);			
@@ -2968,6 +3211,35 @@ void generate_Cal_temp(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type)
 				NanoOptionList_Add(112, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%10),         0, 9, IS_SINGLE,  &NanoPress);//小数点后两位
 				LabelList_Add(96, other_y, NULL, 0, (uint8_t *)XIAOSHUDIAN, LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
 				break;
+
+			case LH_DX01_ModbusID:
+				if(setting_GetTemp_jingdu() == 0)
+				{
+					temp_int = (int)((temp*100) + 0.5);
+					NanoOptionList_Add( 96, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int/10000), 0, 1, IS_SINGLE,  &NanoPress);		
+					NanoOptionList_Add( 104, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%10000/1000), 0, 9, IS_SINGLE,  &NanoPress);
+					NanoOptionList_Add( 112, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%1000/100),   0, 9, IS_SINGLE,  &NanoPress);	
+				}
+				else if(setting_GetTemp_jingdu() == 5)
+				{
+					temp_int = (int)((temp*100) + 0.5);
+					NanoOptionList_Add( 80, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int/10000), 0, 1, IS_SINGLE,  &NanoPress);		
+					NanoOptionList_Add( 88, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%10000/1000), 0, 9, IS_SINGLE,  &NanoPress);
+					NanoOptionList_Add( 96, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%1000/100),   0, 9, IS_SINGLE,  &NanoPress);
+					NanoOptionList_Add(112, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%100/10),     0, 9, IS_SINGLE,  &NanoPress);//小数点后1位			
+					LabelList_Add(104, other_y, NULL, 0, (uint8_t *)XIAOSHUDIAN, LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+				}
+				else
+				{
+					temp_int = (int)((temp*100) + 0.5);
+					NanoOptionList_Add( 72, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int/10000), 0, 1, IS_SINGLE,  &NanoPress);		
+					NanoOptionList_Add( 80, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%10000/1000), 0, 9, IS_SINGLE,  &NanoPress);
+					NanoOptionList_Add( 88, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%1000/100),   0, 9, IS_SINGLE,  &NanoPress);
+					NanoOptionList_Add(104, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%100/10),     0, 9, IS_SINGLE,  &NanoPress);//小数点后1位			
+					NanoOptionList_Add(112, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int%10),         0, 9, IS_SINGLE,  &NanoPress);//小数点后两位
+					LabelList_Add(96, other_y, NULL, 0, (uint8_t *)XIAOSHUDIAN, LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+				}
+				break;
 			default:
 				temp_int = (int)(temp*100);			
 				NanoOptionList_Add( 88, other_y, NULL, 0, NULL, NANOOPTION_NUMBER,  (uint8_t)(temp_int/1000), 0, 9, IS_SINGLE,  &NanoPress);
@@ -2989,9 +3261,18 @@ void generate_Cal_temp(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type)
 	
 	interfacial->page_father = PAGE_4_CAL;//设定父界面
 	
-	interfacial->content_chn = (uint8_t *)wendu_cn ;
-	interfacial->ChnContent_size = sizeof(wendu_cn);
-	interfacial->content_eng = (uint8_t *)wendu_en;
+	if(get_CurDo()->modbus_id == EC_DS46_ModbusID)
+	{
+		interfacial->content_chn = (uint8_t *)wendujiaozhun_cn ;
+		interfacial->ChnContent_size = sizeof(wendujiaozhun_cn);
+		interfacial->content_eng = (uint8_t *)wendujiaozhun_en;
+	}
+	else
+	{
+		interfacial->content_chn = (uint8_t *)wendu_cn ;
+		interfacial->ChnContent_size = sizeof(wendu_cn);
+		interfacial->content_eng = (uint8_t *)wendu_en;
+	}
 }
 
 void generate_AutoLock(PtrToInterfacial interfacial)
@@ -4213,7 +4494,10 @@ void generate_shenghui_EC_ONE(PtrToInterfacial interfacial, SENSOR_TYPE sensor_t
 		NanoOptionList_Add(108, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
 		LabelList_Add(84, 56, NULL, 0, (uint8_t *)XIAOSHUDIAN,  LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
   	}
-	else if(get_CurDo()->modbus_id == OiW_yushan_ModbusID)
+	else if(get_CurDo()->modbus_id == OiW_yushan_ModbusID
+	|| get_CurDo()->modbus_id == OiW_yushan_DA511_ModbusID
+	|| get_CurDo()->modbus_id == EC_DS46_ModbusID
+	|| get_CurDo()->modbus_id == EC_DE40_ModbusID)
 	{
 		// NanoOptionList_Add(52, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 68, 67, 68, IS_SINGLE, &NanoPercent); //数值
 		NanoOptionList_Add(60, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
@@ -4251,6 +4535,7 @@ void generate_shenghui_EC_ONE(PtrToInterfacial interfacial, SENSOR_TYPE sensor_t
 	switch(get_CurDo()->modbus_id)
 	{									
 		case EC_DE26_ModbusID: 
+		case EC_DE40_ModbusID:
 		case ORP_DR31_ModbusID:
 			interfacial->content_chn = (uint8_t *)dandian_cn;
 			interfacial->ChnContent_size = sizeof(dandian_cn);
@@ -4258,6 +4543,7 @@ void generate_shenghui_EC_ONE(PtrToInterfacial interfacial, SENSOR_TYPE sensor_t
 			break;	
 		case OiW_guohong_ModbusID:
 		case OiW_yushan_ModbusID:
+		case OiW_yushan_DA511_ModbusID:
 			interfacial->content_chn = (uint8_t *)dandianjiaozhun_cn;
 			interfacial->ChnContent_size = sizeof(dandianjiaozhun_cn);
 			interfacial->content_eng = (uint8_t *)dandianjiaozhun_en;
@@ -4285,6 +4571,13 @@ void generate_shenghui_EC_ONE(PtrToInterfacial interfacial, SENSOR_TYPE sensor_t
 			interfacial->content_chn = (uint8_t *)xielvshezhi_cn;
 			interfacial->ChnContent_size = sizeof(xielvshezhi_cn);
 			interfacial->content_eng = (uint8_t *)xielvshezhi_en;
+			break;
+
+		case EC_DS46_ModbusID:
+			interfacial->content_chn = (uint8_t *)yandujiaozhun_cn;
+			interfacial->ChnContent_size = sizeof(yandujiaozhun_cn);
+			interfacial->content_eng = (uint8_t *)yandujiaozhun_en;
+
 			break;
 		
 		default:
@@ -4314,7 +4607,9 @@ void generate_OIW_K_CAL(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type)
 		NanoOptionList_Add(76, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
 		LabelList_Add(68, 56, NULL, 0, (uint8_t *)XIAOSHUDIAN,  LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
   	}
-	else if(get_CurDo()->modbus_id == OiW_yushan_ModbusID)
+	else if(get_CurDo()->modbus_id == OiW_yushan_ModbusID
+	|| get_CurDo()->modbus_id == OiW_yushan_DA511_ModbusID
+	|| get_CurDo()->modbus_id == LH_DX01_ModbusID)
 	{ 
 		NanoOptionList_Add(52, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent); //数值
 		NanoOptionList_Add(60, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
@@ -4335,6 +4630,8 @@ void generate_OIW_K_CAL(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type)
 	{									
 		case OiW_guohong_ModbusID:
 		case OiW_yushan_ModbusID:
+		case OiW_yushan_DA511_ModbusID:
+		case LH_DX01_ModbusID:
 			interfacial->content_chn = (uint8_t *)xielvjiaozhun_cn;
 			interfacial->ChnContent_size = sizeof(xielvjiaozhun_cn);
 			interfacial->content_eng = (uint8_t *)xielvjiaozhun_en;
@@ -4360,15 +4657,12 @@ void generate_shenghui_BGA_ONE(PtrToInterfacial interfacial, SENSOR_TYPE sensor_
 	
 	if(get_CurDo()->modbus_id == Bga_shenghui_ModbusID)
 	{
-		NanoOptionList_Add(44, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent); //数值
-		NanoOptionList_Add(52, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
 		NanoOptionList_Add(60, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
 		NanoOptionList_Add(68, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
 		NanoOptionList_Add(76, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
-		NanoOptionList_Add(84, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
 
-		LabelList_Add(92, 56, NULL, 0, (uint8_t *)XIAOSHUDIAN,  LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
-		NanoOptionList_Add(100, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+		LabelList_Add(84, 56, NULL, 0, (uint8_t *)XIAOSHUDIAN,  LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+		NanoOptionList_Add(92, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
   	}
 	OptionList_Add(0, (uint8_t *)jinrujiaozhunmoshi_cn, sizeof(jinrujiaozhunmoshi_cn), (uint8_t *)jinrujiaozhunmoshi_en, NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NanoPercent, &option_head);
 		
@@ -4380,9 +4674,9 @@ void generate_shenghui_BGA_ONE(PtrToInterfacial interfacial, SENSOR_TYPE sensor_
 	switch(get_CurDo()->modbus_id)
 	{									
 		case Bga_shenghui_ModbusID:
-			interfacial->content_chn = (uint8_t *)Bga_jiaozhun1_cn;
-			interfacial->ChnContent_size = sizeof(Bga_jiaozhun1_cn);
-			interfacial->content_eng = (uint8_t *)Bga_jiaozhun1_en;
+			interfacial->content_chn = (uint8_t *)lingdianjiaozhun_cn;
+			interfacial->ChnContent_size = sizeof(lingdianjiaozhun_cn);
+			interfacial->content_eng = (uint8_t *)lingdianjiaozhun_en;
 			break;
 
 		default:
@@ -4406,15 +4700,12 @@ void generate_shenghui_BGA_TWO(PtrToInterfacial interfacial, SENSOR_TYPE sensor_
 	
 	if(get_CurDo()->modbus_id == Bga_shenghui_ModbusID)
 	{
-		NanoOptionList_Add(44, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent); //数值
-		NanoOptionList_Add(52, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
 		NanoOptionList_Add(60, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
 		NanoOptionList_Add(68, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
 		NanoOptionList_Add(76, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
-		NanoOptionList_Add(84, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
 
-		LabelList_Add(92, 56, NULL, 0, (uint8_t *)XIAOSHUDIAN,  LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
-		NanoOptionList_Add(100, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+		LabelList_Add(84, 56, NULL, 0, (uint8_t *)XIAOSHUDIAN,  LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+		NanoOptionList_Add(92, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
   	}
 	OptionList_Add(0, (uint8_t *)jinrujiaozhunmoshi_cn, sizeof(jinrujiaozhunmoshi_cn), (uint8_t *)jinrujiaozhunmoshi_en, NONE_PAGE, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NanoPercent, &option_head);
 		
@@ -4426,9 +4717,9 @@ void generate_shenghui_BGA_TWO(PtrToInterfacial interfacial, SENSOR_TYPE sensor_
 	switch(get_CurDo()->modbus_id)
 	{									
 		case Bga_shenghui_ModbusID:
-			interfacial->content_chn = (uint8_t *)Bga_jiaozhun2_cn;
-			interfacial->ChnContent_size = sizeof(Bga_jiaozhun2_cn);
-			interfacial->content_eng = (uint8_t *)Bga_jiaozhun2_en;
+			interfacial->content_chn = (uint8_t *)xielvjiaozhun_cn;
+			interfacial->ChnContent_size = sizeof(xielvjiaozhun_cn);
+			interfacial->content_eng = (uint8_t *)xielvjiaozhun_en;
 			break;
 
 		default:
@@ -4470,6 +4761,17 @@ void generate_DE26_EC_Zero(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type
 			NanoOptionList_Add(68, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
 			NanoOptionList_Add(76, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
 		}
+		else if(setting_GetMesUnit() == 5)
+		{
+			LabelList_Add(68, 56, NULL, 0, (uint8_t *)XIAOSHUDIAN,  LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+
+			NanoOptionList_Add(52, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 68, 67, 68, IS_SINGLE, &NanoPercent); //数值
+			NanoOptionList_Add(60, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+			NanoOptionList_Add(76, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+			NanoOptionList_Add(84, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+			NanoOptionList_Add(92, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+
+		}
 		else
 		{
 			LabelList_Add(68, 56, NULL, 0, (uint8_t *)XIAOSHUDIAN,  LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
@@ -4478,7 +4780,20 @@ void generate_DE26_EC_Zero(PtrToInterfacial interfacial, SENSOR_TYPE sensor_type
 			NanoOptionList_Add(60, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
 			NanoOptionList_Add(76, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
 			NanoOptionList_Add(84, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+			NanoOptionList_Add(92, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+			NanoOptionList_Add(100, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+
 		}			
+	}
+	else if(get_CurDo()->modbus_id == EC_DE40_ModbusID)
+	{
+		NanoOptionList_Add(60, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+		NanoOptionList_Add(68, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+		NanoOptionList_Add(76, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+		NanoOptionList_Add(92, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+		NanoOptionList_Add(100, 56, NULL, 0, NULL, NANOOPTION_NUMBER, 0, 0, 9, IS_SINGLE, &NanoPercent);
+		LabelList_Add(84, 56, NULL, 0, (uint8_t *)XIAOSHUDIAN,  LABEL_NORMAL, LABEL_PUNCTUATION, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+
 	}
 	else
 	{

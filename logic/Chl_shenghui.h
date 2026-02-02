@@ -17,6 +17,7 @@ void Chl_shenghui_rs485_ClearCal(PtrToDOProbe ptd);
 void Chl_shenghui_Set_Measure_Range(PtrToDOProbe ptd, uint8_t* dat);
 void Chl_shenghui_UpdateTemp2DO_Vol(PtrToDOProbe ptd, uint8_t *dat);
 void Chl_shenghui_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat);
+void Chl_shenghui_rs485_GetCal_Status(PtrToDOProbe ptd);
 
 
 #endif

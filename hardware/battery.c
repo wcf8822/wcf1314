@@ -1,6 +1,7 @@
 #include "battery.h"
 #include "adc.h"
 #include "loadbit.h"
+#include "interfacial.h"
 
 static double sum=0.0;
 static uint8_t count = 1;
@@ -115,30 +116,30 @@ void battery_draw(float ad_value)
 		}
 	}
 	else
- {
+ 	{
 	if( !HAL_GPIO_ReadPin(USB_JOIN_GPIO_Port, USB_JOIN_Pin) && ad_value < BATTERY_VOLTAGE_MAX)//如果接了数据线并且电量没有达到满电要求,则为充电状态
 	{
-				if(BatteryCharge_count == 0)
-				{
-			    GUI_LoadPic(130, 4, (uint8_t *)BATTERY_LAVEL_ARR0, 22, 11);//没格子了
-				}
-				else if(BatteryCharge_count == 1)
-				{
-			  	GUI_LoadPic(130, 4, (uint8_t *)BATTERY_LAVEL_ARR1, 22, 11); //显示一格电
-				}
-				else if(BatteryCharge_count == 2)
-				{
-					GUI_LoadPic(130, 4, (uint8_t *)BATTERY_LAVEL_ARR2, 22, 11); //显示两格电
-				}	
-				else if(BatteryCharge_count == 3)
-				{
-					GUI_LoadPic(130, 4, (uint8_t *)BATTERY_LAVEL_ARR3, 22, 11); //显示三格电
-				}					
-				BatteryCharge_count++;
-				if(BatteryCharge_count >= 4)
-				{
-					BatteryCharge_count = 0;
-				}
+		if(BatteryCharge_count == 0)
+		{
+		GUI_LoadPic(130, 4, (uint8_t *)BATTERY_LAVEL_ARR0, 22, 11);//没格子了
+		}
+		else if(BatteryCharge_count == 1)
+		{
+		GUI_LoadPic(130, 4, (uint8_t *)BATTERY_LAVEL_ARR1, 22, 11); //显示一格电
+		}
+		else if(BatteryCharge_count == 2)
+		{
+			GUI_LoadPic(130, 4, (uint8_t *)BATTERY_LAVEL_ARR2, 22, 11); //显示两格电
+		}	
+		else if(BatteryCharge_count == 3)
+		{
+			GUI_LoadPic(130, 4, (uint8_t *)BATTERY_LAVEL_ARR3, 22, 11); //显示三格电
+		}					
+		BatteryCharge_count++;
+		if(BatteryCharge_count >= 4)
+		{
+			BatteryCharge_count = 0;
+		}
 	}
 	else
 	{
@@ -165,11 +166,17 @@ void battery_draw(float ad_value)
 				GUI_LoadPic(130, 4, (uint8_t *)BATTERY_LAVEL_ARR1, 22, 11); //显示一格电
 			}
 		}
-		else if(ad_value < BATTERY_LAVEL_1)//0.6~3.6	0格电
+		else if(ad_value >=BATTERY_LAVEL_0 && ad_value < BATTERY_LAVEL_1)//0.6~3.6	0格电
 		{
 			bat_flags.bat_lvl1 = 1;
 			GUI_LoadPic(130, 4, (uint8_t *)BATTERY_LAVEL_ARR0, 22, 11);//没格子了
 		}	
+		else if(ad_value < BATTERY_LAVEL_CLOSE)//关机
+		{
+			set_close();
+			generate_MessageBox(MESSAGE_Close, 1);	
+			GUI_LoadPic(130, 4, (uint8_t *)BATTERY_LAVEL_ARR0, 22, 11);//没格子了
+		}
 	}			 
  }	
 	

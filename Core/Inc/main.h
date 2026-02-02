@@ -182,7 +182,7 @@ void Error_Handler(void);
 
 
 
-#define SETTING_FIRSTRUN_JUDGE 0x67     //判断是否是第一次上电的判断对比数值
+#define SETTING_FIRSTRUN_JUDGE 0xDD     //版本维护
 
 #define SETTING_FIRSTRUN_ADDR  0x000000 //判断是否是第一次上电的判断对比位 地址
 #define SETTING_CNORENG_ADDR   0x000100 //判断恢复出厂设置是英文还是中文的数据位 地址
@@ -199,7 +199,7 @@ void Error_Handler(void);
 #define LOG_FIRST_ADDR         0x3CB000 //DO 第一条记录的存储地址
 #define LOG_FIRST_pH_ADDR         0x3CB000+1*LOG_MAX_COUNT*sizeof(log_t)   //pH 第一条记录的存储地址
 #define LOG_FIRST_Tur_ADDR         0x3CB000+2*LOG_MAX_COUNT*sizeof(log_t)   //Tur 第一条记录的存储地址
-#define LOG_FIRST_FCL_ADDR         0x3CB000+3*LOG_MAX_COUNT*sizeof(log_t)   //FCL 第一条记录的存储地址
+#define LOG_FIRST_SAL_ADDR         0x3CB000+3*LOG_MAX_COUNT*sizeof(log_t)   //SAL 第一条记录的存储地址
 #define LOG_FIRST_EC_ADDR         0x3CB000+4*LOG_MAX_COUNT*sizeof(log_t)   //EC 第一条记录的存储地址
 #define LOG_FIRST_ORP_ADDR         0x3CB000+5*LOG_MAX_COUNT*sizeof(log_t)   //ORP 第一条记录的存储地址	
 #define LOG_FIRST_NH4_ADDR         0x3CB000+6*LOG_MAX_COUNT*sizeof(log_t)   //NH4 第一条记录的存储地址	
@@ -211,6 +211,7 @@ void Error_Handler(void);
 #define LOG_FIRST_PPM_ADDR         0x3CB000+12*LOG_MAX_COUNT*sizeof(log_t)   //水中油 第一条记录的存储地址
 #define LOG_FIRST_MLSS_ADDR        0x3CB000+13*LOG_MAX_COUNT*sizeof(log_t)   //污泥浓度 第一条记录的存储地址
 #define LOG_FIRST_OIW_ADDR         0x3CB000+14*LOG_MAX_COUNT*sizeof(log_t)   //水中油 第一条记录的存储地址
+#define LOG_FIRST_TSS_ADDR         0x3CB000+15*LOG_MAX_COUNT*sizeof(log_t)   //悬浮物 第一条记录的存储地址
 
 #define LOG_COUNT_ADDR         0x000200 //记录条数储存位起始地址  
 

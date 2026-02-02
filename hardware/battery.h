@@ -12,10 +12,12 @@
 /*不同档位ad阈值*/
 
                                                //干电池 | 锂电池
-#define BATTERY_LAVEL_1 (setting_GetBattertType() ? 3.6 : 3.2) //20240626 
-#define BATTERY_LAVEL_2 (setting_GetBattertType() ? 4.1 : 3.5)
-#define BATTERY_LAVEL_3 (setting_GetBattertType() ? 4.6 : 3.7)  //20240626
-#define BATTERY_VOLTAGE_MAX 4.1                                 //20240626
+#define BATTERY_LAVEL_CLOSE (setting_GetBattertType() ? 3.3 : 3.1) //20240626 
+#define BATTERY_LAVEL_0 (setting_GetBattertType() ? 3.4 : 3.2) //20240626 
+#define BATTERY_LAVEL_1 (setting_GetBattertType() ? 3.6 : 3.4) //20240626 
+#define BATTERY_LAVEL_2 (setting_GetBattertType() ? 4.1 : 3.6)
+#define BATTERY_LAVEL_3 (setting_GetBattertType() ? 4.6 : 3.85)  //20240626
+#define BATTERY_VOLTAGE_MAX 4.12                                 //20240626
 #define BATTERY_LAVEL_USB 0.6 
 
 

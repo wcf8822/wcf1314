@@ -160,6 +160,17 @@ void LabelList_Print(list_label lbllist , uint8_t IsChn)
 					}
 				}
 				break;
+
+			case LABEL_xinziku:
+				if(IsChn)
+				{
+					GUI_PutChnStr_xin(p->x, p->y, p->content_chn, p->ChnContent_size, MENU_FONT_CHN_LSIZE, MENU_FONT_CHN_RSIZE, LOADBIT_NORMAL);
+				}
+				else
+				{
+					GUI_PutEngStr(p->x, p->y, p->content_eng, MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_NORMAL);
+				}
+				break;
 				
 			case LABEL_UINT:
 				temp_x = p->x;
