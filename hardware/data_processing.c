@@ -2499,8 +2499,19 @@ void LH_DX01_DataHandle(void){
 				close_circle();
 				//设置清洗时间
 				DX01_rs485_SetClear_time(get_COMADo()->modbus_id == LH_DX01_ModbusID ? get_COMADo() : get_COMBDo(), &(rs485_usart.rx_buf[3]));
+				DX01_rs485_Get_lvbo_num(get_COMADo()->modbus_id == LH_DX01_ModbusID ? get_COMADo() : get_COMBDo());
 			}
 			break;
+
+		case DO_SendType_GetMesParameter:
+			if( rs485_usart.rx_buf[1] == 0x03)
+			{
+				close_circle();
+				//设置清洗时间
+				DX01_rs485_Set_lvbo_num(get_COMADo()->modbus_id == LH_DX01_ModbusID ? get_COMADo() : get_COMBDo(), &(rs485_usart.rx_buf[3]));
+			}
+			break;
+
 		case DO_SendType_GetTempTwoDO:
 			if(rs485_usart.rx_buf[1] == 0x03 && rs485_usart.rx_buf[2] == 0x06)
 			{
@@ -2546,6 +2557,13 @@ void LH_DX01_DataHandle(void){
 				DX01_rs485_Set_Temp_Cal_zero(get_COMADo()->modbus_id == LH_DX01_ModbusID ? get_COMADo() : get_COMBDo(),0);
 			}
 			break;
+		case DO_SendType_SetFullCal:
+			if(rs485_usart.rx_buf[1] == 0x06)
+			{
+				close_circle();
+				DX01_rs485_Get_lvbo_num(get_COMADo()->modbus_id == LH_DX01_ModbusID ? get_COMADo() : get_COMBDo());
+			}
+			break;
 
 		case DO_SendType_SetZeroCal:
 			if(rs485_usart.rx_buf[1] == 0x06 && rs485_usart.rx_buf[2] == 0x07)
@@ -2583,6 +2601,122 @@ void LH_DX01_DataHandle(void){
 	}
 
 }
+
+/*DZ09  串口数据处理*/
+void DZ09_DataHandle(void){
+	switch(rs485_GetSentType())
+	{
+		case DO_SendType_GetModbusId:   //获取modbus id
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{	
+				uint8_t DO_ID = ZS_DZ09_ModbusID;
+				
+				DO_AddProbe(DO_ID);
+					
+				rs485_DevicePlus();//添加下设备树上的设备个数
+							
+				GetCircularSent_Flag=0;
+				DZ09_rs485_GetSN(get_COMADo());
+				Set_TUR_Connect_FLAG(1);	//连接成功
+			}
+			break;
+		
+		case DO_SendType_GetSN:         //获取设备编码
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{
+				close_circle();
+				DZ09_SetSN(get_COMADo()->modbus_id == ZS_DZ09_ModbusID ? get_COMADo() : get_COMBDo(), &(rs485_usart.rx_buf[3]), 0);
+				DZ09_rs485_GetSHWVersion(get_COMADo());
+			}
+			break;					
+		
+		case DO_SendType_GetSHWVersion: //获取软硬件版本号
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{
+				close_circle();
+				DZ09_SetSHWVersion(get_COMADo()->modbus_id == ZS_DZ09_ModbusID ? get_COMADo() : get_COMBDo());
+				DO_SetIsInit(get_COMADo()->modbus_id == ZS_DZ09_ModbusID ? get_COMADo() : get_COMBDo());
+				DZ09_rs485_GetTemp_CalValue(get_COMADo()->modbus_id == ZS_DZ09_ModbusID ? get_COMADo() : get_COMBDo());
+			}
+			break;	
+			
+		case DO_SendType_GetTempTwoDO://更新数据
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{
+				close_circle();
+				DZ09_UpdateTemp2DO(get_COMADo()->modbus_id == ZS_DZ09_ModbusID ? get_COMADo() : get_COMBDo(),&(rs485_usart.rx_buf[3]));
+				DO_SetIsGetedValue(get_COMADo()->modbus_id == ZS_DZ09_ModbusID ? get_COMADo() : get_COMBDo());//设置do设备已经有数据了
+			}
+			break;
+		
+		case DO_SendType_SetZeroCal://零点校准
+			if(rs485_usart.rx_buf[2] == 0x01 && rs485_usart.rx_buf[3] == 0x72)//校准返回
+			{		
+		  		close_circle();
+				switch(interfacial_GetCurPage())
+				{
+					case PAGE_5_shenghui_Tur_ONE:
+						generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+						interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
+						interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
+						interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
+						break;
+				}
+			}
+			break;
+
+		case DO_SendType_SetKB://斜率校准
+			if(rs485_usart.rx_buf[2] == 0x01 && rs485_usart.rx_buf[3] == 0x73)//校准返回
+			{		
+		  		close_circle();
+				switch(interfacial_GetCurPage())
+				{
+					case PAGE_5_shenghui_Tur_TWO:
+						generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+						interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
+						interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
+						interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
+						break;
+				}
+			}
+			break;
+
+		case DO_SendType_HyphiveClearCal://恢复出厂设置
+			if(rs485_usart.rx_buf[2] == 0x01 && rs485_usart.rx_buf[3] == 0xf5)
+			{
+				close_circle();
+				if(interfacial_GetCurPage() == PAGE_1_RESETCAL)
+				{
+					generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+				}
+				DZ09_rs485_Set_Temp_Cal_zero(get_COMADo()->modbus_id == ZS_DZ09_ModbusID ? get_COMADo() : get_COMBDo(),0);
+			}
+			break;		
+
+		case DO_SendType_SetTemp:
+			if( rs485_usart.rx_buf[1] == 0x06 && rs485_usart.rx_buf[2] == 0x01)//校准返回
+			{
+				close_circle();
+				if(interfacial_GetCurPage() == PAGE_5_TEMP)
+				{
+					generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+				}
+				DZ09_rs485_GetTemp_CalValue(get_COMADo()->modbus_id == ZS_DZ09_ModbusID ? get_COMADo() : get_COMBDo());
+			}
+			break;		
+
+		case DO_SendType_GetSalinity:
+			if( rs485_usart.rx_buf[1] == 0x03 && rs485_usart.rx_buf[2] == 0x02)//校准返回
+			{
+				close_circle();
+				DZ09_SetTemp_Cal_value(get_COMADo()->modbus_id == ZS_DZ09_ModbusID ? get_COMADo() : get_COMBDo(), &(rs485_usart.rx_buf[3]));
+			}
+			break;				
+		default:
+			break;
+	}
+}
+
 //这是在main里处理的
 void rs485_DataHandle(void)
 {
@@ -2687,6 +2821,11 @@ void rs485_DataHandle(void)
 				case LH_DX01_ModbusID:
 			  LH_DX01_DataHandle();
 				break;
+
+				case ZS_DZ09_ModbusID:
+			  DZ09_DataHandle();
+				break;
+
 				default:
 					break;
 			}

@@ -182,7 +182,7 @@ void Error_Handler(void);
 
 
 
-#define SETTING_FIRSTRUN_JUDGE 0xDD     //版本维护
+#define SETTING_FIRSTRUN_JUDGE 0xDE     //版本维护
 
 #define SETTING_FIRSTRUN_ADDR  0x000000 //判断是否是第一次上电的判断对比位 地址
 #define SETTING_CNORENG_ADDR   0x000100 //判断恢复出厂设置是英文还是中文的数据位 地址

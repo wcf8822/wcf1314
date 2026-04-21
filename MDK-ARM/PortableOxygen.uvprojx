@@ -956,6 +956,16 @@
               <FileType>1</FileType>
               <FilePath>..\logic\EC_DE40.c</FilePath>
             </File>
+            <File>
+              <FileName>DZ09.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\logic\DZ09.c</FilePath>
+            </File>
+            <File>
+              <FileName>TDS_DT49.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\logic\TDS_DT49.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

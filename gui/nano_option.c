@@ -198,3 +198,9 @@ uint32_t NanoOptionList_Get_np_Value(PtrToNanoOptionNode nanooptionlist, uint8_t
 	
 	return ret;
 }
+
+/*获取正负号标准位*/
+uint8_t Get_uint_flag(void)
+{
+	return orp_np;
+}

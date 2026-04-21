@@ -22,6 +22,7 @@ void NanoOptionList_Destory(PtrToNanoOptionNode *nanooptionlist);
 
 uint32_t NanoOptionList_GetValue(PtrToNanoOptionNode nanooptionlist, uint8_t coefficient);
 uint32_t NanoOptionList_Get_np_Value(PtrToNanoOptionNode nanooptionlist, uint8_t coefficient);
+uint8_t Get_uint_flag(void);
 
 extern int8_t orp_np;
 

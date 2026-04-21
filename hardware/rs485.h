@@ -46,6 +46,8 @@
 #define OiW_yushan_DA511_ModbusID 42
 #define OiW_guohong_ModbusID 29
 
+#define ZS_DZ09_ModbusID 13
+
 #define MLSS_Tianjian_ModbusID 77
 
 #define LH_DX01_ModbusID 5
@@ -53,6 +55,7 @@
 
 #define EC_DE40_ModbusID 3
 #define EC_DS46_ModbusID 85
+#define TDS_DT49_Modbus 86
 /*传感器类型*/
 typedef enum{
 	TYPE_DO = 0,           //溶解氧

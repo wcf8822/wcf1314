@@ -61,6 +61,7 @@ typedef enum{
 	PAGE_3_TIME,           //时间设置
 	PAGE_3_BEEP,           //按键音
 	PAGE_3_LANGUAGE,       //语言设置
+	PAGE_3_Temp_jingdu,    //温度精度设置
 	PAGE_3_AUTOSHUT,       //自动关机
   	PAGE_3_AUTOSAVE,      //自动保存
 	PAGE_3_ALARM_TYPE,     //报警设置已接设备列表
@@ -105,6 +106,7 @@ typedef enum{
 	PAGE_4_Temp_xiaoshu,		   //温度精度设置
 	PAGE_4_Cal_Info,		   //校准系数
 	PAGE_4_SLIDEAVG,       //滑动平均开启关闭设置
+	PAGE_4_SENSOR_SLIDEAVG,       //滑动平均开启关闭设置
 	
 	PAGE_4_CAL_GROUP, //pH 标液组管理
 		

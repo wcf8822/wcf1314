@@ -23,5 +23,8 @@ void DX01_rs485_SetTemp_CalValue(PtrToDOProbe ptd,uint8_t *dat);
 void DX01_rs485_Set_Avg_num(PtrToDOProbe ptd,uint8_t *dat);
 void DX01_rs485_SetClear_time(PtrToDOProbe ptd,uint8_t *dat);
 void DX01_rs485_Set_Temp_Cal_zero(PtrToDOProbe ptd,int16_t Value);
+void DX01_rs485_Get_lvbo_num(PtrToDOProbe ptd);
+void DX01_rs485_Set_lvbo_num(PtrToDOProbe ptd,uint8_t *dat);
+void DX01_rs485_Write_Avg_num(PtrToDOProbe ptd,uint8_t value);
 
 #endif

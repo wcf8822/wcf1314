@@ -206,6 +206,7 @@ void DO_AddProbe(uint8_t ModbusId)//这里得添加名字
 			break;
 		
 		case Tur_shenghui_ModbusID:
+		case ZS_DZ09_ModbusID:
 			snprintf(p->name, 7, "Tur %02d", ModbusId); //生成名字
 		  add_Type=TYPE_Tur;
 			if(setting_GetIsOpen_SlideAvg_Tur())

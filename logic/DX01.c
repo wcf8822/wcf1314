@@ -85,6 +85,21 @@ void DX01_rs485_GetClear_time(PtrToDOProbe ptd)
 	rs485_SetSentType(DO_SendType_Get_Tur_Status);
 }
 
+void DX01_rs485_Get_lvbo_num(PtrToDOProbe ptd)
+{
+	// if(ptd == NULL) return;
+	rs485_usart.tx_buf[0] = LH_DX01_ModbusID;
+	rs485_usart.tx_buf[1] = 0x03;
+	rs485_usart.tx_buf[2] = 0x07;
+	rs485_usart.tx_buf[3] = 0x6e;
+	rs485_usart.tx_buf[4] = 0x00;
+	rs485_usart.tx_buf[5] = 0x01;
+	
+	SetCrc(rs485_usart.tx_buf, rs485_usart.tx_size = 8);
+	rs485_SetCircularSentStatus();
+	rs485_SetSentType(DO_SendType_GetMesParameter);
+}
+
 /*设置自动清洗时间间隔  */
 void DX01_rs485_SetClear_time(PtrToDOProbe ptd,uint8_t *dat)
 {
@@ -98,6 +113,38 @@ void DX01_rs485_SetClear_time(PtrToDOProbe ptd,uint8_t *dat)
 
 	snprintf(ptd->DOmgl_Vol_arr,       7, "%4d", ptd->Measure_Range.value_f);
 }
+
+void DX01_rs485_Set_lvbo_num(PtrToDOProbe ptd,uint8_t *dat)
+{
+	if(ptd == NULL) return;
+	uint16_u DX01_lvbo_value;
+
+	DX01_lvbo_value.value_arr[0] = dat[1];
+	DX01_lvbo_value.value_arr[1] = dat[0];
+
+	ptd->DC17_Mes_Time.value_f = DX01_lvbo_value.value_f;
+
+	// snprintf(ptd->DOmgl_Vol_arr,       7, "%4d", ptd->DC17_Mes_Time.value_f);
+}
+
+void DX01_rs485_Write_Avg_num(PtrToDOProbe ptd,uint8_t value)
+{
+	if(ptd == NULL) return;
+	rs485_usart.tx_buf[0]  = LH_DX01_ModbusID;
+	rs485_usart.tx_buf[1]  = 0x06;
+	rs485_usart.tx_buf[2]  = 0x07;
+	rs485_usart.tx_buf[3]  = 0x6e;
+	rs485_usart.tx_buf[4]  = 0x00;
+	rs485_usart.tx_buf[5]  = value;
+	
+	SetCrc(rs485_usart.tx_buf, rs485_usart.tx_size = 8);
+	
+	rs485_SetCircularSentStatus();
+	
+	rs485_SetSentType(DO_SendType_SetFullCal);
+}
+
+
 
 
 /*获取 平均次数  */

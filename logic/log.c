@@ -318,6 +318,14 @@ uint8_t log_SaveData(SENSOR_TYPE sensor_type)
 			
 			log_u.log.log_data.Tur_NTU = atof(get_CurDo()->DOmgl_arr); 
 			
+			if(setting_Get_Temp_Unit())
+			{
+			    log_u.log.log_data.temperature = (get_CurDo()->temperature.value_f-32)/1.8;
+			}
+			else
+			{
+		    	log_u.log.log_data.temperature = atof(get_CurDo()->temperature_arr);//DO_GetTemperature(get_CurDo());			
+			}
 			break;
 			
 		case TYPE_FCL:

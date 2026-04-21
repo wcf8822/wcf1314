@@ -808,6 +808,9 @@ extern const unsigned char Oiw_ppm_en[];
 
 extern const unsigned char Oiw_ppb_cn[5];
 extern const unsigned char Oiw_ppb_en[];
+
+extern const unsigned char lvbocishu_cn[4];              
+extern const unsigned char lvbocishu_en[];
 #endif
 
 

@@ -85,6 +85,8 @@ void generate_AutoLock_value(PtrToInterfacial interfacial);                     
 void generate_SlideAverage_type(PtrToInterfacial interfacial);                       //生成滑动平均选择传感器类型界面
 void generate_SlideAverage_Switch(PtrToInterfacial interfacial);                     //生成滑动平均界面
 void generate_SlideAverage_Value(PtrToInterfacial interfacial, uint8_t temp);        //生成滑动平均次数设置界面
+void generate_SlideAverageA_Sensor_Value(PtrToInterfacial interfacial, uint8_t temp);
+void generate_DZ09_Temp_xiaoshu(PtrToInterfacial interfacial);
 
 void generate_IntervaSave(PtrToInterfacial interfacial,uint16_t num, uint8_t is_chn);
 void generate_LockSave(PtrToInterfacial interfacial);

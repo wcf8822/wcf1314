@@ -2120,3 +2120,6 @@ const unsigned char wendujingdushezhi_en[] = "Temp precision Set";//温度精度
 const unsigned char wendujingdu_0_en[] = "0";
 const unsigned char wendujingdu_1_en[] = "1";
 const unsigned char wendujingdu_2_en[] = "2";
+
+const unsigned char lvbocishu_cn[4] = {169,170,243,74};              
+const unsigned char lvbocishu_en[] = "Filtering Degree";
