@@ -29,6 +29,7 @@
 #include "DO_HaiFa_DY12.h"
 #include "DX01.h"
 #include "MLSS_lanchang.h"
+#include "TDS_DT49.h"
 uint8_t DC18_DC17_flag;		//17,18切换标志位
 
 /*所有串口的接收中断，表示有接收到数据*/
@@ -2717,6 +2718,114 @@ void DZ09_DataHandle(void){
 	}
 }
 
+/*DT49  串口数据处理*/
+void DT49_DataHandle(void){
+	switch(rs485_GetSentType())
+	{
+		case DO_SendType_GetModbusId:   //获取modbus id
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{	
+				uint8_t DO_ID = TDS_DT49_Modbus;
+				
+				DO_AddProbe(DO_ID);
+					
+				rs485_DevicePlus();//添加下设备树上的设备个数
+							
+				TDS_DT49_rs485_GetSN();
+			}
+			break;
+
+		case DO_SendType_GetSN:         //获取设备编码
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{
+				close_circle();
+				TDS_DT49_SetSN(get_COMADo()->modbus_id == TDS_DT49_Modbus ? get_COMADo() : get_COMBDo(), &(rs485_usart.rx_buf[3]), 0);
+				TDS_DT49_rs485_GetSHWVersion();
+			}
+			break;
+
+		case DO_SendType_GetSHWVersion:
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{
+				close_circle();
+				TDS_DS49_SetSHWVersion(get_COMADo()->modbus_id == TDS_DT49_Modbus ? get_COMADo() : get_COMBDo());
+				TDS_DT49_rs485_Get_tds_temp_value();
+			}
+			break;
+
+		case DO_SendType_GetMesParameter:
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{
+				close_circle();
+				TDS_DT49_Settds_temp_xishu(get_COMADo()->modbus_id == TDS_DT49_Modbus ? get_COMADo() : get_COMBDo(), &(rs485_usart.rx_buf[3]));
+				DO_SetIsInit(get_COMADo()->modbus_id == TDS_DT49_Modbus ? get_COMADo() : get_COMBDo());
+			}
+			break;
+
+		case DO_SendType_GetTempTwoDO://更新数据
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{
+				close_circle();
+				TDS_DT49_UpdateTemp2DO(get_COMADo()->modbus_id == TDS_DT49_Modbus ? get_COMADo() : get_COMBDo(),&(rs485_usart.rx_buf[3]));
+				DO_SetIsGetedValue(get_COMADo()->modbus_id == TDS_DT49_Modbus ? get_COMADo() : get_COMBDo());//设置do设备已经有数据了
+			}
+			break;
+
+		case DO_SendType_HyphiveClearCal:
+			if(rs485_usart.rx_buf[2] == 0x06 && (rs485_usart.rx_buf[3] == 0xf4 || rs485_usart.rx_buf[3] == 0xf5 ))
+			{
+				close_circle();
+				if(rs485_usart.rx_buf[3] == 0xf4 && rs485_usart.rx_buf[5] == 0x30)
+				{
+				  TDS_DT49_rs485_ClearCal(get_COMADo());					
+				}
+				else
+				{
+					if(interfacial_GetCurPage() == PAGE_1_RESETCAL)
+					{
+							generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+					}				
+				}				
+			}
+			break;	
+
+		case DO_SendType_SetTemp:
+			if (rs485_usart.rx_buf[1] == 0x10) //校准返回
+			{
+				close_circle();
+				if (interfacial_GetCurPage() == PAGE_5_TEMP )
+				{
+					generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+				}
+			}
+			break;
+
+		case DO_SendType_SetKB:
+		case DO_SendType_SetFullCal:
+			if(rs485_usart.rx_buf[1] == 0x10 && rs485_usart.rx_buf[2] == 0x06)//校准返回
+			{
+				close_circle();
+				switch(interfacial_GetCurPage())
+				{
+					case PAGE_5_DE26_EC_Zero:		
+					case PAGE_5_shenghui_EC_ONE:
+						generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+			  			interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
+						interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
+						interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
+						break;
+										
+					default:
+						break;
+				}
+			}
+			break;
+
+		default:
+			break;
+	}
+}
+
 //这是在main里处理的
 void rs485_DataHandle(void)
 {
@@ -2824,6 +2933,10 @@ void rs485_DataHandle(void)
 
 				case ZS_DZ09_ModbusID:
 			  DZ09_DataHandle();
+				break;
+
+				case TDS_DT49_Modbus:
+			  DT49_DataHandle();
 				break;
 
 				default:

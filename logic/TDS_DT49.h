@@ -15,6 +15,10 @@ extern void TDS_DT49_rs485_SetTemp(PtrToDOProbe ptd, float temp);
 extern void TDS_DT49_rs485_Zero(PtrToDOProbe ptd,float Value);
 extern void TDS_DT49_rs485_SetMode(PtrToDOProbe ptd,uint16_t Value);
 extern void TDS_DT49_rs485_ClearCal(PtrToDOProbe ptd);
+extern void TDS_DT49_SetSN(PtrToDOProbe ptd,uint8_t* buff, uint8_t len);
+extern void TDS_DS49_SetSHWVersion(PtrToDOProbe ptd);
+extern void TDS_DT49_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat);
+extern void TDS_DT49_Settds_temp_xishu(PtrToDOProbe ptd,uint8_t *dat);
 
 
 #endif

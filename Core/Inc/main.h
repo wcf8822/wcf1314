@@ -203,7 +203,7 @@ void Error_Handler(void);
 #define LOG_FIRST_EC_ADDR         0x3CB000+4*LOG_MAX_COUNT*sizeof(log_t)   //EC 第一条记录的存储地址
 #define LOG_FIRST_ORP_ADDR         0x3CB000+5*LOG_MAX_COUNT*sizeof(log_t)   //ORP 第一条记录的存储地址	
 #define LOG_FIRST_NH4_ADDR         0x3CB000+6*LOG_MAX_COUNT*sizeof(log_t)   //NH4 第一条记录的存储地址	
-#define LOG_FIRST_F_ADDR         0x3CB000+7*LOG_MAX_COUNT*sizeof(log_t)   //F 第一条记录的存储地址
+#define LOG_FIRST_TDS_ADDR         0x3CB000+7*LOG_MAX_COUNT*sizeof(log_t)   //TDS 第一条记录的存储地址
 #define LOG_FIRST_CL_ADDR         0x3CB000+8*LOG_MAX_COUNT*sizeof(log_t)   //CL 第一条记录的存储地址
 #define LOG_FIRST_Chl_ADDR         0x3CB000+9*LOG_MAX_COUNT*sizeof(log_t)   //Chl 第一条记录的存储地址
 #define LOG_FIRST_Bga_ADDR         0x3CB000+10*LOG_MAX_COUNT*sizeof(log_t)   //Bga 第一条记录的存储地址

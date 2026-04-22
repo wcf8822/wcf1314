@@ -44,6 +44,7 @@
 #include "MLSS_lanchang.h"
 #include "EC_DE40.h"
 #include "DZ09.h"
+#include "TDS_DT49.h"
 /***************************************************************任何指针操作记得加安全性判断是否为空指针！！！！！！！！！！！！！！！！！！！！！！！！！！！*/
 typedef struct{
 	uint8_t* content_cn;
@@ -821,6 +822,9 @@ void StatusBar_Update(void)
 		case TYPE_SAL:
 			GUI_PutEngStr(60, 0, (uint8_t *)&(sensor_type_str[TYPE_SAL]), MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_REVERSE);
 			break;
+		case TYPE_TDS:
+			GUI_PutEngStr(60, 0, (uint8_t *)&(sensor_type_str[TYPE_TDS]), MENU_FONT_ENG_LSIZE, MENU_FONT_ENG_RSIZE, LOADBIT_REVERSE);
+			break;
 		default:
 			break;
 	}
@@ -1171,6 +1175,23 @@ void btn_OkEscMode_NULL(void)
 								break;
 							}							
 							if(setting_GetAutoLock_SAL() != AUTOLOCK_OFF && DO_GetValueLocked(get_CurDo())) //如果是有锁定功能无论自动还是手动就给它开锁
+							{
+								clear_DOShakeCount();              //清除抖动计数
+								DO_SetValueUnlocked(get_CurDo());  //解锁
+							}	
+							break;
+
+						case TYPE_TDS:
+							if(setting_GetAutoLock_TDS() == AUTOLOCK_MANUAL && !DO_GetValueLocked(get_CurDo()))//如果是手动锁定模式的话 值没被锁的话
+							{
+								DO_SetValueLocked(get_CurDo());    //锁住
+								if(setting_GetLockSave())
+								{
+										generate_MessageBox(MESSAGE_SAVELOG, log_SaveData(rs485_GetSensorType()));
+								}
+								break;
+							}							
+							if(setting_GetAutoLock_TDS() != AUTOLOCK_OFF && DO_GetValueLocked(get_CurDo())) //如果是有锁定功能无论自动还是手动就给它开锁
 							{
 								clear_DOShakeCount();              //清除抖动计数
 								DO_SetValueUnlocked(get_CurDo());  //解锁
@@ -2321,10 +2342,11 @@ void btn_OkEscMode_ChangePage(void)
 								get_CurDo()->modbus_id == OiW_yushan_DA511_ModbusID||
 								get_CurDo()->modbus_id == EC_DE40_ModbusID ||
 								get_CurDo()->modbus_id == EC_DS46_ModbusID ||
+								get_CurDo()->modbus_id == TDS_DT49_Modbus ||
 								get_CurDo()->modbus_id == LH_DX01_ModbusID)
 								{
 									STD_value = STD_temp / 100.0;//计算校准的值
-							   	  	snprintf(cal_arr, 9, "%6.2f", STD_value);//将校准值写入校准文字buff			
+							   	  	snprintf(cal_arr, 8, "%6.2f", STD_value);//将校准值写入校准文字buff			
 								}
 								else if(get_CurDo()->modbus_id == MLSS_Tianjian_ModbusID)
 								{
@@ -3123,6 +3145,10 @@ void save_setting(void)
 				case EC_DS46_ModbusID:
 				EC_DE40_rs485_SetMode(get_CurDo(),0x30,EC_DS46_ModbusID);
 					break;
+				
+				case TDS_DT49_Modbus:
+				TDS_DT49_rs485_SetMode(get_CurDo(),0x30);
+					break;
 
 				case pH_DpH07_ModbusID:  
 			    pH_DpH07_rs485_ClearCal(get_CurDo());
@@ -3565,6 +3591,9 @@ void save_setting(void)
 					setting_SetIsAlarm_SAL(0);
 					break;	
 				
+				case TYPE_TDS:
+					setting_SetIsAlarm_TDS(0);
+					break;
 				default:
 					break;
 			}
@@ -3763,6 +3792,16 @@ void save_setting(void)
 						setting_SetAutoLock_SAL(AUTOLOCK_MANUAL);
 					}		
 					break;
+				case TYPE_TDS:
+					if(cur_option == cur_interfacial.option_head)
+					{
+						setting_SetAutoLock_TDS(AUTOLOCK_OFF);
+					}
+					else if(cur_option == cur_interfacial.option_head->prev_option)
+					{
+						setting_SetAutoLock_TDS(AUTOLOCK_MANUAL);
+					}		
+					break;
 				default:
 					break;
 			}
@@ -3852,6 +3891,10 @@ void save_setting(void)
 				case TYPE_SAL:
 					setting_SetAutoLock_SAL(AUTOLOCK_AUTO);//设置成自动锁定
 					setting_SetAutoLockLevel_SAL(cur_option->option_index);				
+					break;
+				case TYPE_TDS:
+					setting_SetAutoLock_TDS(AUTOLOCK_AUTO);//设置成自动锁定
+					setting_SetAutoLockLevel_TDS(cur_option->option_index);				
 					break;
 				default:
 					break;
@@ -4159,6 +4202,17 @@ void save_setting(void)
 						setting_SetHighThreshold_SAL((value_type)temp_value/10.0);	
 					}
 					break;
+
+				case TYPE_TDS:
+					setting_SetIsAlarm_TDS(1);
+					if(checked_AlarmValueLegal())
+					{
+						temp_value = NanoOptionList_GetValue(cur_interfacial.option_head->son_option, 10);//低门限
+						setting_SetLowThreshold_TDS((value_type)temp_value/10.0);
+						temp_value = NanoOptionList_GetValue(cur_interfacial.option_head->next_option->son_option, 10);//高门限制
+						setting_SetHighThreshold_TDS((value_type)temp_value/10.0);	
+					}
+					break;
 					
 				default:
 					break;
@@ -4379,6 +4433,16 @@ void save_setting(void)
 						default:
 							break;
 					}		
+					break;
+				case TYPE_TDS:
+					switch(get_CurDo()->modbus_id)
+            		{
+						case TDS_DT49_Modbus:
+							TDS_DT49_rs485_SetTemp(get_CurDo(), temp_value / 10.0);
+							break;
+						default:
+							break;
+					}
 					break;
 				
 				case TYPE_SAL:
@@ -5134,6 +5198,9 @@ void save_setting(void)
 				case TYPE_SAL:
 					setting_SetIsOpen_SlideAvg_SAL(0);
 					break;
+				case TYPE_TDS:
+					setting_SetIsOpen_SlideAvg_TDS(0);
+					break;
 				default:
 					break;
 			}
@@ -5300,6 +5367,15 @@ void save_setting(void)
 					  filter_init(&(p->queue_domgl), setting_GetSlideAvgTimes_SAL());      //初始化一下mg/l 数值指针
 						filter_init(&(p->queue_dopercent), setting_GetSlideAvgTimes_SAL());  //初始化一下%    数值指针
 						filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_SAL());       //初始化一下℃    数值指针
+	
+						break;
+					
+					case TYPE_TDS:
+						setting_SetSlideAvgTimes_TDS(temp_value);
+						setting_SetIsOpen_SlideAvg_TDS(1);
+					  filter_init(&(p->queue_domgl), setting_GetSlideAvgTimes_TDS());      //初始化一下mg/l 数值指针
+						filter_init(&(p->queue_dopercent), setting_GetSlideAvgTimes_TDS());  //初始化一下%    数值指针
+						filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_TDS());       //初始化一下℃    数值指针
 	
 						break;
 					
@@ -6252,6 +6328,10 @@ void save_setting(void)
 										EC_DE26_rs485_Frist(get_CurDo(),STD_value,EC_DE40_ModbusID);
 										break;
 									
+									case TDS_DT49_Modbus:
+										TDS_DT49_rs485_Standard(get_CurDo(),STD_value);
+										break;
+
 									case EC_shenghui_ModbusID:  
 	                  					EC_shenghui_rs485_Frist(get_CurDo(),STD_value);	
 										break;	
@@ -6379,7 +6459,11 @@ void save_setting(void)
 								case EC_DE40_ModbusID:
 									EC_DE40_rs485_Zero(get_CurDo(),STD_value);		
 									break;
-									
+								
+								case TDS_DT49_Modbus:
+									TDS_DT49_rs485_Zero(get_CurDo(),STD_value);		
+									break;
+
 								case Chl_shenghui_ModbusID:  
 									Chl_shenghui_rs485_Frist(get_CurDo(),STD_value);	
 									break;	
@@ -6782,6 +6866,9 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 				case TYPE_SAL:
 					BinaryOption_init(setting_GetIsAlarm_SAL());
 					break;
+				case TYPE_TDS:
+					BinaryOption_init(setting_GetIsAlarm_TDS());
+					break;
 				default:
 					break;
 				
@@ -7183,6 +7270,9 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 				case TYPE_SAL:
 					AutoLockOption_init(setting_GetAutoLock_SAL());
 					break;
+				case TYPE_TDS:
+					AutoLockOption_init(setting_GetAutoLock_TDS());
+					break;
 				default:
 					break;
 			}
@@ -7248,6 +7338,9 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 					break;
 				case TYPE_SAL:
 					AutoLockOption_init(setting_GetAutoLockLevel_SAL());
+					break;
+				case TYPE_TDS:
+					AutoLockOption_init(setting_GetAutoLockLevel_TDS());
 					break;
 				
 				default:
@@ -7324,6 +7417,9 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 					case TYPE_SAL:
 						BinaryOption_init(setting_GetIsOpen_SlideAvg_SAL());
 						break;
+					case TYPE_TDS:
+						BinaryOption_init(setting_GetIsOpen_SlideAvg_TDS());
+						break;
 					
 					default:
 						break;
@@ -7394,6 +7490,9 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 						break;
 					case TYPE_SAL:
 						generate_SlideAverage_Value(&cur_interfacial, setting_GetSlideAvgTimes_SAL());
+						break;
+					case TYPE_TDS:
+						generate_SlideAverage_Value(&cur_interfacial, setting_GetSlideAvgTimes_TDS());
 						break;
 					default:
 						break;
@@ -7675,7 +7774,7 @@ void interfacial_SetOptionSensorName(uint8_t* value)
 	option_sensor_name = value;
 }
 
-#define Sersor_Number 25    //支持搜索 传感器的数量
+#define Sersor_Number 26    //支持搜索 传感器的数量
 uint8_t CircularSent_Count=1;
 uint8_t GetCircularSent_Flag=0;
 uint8_t TwoCircular_Flag=0;
@@ -7799,6 +7898,10 @@ void rs485_Search_Sensor(void){
 					case ZS_DZ09_ModbusID:
 						DZ09_rs485_GetValue(get_CurDo());
 						break;
+
+					case TDS_DT49_Modbus:
+						TDS_DT49_rs485_GetValue();
+						break;
 					default:
 						break;
 				}  		
@@ -7912,6 +8015,10 @@ void rs485_Search_Sensor(void){
 
 					case ZS_DZ09_ModbusID:
 						DZ09_rs485_GetValue(get_CurDo());
+						break;
+
+					case TDS_DT49_Modbus:
+						TDS_DT49_rs485_GetValue();
 						break;
 					default:
 						break;
@@ -8043,6 +8150,10 @@ void rs485_Search_Sensor(void){
 
 					case ZS_DZ09_ModbusID:
 						DZ09_rs485_GetValue(get_CurDo());
+						break;
+						
+					case TDS_DT49_Modbus:
+						TDS_DT49_rs485_GetValue();
 						break;
 					default:
 						break;
@@ -8247,6 +8358,14 @@ void rs485_Search_Sensor(void){
 						}					
 					}
 
+					if( CircularSent_Count ==25){
+
+						if(get_COMADo()->modbus_id != TDS_DT49_Modbus ){
+						CircularSent_isSelect=1;			
+							TDS_DT49_rs485_GetModbusId();
+						}					
+					}
+
 					if(CircularSent_Count == Sersor_Number){
 						CircularSent_Count=0;
 					}				
@@ -8384,6 +8503,11 @@ void rs485_Search_Sensor(void){
 					DZ09_rs485_GetModbusId();			
 				}	
 				
+				if(CircularSent_Count == 25)
+				{
+					CircularSent_isSelect=1;	
+					TDS_DT49_rs485_GetModbusId();
+				}
 				if(CircularSent_Count == Sersor_Number){
 					CircularSent_Count=0;
 				}				
@@ -8903,6 +9027,26 @@ void interfacial_refresh(void)                                                  
 							  LabelList_Add( 120, 114, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_CELSIUS, DONT_HAVE_PARENTHESIS, &label_head);//℃						 
 						  	}
 							break;
+
+						case TYPE_TDS:
+							LabelList_Add( 0, 66, (uint8_t *)TDS_cn, sizeof(TDS_cn), (uint8_t *)TDS_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+							LabelList_Add( 32,  56, NULL, 0, (uint8_t *)get_CurDo()->DOmgl_arr,       LABEL_LARGE, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //EC
+
+							LabelList_Add( 128, 65, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_GL, DONT_HAVE_PARENTHESIS, &label_head);									
+
+							LabelList_Add( 0, 112, (uint8_t *)wendu_cn, sizeof(wendu_cn), (uint8_t *)wendu_en, LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //temperature						
+							LabelList_Add( 62, 112, NULL, 0, (uint8_t *)get_CurDo()->temperature_arr, LABEL_MEDIUM, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //temperature
+							
+							if(setting_Get_Temp_Unit())
+							{
+								LabelList_Add( 120, 114, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_FAHRENHEIT, DONT_HAVE_PARENTHESIS, &label_head);//°F								 
+							}
+							else
+							{
+								LabelList_Add( 120, 114, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_CELSIUS, DONT_HAVE_PARENTHESIS, &label_head);//℃						 
+							}
+							break;
+
 						default:
 							break;
 						
@@ -9019,6 +9163,12 @@ void interfacial_refresh(void)                                                  
 									Enable_warning=setting_GetIsAlarm_SAL();
 							  		high = float_format(setting_GetHighThreshold_SAL());
 									low = float_format(setting_GetLowThreshold_SAL());	
+									break;
+
+								case TYPE_TDS:
+									Enable_warning=setting_GetIsAlarm_TDS();
+							  		high = float_format(setting_GetHighThreshold_TDS());
+									low = float_format(setting_GetLowThreshold_TDS());	
 									break;
 								default:
 									break;

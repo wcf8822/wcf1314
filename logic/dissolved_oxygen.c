@@ -345,6 +345,17 @@ void DO_AddProbe(uint8_t ModbusId)//这里得添加名字
 				filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_TSS());       //初始化一下℃    数值指针			
 			}
 			break;
+
+		case TDS_DT49_Modbus:
+			snprintf(p->name, 8, "TDS %02d", ModbusId); //生成名字
+		  add_Type=TYPE_TDS;
+			if(setting_GetIsOpen_SlideAvg_TDS())
+			{//如果开启了滑动平均就直接添加下 没开的话就等开的时候再初始化
+				filter_init(&(p->queue_domgl), setting_GetSlideAvgTimes_TDS());      //初始化一下mg/l 数值指针
+				filter_init(&(p->queue_dopercent), setting_GetSlideAvgTimes_TDS());  //初始化一下%    数值指针
+				filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_TDS());       //初始化一下℃    数值指针			
+			}
+			break;
 		
 		default:
 			break;
@@ -1134,6 +1145,10 @@ void CheckValueLock(PtrToDOProbe ptd)
 			case TYPE_SAL:
 				eps = DO_AutoLock_eps[setting_GetAutoLockLevel_SAL()];
 				GetAutoLock_Flag=setting_GetAutoLock_SAL();	
+				break;
+			case TYPE_TDS:
+				eps = DO_AutoLock_eps[setting_GetAutoLockLevel_TDS()];
+				GetAutoLock_Flag=setting_GetAutoLock_TDS();	
 				break;
 			default:
 				break;

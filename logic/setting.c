@@ -363,6 +363,19 @@ uint8_t setting_GetIsAlarm_SAL(void)
 	return setting.setting_struct.IsAlarm_SAL;
 }
 
+/*设置是否报警*/
+void setting_SetIsAlarm_TDS(uint8_t IsAlarm)
+{
+	setting.setting_struct.IsAlarm_TDS = IsAlarm;
+}
+
+/*获取是否报警*/
+uint8_t setting_GetIsAlarm_TDS(void)
+{
+	return setting.setting_struct.IsAlarm_TDS;
+}
+
+
 /*设置是否选中*/
 void setting_SetIsSelect_DO(uint8_t sSelect)
 {
@@ -733,6 +746,16 @@ uint8_t setting_GetIsOpen_SlideAvg_SAL(void)
 }
 
 
+/*是否开启滑动平均设置*/
+void setting_SetIsOpen_SlideAvg_TDS(uint8_t IsOpen)
+{
+	setting.setting_struct.IsOpen_SlideAvg_TDS = IsOpen;
+}
+uint8_t setting_GetIsOpen_SlideAvg_TDS(void)
+{
+	return setting.setting_struct.IsOpen_SlideAvg_TDS;
+}
+
 /*
 #include <stdio.h>
 
@@ -960,6 +983,14 @@ void init_setting(void)
 	setting.setting_struct.IsAlarm_SAL= 0;
 	setting.setting_struct.LowThreshold_SAL = 0.00;
 	setting.setting_struct.HighThreshold_SAL = 0.00;
+
+	setting.setting_struct.AutoLock_TDS =0;
+	setting.setting_struct.AutoLock_level_TDS = 0;
+	setting.setting_struct.IsOpen_SlideAvg_TDS = 0;
+	setting.setting_struct.SlideAvgTimes_TDS = 2;
+	setting.setting_struct.IsAlarm_TDS= 0;
+	setting.setting_struct.LowThreshold_TDS = 0.00;
+	setting.setting_struct.HighThreshold_TDS = 0.00;
 }
 
 /*恢复出厂设置*/
@@ -1350,6 +1381,25 @@ void setting_SetLowThreshold_SAL(value_type value)
 	setting.setting_struct.LowThreshold_SAL = value;
 }
 
+value_type setting_GetHighThreshold_TDS(void)
+{
+	return setting.setting_struct.HighThreshold_TDS;
+}
+void setting_SetHighThreshold_TDS(value_type value)
+{
+	setting.setting_struct.HighThreshold_TDS= value;
+}
+
+
+value_type setting_GetLowThreshold_TDS(void)
+{
+	return setting.setting_struct.LowThreshold_TDS;
+}
+void setting_SetLowThreshold_TDS(value_type value)
+{
+	setting.setting_struct.LowThreshold_TDS = value;
+}
+
 
 uint8_t setting_GetSlideAvgTimes_DO(void)
 {
@@ -1505,6 +1555,16 @@ uint8_t setting_GetSlideAvgTimes_SAL(void)
 void setting_SetSlideAvgTimes_SAL(uint8_t times)
 {
 	setting.setting_struct.SlideAvgTimes_SAL = times;
+}
+
+
+uint8_t setting_GetSlideAvgTimes_TDS(void)
+{
+	return setting.setting_struct.SlideAvgTimes_TDS;
+}
+void setting_SetSlideAvgTimes_TDS(uint8_t times)
+{
+	setting.setting_struct.SlideAvgTimes_TDS = times;
 }
 
 
@@ -1695,6 +1755,15 @@ void setting_SetAutoLock_SAL(uint8_t AutoLock)
 	setting.setting_struct.AutoLock_SAL = AutoLock;
 }
 
+uint8_t setting_GetAutoLock_TDS(void)
+{
+	return setting.setting_struct.AutoLock_TDS;
+}
+void setting_SetAutoLock_TDS(uint8_t AutoLock)
+{
+	setting.setting_struct.AutoLock_TDS = AutoLock;
+}
+
 uint8_t setting_GetAutoLockLevel_DO(void)
 {
 	return setting.setting_struct.AutoLock_level_DO;
@@ -1849,6 +1918,15 @@ uint8_t setting_GetAutoLockLevel_SAL(void)
 void setting_SetAutoLockLevel_SAL(uint8_t level)
 {
 	setting.setting_struct.AutoLock_level_SAL = level;
+}
+
+uint8_t setting_GetAutoLockLevel_TDS(void)
+{
+	return setting.setting_struct.AutoLock_level_TDS;
+}
+void setting_SetAutoLockLevel_TDS(uint8_t level)
+{
+	setting.setting_struct.AutoLock_level_TDS = level;
 }
 
 

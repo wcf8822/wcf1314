@@ -74,6 +74,7 @@ typedef enum{
 	TYPE_Oiw,				//水中油
 	TYPE_TSS,				//悬浮物
 	TYPE_SAL,				//盐度传感器
+	TYPE_TDS,				//TDS传感器
 	TYPE_NONE              //未接传感器
 	
 }SENSOR_TYPE;

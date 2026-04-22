@@ -50,6 +50,7 @@ typedef struct struct_setting{
 	uint8_t AutoLock_TSS;      //是否自动锁定
 	uint8_t AutoLock_SAL;      //是否自动锁定
 	uint8_t AutoLock_OIW_ppm;      //是否自动锁定
+	uint8_t AutoLock_TDS;      //是否自动锁定
 	
 	uint8_t AutoLock_level_pH;       //自动锁定等级
 	uint8_t AutoLock_level_DO;       //自动锁定等级
@@ -65,7 +66,8 @@ typedef struct struct_setting{
 	uint8_t AutoLock_level_TSS;    //自动锁定等级
 	uint8_t AutoLock_level_SAL;    //自动锁定等级
 	uint8_t AutoLock_level_OIW_ppm;    //自动锁定等级
-	
+	uint8_t AutoLock_level_TDS;    //自动锁定等级
+
 	uint8_t IsAlarm_pH;       //是否报警
 	uint8_t IsAlarm_DO;       //是否报警
 	uint8_t IsAlarm_EC;       //是否报警
@@ -80,6 +82,7 @@ typedef struct struct_setting{
 	uint8_t IsAlarm_TSS;    //是否报警
 	uint8_t IsAlarm_SAL;	//是否报警
 	uint8_t IsAlarm_OIW_ppm;    //是否报警
+	uint8_t IsAlarm_TDS;	//是否报警
 
 	uint8_t AutoShut;         //0 5 10 20
 	
@@ -97,6 +100,7 @@ typedef struct struct_setting{
 	uint8_t IsOpen_SlideAvg_OIW_ppm;  //是否开启滑动平均
 	uint8_t IsOpen_SlideAvg_TSS;  //是否开启滑动平均
 	uint8_t IsOpen_SlideAvg_SAL;  //是否开启滑动平均
+	uint8_t IsOpen_SlideAvg_TDS;  //是否开启滑动平均
 	
 	uint8_t SlideAvgTimes_pH;    //滑动平均次数
 	uint8_t SlideAvgTimes_DO;    //滑动平均次数
@@ -112,6 +116,7 @@ typedef struct struct_setting{
 	uint8_t SlideAvgTimes_OIW_ppm;	  //滑动平均次数
 	uint8_t SlideAvgTimes_TSS;	  //滑动平均次数
 	uint8_t SlideAvgTimes_SAL;	  //滑动平均次数
+	uint8_t SlideAvgTimes_TDS;	  //滑动平均次数
 
 	uint8_t IsSelect_pH;       //是否选中加入到读取指令
 	uint8_t IsSelect_DO;       //是否选中   海发、禹山溶解氧
@@ -167,6 +172,9 @@ typedef struct struct_setting{
 
 	value_type LowThreshold_SAL;
 	value_type HighThreshold_SAL; //高门限报警阈值
+
+	value_type LowThreshold_TDS;
+	value_type HighThreshold_TDS; //高门限报警阈值
 
 	value_type AirPressure;   //气压补偿
 	value_type Salinity;      //盐度值
@@ -678,5 +686,29 @@ void setting_SetAutoLock_OIW_ppm(uint8_t AutoLock);
 
 uint8_t setting_GetAutoLockLevel_OIW_ppm(void);
 void setting_SetAutoLockLevel_OIW_ppm(uint8_t level);
+
+void setting_SetIsOpen_SlideAvg_TDS(uint8_t IsOpen);
+uint8_t setting_GetIsOpen_SlideAvg_TDS(void);
+
+uint8_t setting_GetSlideAvgTimes_TDS(void);
+void setting_SetSlideAvgTimes_TDS(uint8_t times);
+
+/*获取是否报警*/
+uint8_t setting_GetIsAlarm_TDS(void);
+
+/*设置是否报警*/
+void setting_SetIsAlarm_TDS(uint8_t IsAlarm);
+
+value_type setting_GetHighThreshold_TDS(void);
+void setting_SetHighThreshold_TDS(value_type value);
+
+value_type setting_GetLowThreshold_TDS(void);
+void setting_SetLowThreshold_TDS(value_type value);
+
+uint8_t setting_GetAutoLock_TDS(void);
+void setting_SetAutoLock_TDS(uint8_t AutoLock);
+
+uint8_t setting_GetAutoLockLevel_TDS(void);
+void setting_SetAutoLockLevel_TDS(uint8_t level);
 
 #endif

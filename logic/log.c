@@ -87,8 +87,8 @@ void log_WriteLog(log_union *log, uint16_t index,SENSOR_TYPE type)
        addr = LOG_FIRST_NH4_ADDR + (index << 8);			
 			 break;
 			
-			case TYPE_F:
-        addr = LOG_FIRST_F_ADDR + (index << 8);		
+			case TYPE_TDS:
+        addr = LOG_FIRST_TDS_ADDR + (index << 8);		
 				break;
 			
 			case TYPE_CL:
@@ -159,8 +159,8 @@ void log_ReadData(log_union*p ,uint16_t index,SENSOR_TYPE type)
        addr = LOG_FIRST_NH4_ADDR + (index << 8);			
 			 break;
 			
-			case TYPE_F:
-       addr = LOG_FIRST_F_ADDR + (index << 8);		
+			case TYPE_TDS:
+       addr = LOG_FIRST_TDS_ADDR + (index << 8);		
 				break;
 			
 			case TYPE_CL:
@@ -647,6 +647,28 @@ uint8_t log_SaveData(SENSOR_TYPE sensor_type)
 		    	log_u.log.log_data.temperature = atof(get_CurDo()->temperature_arr);//DO_GetTemperature(get_CurDo());			
 			}	
 			break;
+		
+		case TYPE_TDS:
+			if(log_count.log_count_Type[TYPE_F] >= LogCount_max)//如果写满了直接跳过
+			{
+				return 0;
+			}
+			log_u.log.type_str[0] = 'T';
+			log_u.log.type_str[1] = 'D';
+			log_u.log.type_str[2] = 'S';		
+      index=	log_count.log_count_Type[TYPE_F];			
+			
+			log_u.log.log_data.EC_TDS = get_CurDo()->DOmgl.value_f; 
+
+			if(setting_Get_Temp_Unit())
+			{
+			    log_u.log.log_data.temperature = (get_CurDo()->temperature.value_f-32)/1.8;
+			}
+			else
+			{
+		    	log_u.log.log_data.temperature = atof(get_CurDo()->temperature_arr);//DO_GetTemperature(get_CurDo());			
+			}	
+			break;
 					
 		default:
 			break;
@@ -680,6 +702,10 @@ uint8_t log_SaveData(SENSOR_TYPE sensor_type)
 	if(sensor_type == TYPE_SAL)
 	{
 		log_SetLogCount(index+1,TYPE_FCL);
+	}
+	else if(sensor_type == TYPE_TDS)
+	{
+		log_SetLogCount(index+1,TYPE_F);
 	}
 	else if(sensor_type == TYPE_Oiw && get_CurDo()->modbus_id == OiW_yushan_DA511_ModbusID)
 	{

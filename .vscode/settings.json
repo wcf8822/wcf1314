@@ -15,6 +15,7 @@
         "rs485.h": "c",
         "dx01.h": "c",
         "tur_shenghui.h": "c",
-        "ec_de40.h": "c"
+        "ec_de40.h": "c",
+        "tds_dt49.h": "c"
     }
 }

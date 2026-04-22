@@ -368,7 +368,7 @@ extern const unsigned char yingwen_cn[8];
 extern const unsigned char zidongsousuozhong_cn[3] ;
 extern const unsigned char zidongsousuozhong_en[] ;
 
-extern const unsigned char sensor_type_str[17][7];
+extern const unsigned char sensor_type_str[18][7];
 
 extern const unsigned char battery_image[6][33];
 extern const unsigned char battery_image_big[4][484];
@@ -811,6 +811,9 @@ extern const unsigned char Oiw_ppb_en[];
 
 extern const unsigned char lvbocishu_cn[4];              
 extern const unsigned char lvbocishu_en[];
+
+extern const unsigned char tds_changshu_cn[2];              
+extern const unsigned char tds_changshu_en[];
 #endif
 
 
