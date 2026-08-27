@@ -51,6 +51,8 @@ typedef struct struct_setting{
 	uint8_t AutoLock_SAL;      //是否自动锁定
 	uint8_t AutoLock_OIW_ppm;      //是否自动锁定
 	uint8_t AutoLock_TDS;      //是否自动锁定
+	uint8_t AutoLock_CL;      //是否自动锁定
+	
 	
 	uint8_t AutoLock_level_pH;       //自动锁定等级
 	uint8_t AutoLock_level_DO;       //自动锁定等级
@@ -67,6 +69,8 @@ typedef struct struct_setting{
 	uint8_t AutoLock_level_SAL;    //自动锁定等级
 	uint8_t AutoLock_level_OIW_ppm;    //自动锁定等级
 	uint8_t AutoLock_level_TDS;    //自动锁定等级
+	uint8_t AutoLock_level_CL;    //自动锁定等级	
+	
 
 	uint8_t IsAlarm_pH;       //是否报警
 	uint8_t IsAlarm_DO;       //是否报警
@@ -83,6 +87,8 @@ typedef struct struct_setting{
 	uint8_t IsAlarm_SAL;	//是否报警
 	uint8_t IsAlarm_OIW_ppm;    //是否报警
 	uint8_t IsAlarm_TDS;	//是否报警
+	uint8_t IsAlarm_CL;	//是否报警
+	
 
 	uint8_t AutoShut;         //0 5 10 20
 	
@@ -101,6 +107,7 @@ typedef struct struct_setting{
 	uint8_t IsOpen_SlideAvg_TSS;  //是否开启滑动平均
 	uint8_t IsOpen_SlideAvg_SAL;  //是否开启滑动平均
 	uint8_t IsOpen_SlideAvg_TDS;  //是否开启滑动平均
+	uint8_t IsOpen_SlideAvg_CL;  //是否开启滑动平均
 	
 	uint8_t SlideAvgTimes_pH;    //滑动平均次数
 	uint8_t SlideAvgTimes_DO;    //滑动平均次数
@@ -117,7 +124,8 @@ typedef struct struct_setting{
 	uint8_t SlideAvgTimes_TSS;	  //滑动平均次数
 	uint8_t SlideAvgTimes_SAL;	  //滑动平均次数
 	uint8_t SlideAvgTimes_TDS;	  //滑动平均次数
-
+	uint8_t SlideAvgTimes_CL;	  //滑动平均次数
+	
 	uint8_t IsSelect_pH;       //是否选中加入到读取指令
 	uint8_t IsSelect_DO;       //是否选中   海发、禹山溶解氧
 	uint8_t IsSelect_DO_shenghui;       //昇辉溶解氧
@@ -176,6 +184,9 @@ typedef struct struct_setting{
 	value_type LowThreshold_TDS;
 	value_type HighThreshold_TDS; //高门限报警阈值
 
+	value_type LowThreshold_CL;
+	value_type HighThreshold_CL; //高门限报警阈值
+	
 	value_type AirPressure;   //气压补偿
 	value_type Salinity;      //盐度值
 

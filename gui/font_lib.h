@@ -620,8 +620,7 @@ extern const unsigned char F_en[] ;
 /*
 CL 传感器
 */
-extern const unsigned char CL_jiaozhun_cn[3] ;
-extern const unsigned char CL_jiaozhun_en[] ;
+
 
 extern const unsigned char CL_cn[2] ;
 extern const unsigned char CL_en[] ;
@@ -814,6 +813,16 @@ extern const unsigned char lvbocishu_en[];
 
 extern const unsigned char tds_changshu_cn[2];              
 extern const unsigned char tds_changshu_en[];
+
+extern const unsigned char cl_lvlizi_cn[3];              
+extern const unsigned char cl_lvlizi_en[];
+
+extern const unsigned char FCL_cn[2];
+extern const unsigned char FCL_en[];
+
+
+
+
 #endif
 
 

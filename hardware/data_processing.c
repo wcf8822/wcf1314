@@ -27,9 +27,15 @@
 #include "OiW_Guohong.h"
 #include "OiW_yushan.h"
 #include "DO_HaiFa_DY12.h"
+#include "EC_DE40.h"
 #include "DX01.h"
 #include "MLSS_lanchang.h"
+#include "DZ09.h"
 #include "TDS_DT49.h"
+#include "DL312.h"
+#include "DY05.h"
+#include "DO59.h"
+
 uint8_t DC18_DC17_flag;		//17,18切换标志位
 
 /*所有串口的接收中断，表示有接收到数据*/
@@ -1582,10 +1588,20 @@ void pH_DpH07_DataHandle(void){
 			{
 				close_circle();
 				pH_DpH07_SetSN(get_COMADo()->modbus_id == pH_DpH07_ModbusID ? get_COMADo() : get_COMBDo());
+				pH_DpH07_rs485_GetStander(get_COMADo());
+
+			}
+			break;		
+
+		case DO_SendType_Set_Mes_mode:         //获取国标和美标
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{
+				close_circle();
+				pH_DpH07_SetStander(get_COMADo()->modbus_id == pH_DpH07_ModbusID ? get_COMADo() : get_COMBDo(), &(rs485_usart.rx_buf[3]));
 				pH_DpH07_rs485_GetSHWVersion(get_COMADo());
 
 			}
-			break;					
+			break;			
 		
 		case DO_SendType_GetSHWVersion: //获取软硬件版本号
 			if(rs485_usart.rx_buf[1] == 0x03)
@@ -1651,6 +1667,13 @@ void pH_DpH07_DataHandle(void){
 				}
 			}
 			break;		
+			
+		case DO_SendType_Set_Mes_Time:
+			if(rs485_usart.rx_buf[1] == 0x06 && rs485_usart.rx_buf[2] == 0x08 && rs485_usart.rx_buf[3] == 0x0a)//校准返回
+			{
+				close_circle();
+			}
+			break;
 			
 		default:
 			break;
@@ -1863,6 +1886,9 @@ void ORP_DR31_DataHandle(void){
 						break;
 				}
 			}
+			break;
+			
+		default:
 			break;
 	}
 }
@@ -2578,6 +2604,8 @@ void LH_DX01_DataHandle(void){
 						interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
 						interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
 						break;
+					default:
+						break;
 				}			
 			}
 			break;
@@ -2593,6 +2621,8 @@ void LH_DX01_DataHandle(void){
 						interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
 						interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
 						interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
+						break;
+					default:
 						break;
 				}
 			}
@@ -2662,6 +2692,8 @@ void DZ09_DataHandle(void){
 						interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
 						interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
 						break;
+					default:
+						break;
 				}
 			}
 			break;
@@ -2677,6 +2709,8 @@ void DZ09_DataHandle(void){
 						interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
 						interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
 						interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
+						break;
+					default:
 						break;
 				}
 			}
@@ -2826,6 +2860,392 @@ void DT49_DataHandle(void){
 	}
 }
 
+/*DL312  串口数据处理*/
+void DL312_DataHandle(void){
+	switch(rs485_GetSentType())
+	{
+		case DO_SendType_GetModbusId:   //获取modbus id
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{	
+				uint8_t DO_ID = Cl_DL312_ModbusID;
+				
+				DO_AddProbe(DO_ID);
+					
+				rs485_DevicePlus();//添加下设备树上的设备个数
+							
+				GetCircularSent_Flag=0;
+				DL312_rs485_GetSN(get_COMADo());
+
+			}
+			break;
+		
+		case DO_SendType_GetSN:         //获取设备编码
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{
+				close_circle();
+				DL312_SetSN(get_COMADo()->modbus_id == Cl_DL312_ModbusID ? get_COMADo() : get_COMBDo(), &(rs485_usart.rx_buf[3]), 0);
+				DL312_rs485_GetSHWVersion(get_COMADo());
+			}
+			break;					
+		
+		case DO_SendType_GetSHWVersion: //获取软硬件版本号
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{
+				close_circle();
+				DL312_SetSHWVersion(get_COMADo()->modbus_id == Cl_DL312_ModbusID ? get_COMADo() : get_COMBDo());
+
+				DL312_rs485_GetTemp_CalValue(get_COMADo()->modbus_id == Cl_DL312_ModbusID ? get_COMADo() : get_COMBDo());
+			}
+			break;	
+			
+		case DO_SendType_GetTempTwoDO://更新数据
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{
+				close_circle();
+				DL312_UpdateTemp2DO(get_COMADo()->modbus_id == Cl_DL312_ModbusID ? get_COMADo() : get_COMBDo(),&(rs485_usart.rx_buf[3]));
+				DO_SetIsGetedValue(get_COMADo()->modbus_id == Cl_DL312_ModbusID ? get_COMADo() : get_COMBDo());//设置do设备已经有数据了
+			}
+			break;
+		
+		case DO_SendType_SetZeroCal://零点校准
+		case DO_SendType_SetFullCal:
+			if(rs485_usart.rx_buf[1] == 0x06 && rs485_usart.rx_buf[5] == 0xff)//校准返回
+			{		
+		  	close_circle();
+				switch(interfacial_GetCurPage())
+				{
+					case PAGE_5_DO_ONE_First:
+					case PAGE_5_DO_TWO_FIRST:
+						generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+						interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
+						interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
+						interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
+						break;
+					default:
+						break;
+				}
+			}
+			break;
+
+
+		case DO_SendType_SetKB:
+
+			close_circle();
+			switch(interfacial_GetCurPage())
+			{
+					case PAGE_1_RESETCAL:
+						generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+						interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
+						interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
+						interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);						
+					  break;
+					case PAGE_5_DO_ONE_First:
+            DL312_rs485_Set_Zero_Cal(get_CurDo(),0xFF);
+					  break;
+					case PAGE_5_DO_TWO_FIRST:
+            DL312_rs485_Set_Slp_Cal(get_CurDo(),0xFF);
+					  break;									
+				default:
+					break;
+			}
+		   
+			break;
+
+			
+		case DO_SendType_HyphiveClearCal://恢复出厂设置
+			if(rs485_usart.rx_buf[1] == 0x06 && rs485_usart.rx_buf[3] == 0x1b)
+			{
+				close_circle();
+				if(interfacial_GetCurPage() == PAGE_1_RESETCAL)
+				{
+					generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+				}
+			}
+			break;		
+
+		case DO_SendType_SetTemp:
+			if( rs485_usart.rx_buf[1] == 0x10 && rs485_usart.rx_buf[3] == 0x14)//校准返回
+			{
+				close_circle();
+				if(interfacial_GetCurPage() == PAGE_5_TEMP)
+				{
+					generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+				}
+				DL312_rs485_GetTemp_CalValue(get_COMADo()->modbus_id == Cl_DL312_ModbusID ? get_COMADo() : get_COMBDo());
+			}
+			break;		
+
+		case DO_SendType_GetSalinity:
+			if( rs485_usart.rx_buf[1] == 0x03 && rs485_usart.rx_buf[2] == 0x04)//校准返回
+			{
+				close_circle();
+				DO_SetIsInit(get_COMADo()->modbus_id == Cl_DL312_ModbusID ? get_COMADo() : get_COMBDo());
+				DL312_SetTemp_Cal_value(get_COMADo()->modbus_id == Cl_DL312_ModbusID ? get_COMADo() : get_COMBDo(), &(rs485_usart.rx_buf[3]));
+			}
+			break;				
+		default:
+			break;
+	}
+}
+
+
+void DO_DY05_DataHandle(void){
+	switch(rs485_GetSentType())
+	{
+		case DO_SendType_GetModbusId:   //溶解氧获取modbus id
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{	
+				uint8_t DO_ID = DO_DY05_ModbusID;
+				
+				DO_AddProbe(DO_ID);
+					
+				rs485_DevicePlus();//添加下设备树上的设备个数
+							
+				GetCircularSent_Flag=0;
+
+
+				DY05_SetSN(get_COMADo()->modbus_id == DO_DY05_ModbusID ? get_COMADo() : get_COMBDo(), &(rs485_usart.rx_buf[3]), 0);
+				DY05_SetSHWVersion(get_COMADo()->modbus_id == DO_DY05_ModbusID ? get_COMADo() : get_COMBDo());
+				
+				DY05_rs485_GetSalinity(get_COMADo());
+			}
+			break;
+				
+		case DO_SendType_GetSalinity:  //获取溶解氧设置的盐度值
+			if(rs485_usart.rx_buf[1] == 0x03 && rs485_usart.rx_buf[2] == 0x04)
+			{
+				close_circle();
+				DY05_SetSalinityArr(get_COMADo()->modbus_id == DO_DY05_ModbusID ? get_COMADo() : get_COMBDo(), &(rs485_usart.rx_buf[3]));
+				DY05_rs485_GetPressure(get_COMADo());
+			}
+			break;
+			
+		case DO_SendType_GetPressure: //获取溶解氧设置的气压值
+			if(rs485_usart.rx_buf[1] == 0x03 && rs485_usart.rx_buf[2] == 0x04)
+			{
+				close_circle();
+				DY05_SetPressureArr(get_COMADo()->modbus_id == DO_DY05_ModbusID ? get_COMADo() : get_COMBDo(),&(rs485_usart.rx_buf[3]));
+				DY05_rs485_GetTemp_CalValue(get_COMADo());
+			}
+			break;
+			
+		case DO_SendType_GetTemperature: //获取温度偏移量
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{
+				close_circle();
+				DY05_SetTemp_Cal_value(get_COMADo()->modbus_id == DO_DY05_ModbusID ? get_COMADo() : get_COMBDo(),&(rs485_usart.rx_buf[3]));
+				DO_SetIsInit(get_COMADo()->modbus_id == DO_DY05_ModbusID ? get_COMADo() : get_COMBDo());
+			}
+			break;
+			
+			
+		case DO_SendType_GetTempTwoDO:
+			if(rs485_usart.rx_buf[1] == 0x03 && rs485_usart.rx_buf[2] == 0x06)
+			{
+				close_circle();
+				DY05_UpdateTemp2DO(get_COMADo()->modbus_id == DO_DY05_ModbusID ? get_COMADo() : get_COMBDo(),&(rs485_usart.rx_buf[3]));
+				DO_SetIsGetedValue(get_COMADo()->modbus_id == DO_DY05_ModbusID ? get_COMADo() : get_COMBDo());//设置do设备已经有数据了
+			}
+			break;
+				
+		case DO_SendType_SetZeroCal:
+		case DO_SendType_SetFullCal:
+			if(rs485_usart.rx_buf[1] == 0x06)//校准返回
+			{
+				close_circle();
+				switch(interfacial_GetCurPage())
+				{
+					case PAGE_5_DO_ONE_First:
+					case PAGE_5_DO_TWO_FIRST:
+						generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+						interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
+						interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
+						interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
+						break;
+					
+					default:
+						break;
+				}
+			}
+			break;
+		
+		case DO_SendType_SetTemp:
+			if( rs485_usart.rx_buf[1] == 0x06 && rs485_usart.rx_buf[2] == 0x02)//校准返回
+			{
+				close_circle();
+				if(interfacial_GetCurPage() == PAGE_5_TEMP)
+				{
+						generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+					  DY05_rs485_GetTemp_CalValue(get_COMADo());
+				}
+			}
+			break;
+
+		case DO_SendType_SetPressure:
+			if( rs485_usart.rx_buf[1] == 0x10 && rs485_usart.rx_buf[2] == 0x02)//校准返回
+			{
+				close_circle();
+				if(interfacial_GetCurPage() == PAGE_3_PRESSURE)
+				{
+						generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+				}
+			}
+			break;
+		
+		case DO_SendType_SetSalinity:
+			if(rs485_usart.rx_buf[1] == 0x10 && rs485_usart.rx_buf[2] == 0x02)//校准返回
+			{
+				close_circle();
+				if(interfacial_GetCurPage() == PAGE_3_SALT)
+				{
+						generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+				}
+			}
+			break;
+	
+		case DO_SendType_Set_Mes_mode:
+			if(rs485_usart.rx_buf[2] == 0x02 && rs485_usart.rx_buf[3] == 0xf4)
+			{
+				close_circle();
+				DY05_rs485_ClearCal(get_COMADo());
+			}
+			break;
+			
+		case DO_SendType_HyphiveClearCal:
+			if(rs485_usart.rx_buf[2] == 0x02 && rs485_usart.rx_buf[3] == 0xf5)
+			{
+				close_circle();
+				if(interfacial_GetCurPage() == PAGE_1_RESETCAL)
+				{
+						generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+				}
+				DY05_rs485_GetTemp_CalValue(get_COMADo());
+			}
+			break;								
+		default:
+			break;
+	}
+}
+
+void DO_DO59_DataHandle(void){
+	switch(rs485_GetSentType())
+	{
+		case DO_SendType_GetModbusId:   //溶解氧获取modbus id
+			if(rs485_usart.rx_buf[1] == 0x03)
+			{	
+				uint8_t DO_ID = DO_DO59_ModbusID;
+				
+				DO_AddProbe(DO_ID);
+					
+				rs485_DevicePlus();//添加下设备树上的设备个数
+							
+				GetCircularSent_Flag=0;
+
+
+				DO59_SetSN(get_COMADo()->modbus_id == DO_DO59_ModbusID ? get_COMADo() : get_COMBDo(), &(rs485_usart.rx_buf[3]), 0);
+				DO59_SetSHWVersion(get_COMADo()->modbus_id == DO_DO59_ModbusID ? get_COMADo() : get_COMBDo());
+				
+				DO59_rs485_GetSalinity(get_COMADo());
+			}
+			break;
+				
+		case DO_SendType_GetSalinity:  //获取溶解氧设置的盐度值
+			if(rs485_usart.rx_buf[1] == 0x03 && rs485_usart.rx_buf[2] == 0x02)
+			{
+				close_circle();
+				DO59_SetSalinityArr(get_COMADo()->modbus_id == DO_DO59_ModbusID ? get_COMADo() : get_COMBDo(), &(rs485_usart.rx_buf[3]));
+				DO59_rs485_GetPressure(get_COMADo());
+			}
+			break;
+			
+		case DO_SendType_GetPressure: //获取溶解氧设置的气压值
+			if(rs485_usart.rx_buf[1] == 0x03 && rs485_usart.rx_buf[2] == 0x04)
+			{
+				close_circle();
+				DO59_SetPressureArr(get_COMADo()->modbus_id == DO_DO59_ModbusID ? get_COMADo() : get_COMBDo(),&(rs485_usart.rx_buf[3]));
+				DO_SetIsInit(get_COMADo()->modbus_id == DO_DO59_ModbusID ? get_COMADo() : get_COMBDo());
+			}
+			break;
+			
+		case DO_SendType_GetTempTwoDO:
+			if(rs485_usart.rx_buf[1] == 0x03 && rs485_usart.rx_buf[2] == 0x06)
+			{
+				close_circle();
+				DO59_UpdateTemp2DO(get_COMADo()->modbus_id == DO_DO59_ModbusID ? get_COMADo() : get_COMBDo(),&(rs485_usart.rx_buf[3]));
+				DO_SetIsGetedValue(get_COMADo()->modbus_id == DO_DO59_ModbusID ? get_COMADo() : get_COMBDo());//设置do设备已经有数据了
+			}
+			break;
+				
+		case DO_SendType_SetZeroCal:
+		case DO_SendType_SetFullCal:
+			if(rs485_usart.rx_buf[1] == 0x06)//校准返回
+			{
+				close_circle();
+				switch(interfacial_GetCurPage())
+				{
+					case PAGE_5_DO_ONE_First:
+					case PAGE_5_DO_TWO_FIRST:
+						
+						generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+						interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
+						interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
+						interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
+						break;
+					
+					default:
+						break;
+				}
+			}
+			break;
+		
+		case DO_SendType_SetTemp:
+			if( rs485_usart.rx_buf[1] == 0x06 && rs485_usart.rx_buf[2] == 0x04)//校准返回
+			{
+				close_circle();
+				if(interfacial_GetCurPage() == PAGE_5_TEMP)
+				{
+						generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+				}
+			}
+			break;
+
+		case DO_SendType_SetPressure:
+			if( rs485_usart.rx_buf[1] == 0x10 && rs485_usart.rx_buf[2] == 0x04)//校准返回
+			{
+				close_circle();
+				if(interfacial_GetCurPage() == PAGE_3_PRESSURE)
+				{
+						generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+				}
+			}
+			break;
+		
+		case DO_SendType_SetSalinity:
+			if(rs485_usart.rx_buf[1] == 0x06 && rs485_usart.rx_buf[2] == 0x04)//校准返回
+			{
+				close_circle();
+				if(interfacial_GetCurPage() == PAGE_3_SALT)
+				{
+						generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+				}
+			}
+			break;
+	
+		
+		case DO_SendType_HyphiveClearCal:
+			if(rs485_usart.rx_buf[2] == 0x04 && rs485_usart.rx_buf[3] == 0x33)
+			{
+				close_circle();
+				if(interfacial_GetCurPage() == PAGE_1_RESETCAL)
+				{
+						generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+				}
+			}
+			break;								
+		default:
+			break;
+	}
+}
 //这是在main里处理的
 void rs485_DataHandle(void)
 {
@@ -2938,7 +3358,19 @@ void rs485_DataHandle(void)
 				case TDS_DT49_Modbus:
 			  DT49_DataHandle();
 				break;
-
+				
+				case Cl_DL312_ModbusID:
+					DL312_DataHandle();
+				break;
+				
+				case DO_DY05_ModbusID:
+					DO_DY05_DataHandle();
+				break;	
+				
+				case DO_DO59_ModbusID:
+					DO_DO59_DataHandle();
+				break;	
+				
 				default:
 					break;
 			}

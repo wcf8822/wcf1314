@@ -11,6 +11,8 @@
 #include "log.h"
 #include "logic.h"
 #include "DO_HaiFa_DY12.h"
+#include "DY05.h"
+#include "DO59.h"
 #include "math.h"
 /////////////////////////////////////////////////////////////////////////////////////////////好像可以直接在485指令里直接改对应设备的值就不用改结构体里的值
 
@@ -183,6 +185,8 @@ void DO_AddProbe(uint8_t ModbusId)//这里得添加名字
 		case DO_shenghui_ModbusID:
 		case DO_HF1012_ModbusID:
 		case DO_HF_DY12_ModbusID:
+		case DO_DY05_ModbusID:
+		case DO_DO59_ModbusID:
 			snprintf(p->name, 6, "DO %02d", ModbusId); //生成名字
 		  add_Type=TYPE_DO;
 			if(setting_GetIsOpen_SlideAvg_DO())
@@ -356,7 +360,18 @@ void DO_AddProbe(uint8_t ModbusId)//这里得添加名字
 				filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_TDS());       //初始化一下℃    数值指针			
 			}
 			break;
-		
+			
+		case Cl_DL312_ModbusID:
+			snprintf(p->name, 8, "CL %02d", ModbusId); //生成名字
+		  add_Type=TYPE_CL;
+			if(setting_GetIsOpen_SlideAvg_CL())
+			{//如果开启了滑动平均就直接添加下 没开的话就等开的时候再初始化
+				filter_init(&(p->queue_domgl), setting_GetSlideAvgTimes_CL());      //初始化一下mg/l 数值指针
+				filter_init(&(p->queue_dopercent), setting_GetSlideAvgTimes_CL());  //初始化一下%    数值指针
+				filter_init(&(p->queue_temp), setting_GetSlideAvgTimes_CL());       //初始化一下℃    数值指针			
+			}
+			break;
+			
 		default:
 			break;
 		
@@ -1157,22 +1172,45 @@ void CheckValueLock(PtrToDOProbe ptd)
 		if(GetAutoLock_Flag == AUTOLOCK_AUTO)//如果开启了自动锁定功能
 		{
 			if(rs485_GetSensorType() ==TYPE_DO)
-			{
-				difference = ptd->DOpercent.value_f - ptd->last_DOmgl;//取差值
-				if(fabs(difference) <= 0.0015)
+			{			
+				if(get_CurDo()->modbus_id == DO_DY05_ModbusID || get_CurDo()->modbus_id == DO_DO59_ModbusID)
 				{
-					ptd->shake_count++;
-				}
-				lock_num++;
-				setting_SetAutoLock_num(lock_num);
+					difference = ptd->DOmgl.value_f - ptd->last_DOmgl;
+					if(fabs(difference) <= 0.015)
+					{
+						ptd->shake_count++;
+					}
+					lock_num++;
+					setting_SetAutoLock_num(lock_num);
 
-				if(setting_AutoLock_num() == eps || fabs(difference) > 0.005)
+					if(setting_AutoLock_num() == eps || fabs(difference) > 0.06)
+					{
+						lock_num =0;
+						setting_SetAutoLock_num(0);
+						ptd->shake_count =0;
+					}
+          lock_max= eps*2/4;									
+				}				
+				else
 				{
-					lock_num =0;
-					setting_SetAutoLock_num(0);
-					ptd->shake_count =0;
+					difference = ptd->DOpercent.value_f - ptd->last_DOmgl;//取差值
+					if(fabs(difference) <= 0.0015)
+					{
+						ptd->shake_count++;
+					}
+					lock_num++;
+					setting_SetAutoLock_num(lock_num);
+
+					if(setting_AutoLock_num() == eps || fabs(difference) > 0.005)
+					{
+						lock_num =0;
+						setting_SetAutoLock_num(0);
+						ptd->shake_count =0;
+					}
+          lock_max= eps*3/4;					
 				}
-				lock_max= eps*3/4;
+
+				
 			}
 			else
 			{
@@ -1407,6 +1445,14 @@ void DO_UpdatePressSal(PtrToDOProbe *DO_head) //更新DO设备的气压值和盐
 					DO_HaiFa_DY12_rs485_Set_Cmd_open(get_CurDo());
 					break;
 				
+				case DO_DY05_ModbusID:  
+          DY05_rs485_SetPressure(get_CurDo(),press);	 				
+					break;	
+
+				case DO_DO59_ModbusID:  
+          DO59_rs485_SetPressure(get_CurDo(),press);	 				
+					break;	
+				
 				default:
 					break;
 			}
@@ -1430,6 +1476,15 @@ void DO_UpdatePressSal(PtrToDOProbe *DO_head) //更新DO设备的气压值和盐
 					Set_DY12_Sal_Value((int16_t)(sal * 100));
 					DO_HaiFa_DY12_rs485_Set_Cmd_open(get_CurDo());
 					break;
+				
+				case DO_DY05_ModbusID:  
+					DY05_rs485_SetSalinity(get_CurDo(),sal);	            
+					break;
+
+				case DO_DO59_ModbusID:  
+					DO59_rs485_SetSalinity(get_CurDo(),sal);	            
+					break;
+				
 				default:
 					break;
 			}

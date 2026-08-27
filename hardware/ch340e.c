@@ -211,22 +211,24 @@ void ch340_DataHandle(void)
 						{
 							case 0x01://查总共记录条数
 							  log_SendCount();
-							  DO_Send_Count = 0;
-							  pH_Send_Count = 0;
-							  Tur_Send_Count = 0;
-							  EC_Send_Count = 0;
-							  ORP_Send_Count = 0;
-							  NH4_Send_Count = 0;
-							  F_Send_Count = 0;
-							  CL_Send_Count = 0;
-							  Chl_Send_Count = 0;
-							  Bga_Send_Count = 0;
-							  COD_Send_Count = 0;							
-							  MLSS_Send_Count = 0;
-							  OiW_Send_Count = 0;
-							  TSS_Send_Count = 0;
-							   TSS_Send_Count = 0;
-							   SAL_Send_Count = 0;
+                DO_Send_Count = 0;
+								pH_Send_Count = 0;	
+								Tur_Send_Count = 0;
+								FCL_Send_Count = 0;		
+								EC_Send_Count = 0;
+								ORP_Send_Count = 0;
+								NH4_Send_Count = 0;		
+								F_Send_Count = 0;		
+								CL_Send_Count = 0;
+								Chl_Send_Count = 0;
+								Bga_Send_Count = 0;	
+								COD_Send_Count = 0;
+								MLSS_Send_Count = 0;	
+								OiW_Send_Count = 0;		
+								OiW_YUSHAN_Send_Count = 0;
+								TSS_Send_Count = 0;	
+								SAL_Send_Count = 0;	
+								TDS_Send_Count = 0;	
 								break;
 							
 							case 0x02://查第几条记录

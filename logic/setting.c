@@ -244,24 +244,24 @@ uint8_t setting_GetIsAlarm_NH4(void)
 
 void setting_SetIsAlarm_F(uint8_t IsAlarm)
 {
-	// setting.setting_struct.IsAlarm_F = IsAlarm;
+	 //setting.setting_struct.IsAlarm_F = IsAlarm;
 }
 
 /*获取是否报警*/
 uint8_t setting_GetIsAlarm_F(void)
 {
-	// return setting.setting_struct.IsAlarm_F;
+	 //return setting.setting_struct.IsAlarm_F;
 }
 
 void setting_SetIsAlarm_CL(uint8_t IsAlarm)
 {
-	// setting.setting_struct.IsAlarm_CL = IsAlarm;
+	 setting.setting_struct.IsAlarm_CL = IsAlarm;
 }
 
 /*获取是否报警*/
 uint8_t setting_GetIsAlarm_CL(void)
 {
-	// return setting.setting_struct.IsAlarm_CL;
+	 return setting.setting_struct.IsAlarm_CL;
 }
 
 
@@ -654,11 +654,11 @@ uint8_t setting_GetIsOpen_SlideAvg_F(void)
 /*是否开启滑动平均设置*/
 void setting_SetIsOpen_SlideAvg_CL(uint8_t IsOpen)
 {
-	// setting.setting_struct.IsOpen_SlideAvg_CL = IsOpen;
+  setting.setting_struct.IsOpen_SlideAvg_CL = IsOpen;
 }
 uint8_t setting_GetIsOpen_SlideAvg_CL(void)
 {
-	// return setting.setting_struct.IsOpen_SlideAvg_CL;
+  return setting.setting_struct.IsOpen_SlideAvg_CL;
 }
 
 /*是否开启滑动平均设置*/
@@ -840,7 +840,7 @@ void init_setting(void)
 	setting.setting_struct.AutoLock_Bga = 0;
 	setting.setting_struct.AutoLock_COD= 0;
 	setting.setting_struct.AutoLock_MLSS = 0;
-	
+
 	/*自动锁定等级*/
 	setting.setting_struct.AutoLock_level_pH = 0;
 	setting.setting_struct.AutoLock_level_DO = 0;
@@ -852,7 +852,7 @@ void init_setting(void)
 	setting.setting_struct.AutoLock_level_Bga = 0;
 	setting.setting_struct.AutoLock_level_COD = 0;
 	setting.setting_struct.AutoLock_level_MLSS = 0;
-	
+
 	/*是否开启滑动平均功能*/
 	setting.setting_struct.IsOpen_SlideAvg_pH = 0;
 	setting.setting_struct.IsOpen_SlideAvg_DO = 0;
@@ -864,6 +864,7 @@ void init_setting(void)
 	setting.setting_struct.IsOpen_SlideAvg_Bga = 0;
 	setting.setting_struct.IsOpen_SlideAvg_COD = 0;
 	setting.setting_struct.IsOpen_SlideAvg_MLSS = 0;
+
 	/*滑动平均次数*/
 	setting.setting_struct.SlideAvgTimes_pH = 2;
 	setting.setting_struct.SlideAvgTimes_DO = 2;
@@ -949,22 +950,27 @@ void init_setting(void)
 	setting.setting_struct.AutoLock_TSS= 0;
 	setting.setting_struct.AutoLock_OIW_ppm= 0;
 
+
 	setting.setting_struct.AutoLock_level_OIW = 0;
 	setting.setting_struct.AutoLock_level_TSS = 0;
 	setting.setting_struct.AutoLock_level_OIW_ppm = 0;
 
+	
 	setting.setting_struct.IsOpen_SlideAvg_OIW = 0;
 	setting.setting_struct.IsOpen_SlideAvg_OIW_ppm = 0;
 	setting.setting_struct.IsOpen_SlideAvg_TSS = 0;
 
+	
 	setting.setting_struct.SlideAvgTimes_OIW = 2;
 	setting.setting_struct.SlideAvgTimes_OIW_ppm = 2;
 	setting.setting_struct.SlideAvgTimes_TSS = 2;
 
+	
 	setting.setting_struct.IsAlarm_OIW= 0;
 	setting.setting_struct.IsAlarm_OIW_ppm= 0;
 	setting.setting_struct.IsAlarm_TSS = 0;
 
+	
 	setting.setting_struct.LowThreshold_OIW = 0.00;  //低门限报警阈值
 	setting.setting_struct.HighThreshold_OIW = 0.00; //高门限报警阈值
 
@@ -991,6 +997,15 @@ void init_setting(void)
 	setting.setting_struct.IsAlarm_TDS= 0;
 	setting.setting_struct.LowThreshold_TDS = 0.00;
 	setting.setting_struct.HighThreshold_TDS = 0.00;
+	
+	setting.setting_struct.AutoLock_CL =0;
+	setting.setting_struct.AutoLock_level_CL = 0;
+	setting.setting_struct.IsOpen_SlideAvg_CL = 0;
+	setting.setting_struct.SlideAvgTimes_CL = 2;
+	setting.setting_struct.IsAlarm_CL= 0;
+	setting.setting_struct.LowThreshold_CL = 0.00;
+	setting.setting_struct.HighThreshold_CL = 0.00;
+	
 }
 
 /*恢复出厂设置*/
@@ -1221,19 +1236,19 @@ void setting_SetLowThreshold_F(value_type value)
 
 value_type setting_GetHighThreshold_CL(void)
 {
-	// return setting.setting_struct.HighThreshold_CL;
+	 return setting.setting_struct.HighThreshold_CL;
 }
 void setting_SetHighThreshold_CL(value_type value)
 {
-	// setting.setting_struct.HighThreshold_CL= value;
+	 setting.setting_struct.HighThreshold_CL= value;
 }
 value_type setting_GetLowThreshold_CL(void)
 {
-	// return setting.setting_struct.LowThreshold_CL;
+	 return setting.setting_struct.LowThreshold_CL;
 }
 void setting_SetLowThreshold_CL(value_type value)
 {
-	// setting.setting_struct.LowThreshold_CL = value;
+	 setting.setting_struct.LowThreshold_CL = value;
 }
 
 value_type setting_GetHighThreshold_Chl(void)
@@ -1475,11 +1490,11 @@ void setting_SetSlideAvgTimes_F(uint8_t times)
 
 uint8_t setting_GetSlideAvgTimes_CL(void)
 {
-	// return setting.setting_struct.SlideAvgTimes_CL;
+	 return setting.setting_struct.SlideAvgTimes_CL;
 }
 void setting_SetSlideAvgTimes_CL(uint8_t times)
 {
-	// setting.setting_struct.SlideAvgTimes_CL = times;
+	 setting.setting_struct.SlideAvgTimes_CL = times;
 }
 
 
@@ -1674,11 +1689,11 @@ void setting_SetAutoLock_F(uint8_t AutoLock)
 
 uint8_t setting_GetAutoLock_CL(void)
 {
-	// return setting.setting_struct.AutoLock_CL;
+	 return setting.setting_struct.AutoLock_CL;
 }
 void setting_SetAutoLock_CL(uint8_t AutoLock)
 {
-	// setting.setting_struct.AutoLock_CL = AutoLock;
+	 setting.setting_struct.AutoLock_CL = AutoLock;
 }
 
 uint8_t setting_GetAutoLock_Chl(void)
@@ -1838,11 +1853,11 @@ void setting_SetAutoLockLevel_F(uint8_t level)
 
 uint8_t setting_GetAutoLockLevel_CL(void)
 {
-	// return setting.setting_struct.AutoLock_level_CL;
+	 return setting.setting_struct.AutoLock_level_CL;
 }
 void setting_SetAutoLockLevel_CL(uint8_t level)
 {
-	// setting.setting_struct.AutoLock_level_CL = level;
+	 setting.setting_struct.AutoLock_level_CL = level;
 }
 
 uint8_t setting_GetAutoLockLevel_Chl(void)

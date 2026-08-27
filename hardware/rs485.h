@@ -56,6 +56,12 @@
 #define EC_DE40_ModbusID 3
 #define EC_DS46_ModbusID 85
 #define TDS_DT49_Modbus 86
+
+#define Cl_DL312_ModbusID 58
+
+#define DO_DY05_ModbusID 7
+
+#define DO_DO59_ModbusID 6
 /*传感器类型*/
 typedef enum{
 	TYPE_DO = 0,           //溶解氧
@@ -188,7 +194,7 @@ typedef enum{
 	DO_SendType_SetPressure,
 	DO_SendType_SetTemp,
 	DO_SendType_HyphiveClearCal, //海发溶解氧清除所有校准参数
-  	DO_SendType_SetZeroCal,
+  DO_SendType_SetZeroCal,
 	DO_SendType_SetFullCal,	
 	DO_SendType_GetMesParameter, //获取测量间隔,测量模式
 	DO_SendType_Set_Mes_mode,		 //设置测量模式

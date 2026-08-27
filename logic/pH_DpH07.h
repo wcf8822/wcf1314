@@ -14,4 +14,8 @@ void pH_DpH07_rs485_ClearCal(PtrToDOProbe ptd);
 void pH_DpH07_UpdateTemp2DO(PtrToDOProbe ptd, uint8_t *dat);
 void pH_DpH07_SetSN(PtrToDOProbe ptd);
 
+void pH_DpH07_rs485_GetStander(PtrToDOProbe ptd);
+void pH_DpH07_rs485_SetStander(PtrToDOProbe ptd, uint16_t Value);
+void pH_DpH07_SetStander(PtrToDOProbe ptd,uint8_t *dat);
+
 #endif

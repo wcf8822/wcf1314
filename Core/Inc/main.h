@@ -182,39 +182,39 @@ void Error_Handler(void);
 
 
 
-#define SETTING_FIRSTRUN_JUDGE 0xDE     //版本维护
+#define SETTING_FIRSTRUN_JUDGE 0xe0     //版本维护
 
 #define SETTING_FIRSTRUN_ADDR  0x000000 //判断是否是第一次上电的判断对比位 地址
 #define SETTING_CNORENG_ADDR   0x000100 //判断恢复出厂设置是英文还是中文的数据位 地址
-
-#define SETTING_START_ADDR     0x000300 //配置信息存储地址
+#define LOG_COUNT_ADDR         0x000200 //记录条数储存位起始地址 
 #define SETTING_LOGO_ADDR    	 0x000400 //开机动画选择位 地址
 #define SETTING_HAVEGPS_ADDR   0x000500 //是否有gps功能位 地址
 #define SETTING_CONTRAST_ADDR  0x000600 //屏幕初始化对比度数据存储地址
 #define BATTERT_TYPE_ADDR  	   0x000700 //电池类型（干电池和锂电池）数据存储地址   0：锂电池    1：干电池   默认：0
 #define B580_D702_TYPE_ADDR  	 0x000800 //设备类型 702 还是580             0: 702 1:580
+#define SETTING_START_ADDR     0x000900 //配置信息存储地址
 
-
-#define LOG_MAX_COUNT        10000//最大存储个数
-#define LOG_FIRST_ADDR         0x3CB000 //DO 第一条记录的存储地址
-#define LOG_FIRST_pH_ADDR         0x3CB000+1*LOG_MAX_COUNT*sizeof(log_t)   //pH 第一条记录的存储地址
-#define LOG_FIRST_Tur_ADDR         0x3CB000+2*LOG_MAX_COUNT*sizeof(log_t)   //Tur 第一条记录的存储地址
-#define LOG_FIRST_SAL_ADDR         0x3CB000+3*LOG_MAX_COUNT*sizeof(log_t)   //SAL 第一条记录的存储地址
-#define LOG_FIRST_EC_ADDR         0x3CB000+4*LOG_MAX_COUNT*sizeof(log_t)   //EC 第一条记录的存储地址
-#define LOG_FIRST_ORP_ADDR         0x3CB000+5*LOG_MAX_COUNT*sizeof(log_t)   //ORP 第一条记录的存储地址	
-#define LOG_FIRST_NH4_ADDR         0x3CB000+6*LOG_MAX_COUNT*sizeof(log_t)   //NH4 第一条记录的存储地址	
-#define LOG_FIRST_TDS_ADDR         0x3CB000+7*LOG_MAX_COUNT*sizeof(log_t)   //TDS 第一条记录的存储地址
-#define LOG_FIRST_CL_ADDR         0x3CB000+8*LOG_MAX_COUNT*sizeof(log_t)   //CL 第一条记录的存储地址
-#define LOG_FIRST_Chl_ADDR         0x3CB000+9*LOG_MAX_COUNT*sizeof(log_t)   //Chl 第一条记录的存储地址
-#define LOG_FIRST_Bga_ADDR         0x3CB000+10*LOG_MAX_COUNT*sizeof(log_t)   //Bga 第一条记录的存储地址
-#define LOG_FIRST_COD_ADDR         0x3CB000+11*LOG_MAX_COUNT*sizeof(log_t)   //COD 第一条记录的存储地址
-#define LOG_FIRST_PPM_ADDR         0x3CB000+12*LOG_MAX_COUNT*sizeof(log_t)   //水中油 第一条记录的存储地址
-#define LOG_FIRST_MLSS_ADDR        0x3CB000+13*LOG_MAX_COUNT*sizeof(log_t)   //污泥浓度 第一条记录的存储地址
-#define LOG_FIRST_OIW_ADDR         0x3CB000+14*LOG_MAX_COUNT*sizeof(log_t)   //水中油 第一条记录的存储地址
-#define LOG_FIRST_TSS_ADDR         0x3CB000+15*LOG_MAX_COUNT*sizeof(log_t)   //悬浮物 第一条记录的存储地址
-
-#define LOG_COUNT_ADDR         0x000200 //记录条数储存位起始地址  
-
+#define LOG_MAX_COUNT          5000//最大存储个数
+#define LOG_FIRST_ADDR         0x100000 //DO 第一条记录的存储地址  0
+#define LOG_FIRST_pH_ADDR          LOG_FIRST_ADDR+1*LOG_MAX_COUNT*sizeof(log_t)   //pH 第一条记录的存储地址  1
+#define LOG_FIRST_Tur_ADDR         LOG_FIRST_ADDR+2*LOG_MAX_COUNT*sizeof(log_t)   //Tur 第一条记录的存储地址 2
+#define LOG_FIRST_FCL_ADDR         LOG_FIRST_ADDR+3*LOG_MAX_COUNT*sizeof(log_t)   //SAL 第一条记录的存储地址 3
+#define LOG_FIRST_EC_ADDR          LOG_FIRST_ADDR+4*LOG_MAX_COUNT*sizeof(log_t)   //EC 第一条记录的存储地址  4
+#define LOG_FIRST_ORP_ADDR         LOG_FIRST_ADDR+5*LOG_MAX_COUNT*sizeof(log_t)   //ORP 第一条记录的存储地址	5
+#define LOG_FIRST_NH4_ADDR         LOG_FIRST_ADDR+6*LOG_MAX_COUNT*sizeof(log_t)   //NH4 第一条记录的存储地址	6
+#define LOG_FIRST_F_ADDR           LOG_FIRST_ADDR+7*LOG_MAX_COUNT*sizeof(log_t)    //F 第一条记录的存储地址  7
+#define LOG_FIRST_CL_ADDR          LOG_FIRST_ADDR+8*LOG_MAX_COUNT*sizeof(log_t)    //CL 第一条记录的存储地址  8
+#define LOG_FIRST_Chl_ADDR         LOG_FIRST_ADDR+9*LOG_MAX_COUNT*sizeof(log_t)    //Chl 第一条记录的存储地址 9
+#define LOG_FIRST_Bga_ADDR         LOG_FIRST_ADDR+10*LOG_MAX_COUNT*sizeof(log_t)   //Bga 第一条记录的存储地址 10
+#define LOG_FIRST_COD_ADDR         LOG_FIRST_ADDR+11*LOG_MAX_COUNT*sizeof(log_t)   //COD 第一条记录的存储地址 11
+#define LOG_FIRST_MLSS_ADDR        LOG_FIRST_ADDR+12*LOG_MAX_COUNT*sizeof(log_t)   //污泥浓度 第一条记录的存储地址 12
+#define LOG_FIRST_OIW_ADDR         LOG_FIRST_ADDR+13*LOG_MAX_COUNT*sizeof(log_t)   //水中油 第一条记录的存储地址  13
+#define LOG_FIRST_OIW_YUSHAN_ADDR  LOG_FIRST_ADDR+14*LOG_MAX_COUNT*sizeof(log_t)   //水中油 禹山 第一条记录的存储地址  14
+#define LOG_FIRST_TSS_ADDR         LOG_FIRST_ADDR+15*LOG_MAX_COUNT*sizeof(log_t)   //悬浮物 第一条记录的存储地址  15
+#define LOG_FIRST_SAL_ADDR         LOG_FIRST_ADDR+16*LOG_MAX_COUNT*sizeof(log_t)   //盐度 第一条记录的存储地址  16
+#define LOG_FIRST_TDS_ADDR         LOG_FIRST_ADDR+17*LOG_MAX_COUNT*sizeof(log_t)   //TDS 第一条记录的存储地址  17
+	
+	
 #define MAX_EPS_K 0.5
 #define MAX_EPS_B 0.15
 

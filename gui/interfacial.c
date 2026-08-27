@@ -45,6 +45,10 @@
 #include "EC_DE40.h"
 #include "DZ09.h"
 #include "TDS_DT49.h"
+#include "DL312.h"
+#include "DY05.h"
+#include "DO59.h"
+
 /***************************************************************任何指针操作记得加安全性判断是否为空指针！！！！！！！！！！！！！！！！！！！！！！！！！！！*/
 typedef struct{
 	uint8_t* content_cn;
@@ -97,7 +101,7 @@ STATIC uint8_t AncestorPage_OptionIndex = 0;//阿太界面所选的标签下标
 STATIC uint8_t flag_NeedWarning = 0;
 
 HARDWARE_VERSION hardware_version; //硬件版本
-const uint8_t software_version[] = "V2.2.3";  //软件版本
+const uint8_t software_version[] = "V2.2.7";  //软件版本
 
 //SETTING_FIRSTRUN_JUDGE 维护这个变量,清除历史记录和恢复初始化数值
 
@@ -469,7 +473,7 @@ void global_key(void)
 	if(get_KeyCalLongFlag())//探头kb初始化界面
 	{
 
-		if(interfacial_GetCurPage() == PAGE_0_START && rs485_GetDeviceCount())
+		if(interfacial_GetCurPage() == PAGE_0_START && rs485_GetDeviceCount() && get_CurDo()->modbus_id != Cl_DL312_ModbusID )
 		{
 			interfacial_SetPage(PAGE_1_RESETCAL, PAGE_NOT_BACK);
 		}
@@ -1220,182 +1224,215 @@ void Search_History_Type_KeyUpFlag(void){
 	if(datashow_SensorType != TYPE_NONE){
 		while(!Get_Search_Flag)
 		{
-			 if(datashow_SensorType == TYPE_DO)
+			 if(datashow_SensorType == 0)
 			 {
-				 if(log_GetLogCount(TYPE_TSS)	!= 0)
+				 if(log_GetLogCount(17)	!= 0)
 				 {
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_TSS;
+					 datashow_SensorType=17;
            return;					 
 				 }else{
-					 datashow_SensorType=TYPE_TSS;
+					 datashow_SensorType=17;
 				 }
 			 }
 
 			 
-			 if(datashow_SensorType == TYPE_pH )
+			 if(datashow_SensorType == 1 )
 			 {
-				 if(log_GetLogCount(TYPE_DO) != 0)
+				 if(log_GetLogCount(0) != 0)
 				 {
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_DO;		
+					 datashow_SensorType=0;		
            return;					 
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-TYPE_pH);	
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-1);	
 				 }						 
 			 }
 			 
-			 if(datashow_SensorType == TYPE_Tur )
+			 if(datashow_SensorType == 2 )
 			 {
-				 if(log_GetLogCount(TYPE_pH) != 0)	
+				 if(log_GetLogCount(1) != 0)	
 				 {
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_pH;		
+					 datashow_SensorType=1;		
            return;					 
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-TYPE_pH);	
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-1);	
 				 }							 
 			 }
 	
-			 if(datashow_SensorType == TYPE_FCL)
+			 if(datashow_SensorType == 3)
 			 {	
-				 if(log_GetLogCount(TYPE_Tur)	!= 0)	
+				 if(log_GetLogCount(2)	!= 0)	
 				 {								 
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_Tur;
+					 datashow_SensorType=2;
 					 return;
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-TYPE_pH);	
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-1);	
 				 }
 			 }
 
-			 if(datashow_SensorType == TYPE_EC)
+			 if(datashow_SensorType == 4)
 			 {	
-				 if(log_GetLogCount(TYPE_FCL)	!= 0)				
+				 if(log_GetLogCount(3)	!= 0)				
 				 {								 
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_FCL;
+					 datashow_SensorType=3;
 					 return;
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-TYPE_pH);	
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-1);	
 				 }
 			 }
 
-			 if(datashow_SensorType == TYPE_ORP)
+			 if(datashow_SensorType == 5)
 			 {	
-				 if(log_GetLogCount(TYPE_EC) != 0)
+				 if(log_GetLogCount(4) != 0)
 				 {								 
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_EC;
+					 datashow_SensorType=4;
            return;
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-TYPE_pH);	
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-1);	
 				 }
 			 }
 		
-			 if(datashow_SensorType == TYPE_NH4)
+			 if(datashow_SensorType == 6)
 			 {		
-				 if(log_GetLogCount(TYPE_ORP)	!= 0)							 
+				 if(log_GetLogCount(5)	!= 0)							 
 				 {	 
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_ORP;
+					 datashow_SensorType=5;
            return;
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-TYPE_pH);	
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-1);	
 				 }
 			 }
 		
-			 if(datashow_SensorType == TYPE_F)
+			 if(datashow_SensorType == 7)
 			 {	
-				 if(log_GetLogCount(TYPE_NH4)	!= 0)							 
+				 if(log_GetLogCount(6)	!= 0)							 
 				 {
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_NH4;
+					 datashow_SensorType=6;
            return;
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-TYPE_pH);	
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-1);	
 				 }
 			 } 						 
 
-			 if(datashow_SensorType == TYPE_CL)
+			 if(datashow_SensorType == 8)
 			 {	
-				 if(log_GetLogCount(TYPE_F)	!= 0)
+				 if(log_GetLogCount(7)	!= 0)
 				 {							 
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_F;
+					 datashow_SensorType=7;
            return;
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-TYPE_pH);	
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-1);	
 				 }	
 			 }
 			 
-			 if(datashow_SensorType == TYPE_Chl)
+			 if(datashow_SensorType == 9)
 			 {
-				 if(log_GetLogCount(TYPE_CL) != 0)							 
+				 if(log_GetLogCount(8) != 0)							 
 				 {
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_CL;
+					 datashow_SensorType=8;
            return;
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-TYPE_pH);	
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-1);	
 				 }
 			 }						 
 					
-			 if(datashow_SensorType == TYPE_Bga)
+			 if(datashow_SensorType == 10)
 			 {
-				 if(log_GetLogCount(TYPE_Chl) != 0)							 
+				 if(log_GetLogCount(9) != 0)							 
 				 {
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_Chl;
+					 datashow_SensorType=9;
            return;
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-TYPE_pH);	
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-1);	
 				 }
 			 }
 			 
-			 if(datashow_SensorType == TYPE_CODuv)
+			 if(datashow_SensorType == 11)
 			 {	
-				 if(log_GetLogCount(TYPE_Bga) != 0)							 
+				 if(log_GetLogCount(10) != 0)							 
 				 {
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_Bga;
+					 datashow_SensorType=10;
            return;
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-TYPE_pH);	
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-1);	
 				 }
 			 }				 
-			 if(datashow_SensorType == TYPE_MLSS)
+			 if(datashow_SensorType == 12)
 			 {	
-				 if(log_GetLogCount(TYPE_CODuv) != 0)							 
+				 if(log_GetLogCount(11) != 0)							 
 				 {
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_CODuv;
+					 datashow_SensorType=11;
            return;
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-TYPE_pH);	
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-1);	
 				 }
 			 }
-			 if(datashow_SensorType == TYPE_Oiw)
+			 if(datashow_SensorType == 13)
 			 {	
-				 if(log_GetLogCount(TYPE_MLSS) != 0)							 
+				 if(log_GetLogCount(12) != 0)							 
 				 {
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_MLSS;
+					 datashow_SensorType=12;
            return;
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-TYPE_pH);	
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-1);	
 				 }
 			 }
 
-			 if(datashow_SensorType == TYPE_TSS)
+			 if(datashow_SensorType == 14)
 			 {	
-				 if(log_GetLogCount(TYPE_Oiw) != 0)							 
+				 if(log_GetLogCount(13) != 0)							 
 				 {
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_Oiw;
+					 datashow_SensorType=13;
            return;
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-TYPE_pH);	
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-1);	
+				 }
+			 }
+			 if(datashow_SensorType == 15)
+			 {	
+				 if(log_GetLogCount(14) != 0)							 
+				 {
+					 Get_Search_Flag=1;
+					 datashow_SensorType=14;
+           return;
+				 }else{
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-1);	
+				 }
+			 }
+			 if(datashow_SensorType == 16)
+			 {	
+				 if(log_GetLogCount(15) != 0)							 
+				 {
+					 Get_Search_Flag=1;
+					 datashow_SensorType=15;
+           return;
+				 }else{
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-1);	
+				 }
+			 }
+			 if(datashow_SensorType == 17)
+			 {	
+				 if(log_GetLogCount(16) != 0)							 
+				 {
+					 Get_Search_Flag=1;
+					 datashow_SensorType=16;
+           return;
+				 }else{
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType-1);	
 				 }
 			 }
 		}
@@ -1408,183 +1445,215 @@ void Search_History_Type_KeyDownFlag(void){
 	if(datashow_SensorType != TYPE_NONE){
 		while(!Get_Search_Flag)
 		{
-			 if(datashow_SensorType == TYPE_DO)
+			 if(datashow_SensorType == 0)
 			 {
-				 if(log_GetLogCount(TYPE_pH) != 0)
+				 if(log_GetLogCount(1) != 0)
 				 {
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_pH;	
+					 datashow_SensorType=1;	
            return;					 
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+TYPE_pH);								 
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+1);								 
 				 }	 					 
 			 }
 			 
-			 if(datashow_SensorType == TYPE_pH )
+			 if(datashow_SensorType == 1 )
 			 {
-				 if(log_GetLogCount(TYPE_Tur) != 0)
+				 if(log_GetLogCount(2) != 0)
 				 {
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_Tur;		
+					 datashow_SensorType=2;		
            return;					 
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+TYPE_pH);						
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+1);						
 				 }						 
 			 }
 			 
-			 if(datashow_SensorType == TYPE_Tur )
+			 if(datashow_SensorType == 2 )
 			 {
-				 if(log_GetLogCount(TYPE_FCL) != 0)	
+				 if(log_GetLogCount(3) != 0)	
 				 {
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_FCL;		
+					 datashow_SensorType=3;		
            return;					 
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+TYPE_pH);						
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+1);						
 				 }							 
 			 }
 	
-			 if(datashow_SensorType == TYPE_FCL)
+			 if(datashow_SensorType == 3)
 			 {	
-				 if(log_GetLogCount(TYPE_EC)	!= 0)	
+				 if(log_GetLogCount(4)	!= 0)	
 				 {								 
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_EC;
+					 datashow_SensorType=4;
 					 return;
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+TYPE_pH);						
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+1);						
 				 }
 			 }
 
-			 if(datashow_SensorType == TYPE_EC)
+			 if(datashow_SensorType == 4)
 			 {	
-				 if(log_GetLogCount(TYPE_ORP)	!= 0)				
+				 if(log_GetLogCount(5)	!= 0)				
 				 {								 
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_ORP;
+					 datashow_SensorType=5;
 					 return;
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+TYPE_pH);						
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+1);						
 				 }
 			 }
 
-			 if(datashow_SensorType == TYPE_ORP)
+			 if(datashow_SensorType == 5)
 			 {	
-				 if(log_GetLogCount(TYPE_NH4) != 0)
+				 if(log_GetLogCount(6) != 0)
 				 {								 
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_NH4;
+					 datashow_SensorType=6;
            return;
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+TYPE_pH);						
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+1);						
 				 }
 			 }
 		
-			 if(datashow_SensorType == TYPE_NH4)
+			 if(datashow_SensorType == 6)
 			 {		
-				 if(log_GetLogCount(TYPE_F)	!= 0)							 
+				 if(log_GetLogCount(7)	!= 0)							 
 				 {	 
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_F;
+					 datashow_SensorType=7;
            return;
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+TYPE_pH);						
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+1);						
 				 }
 			 }
 		
-			 if(datashow_SensorType == TYPE_F)
+			 if(datashow_SensorType == 7)
 			 {	
-				 if(log_GetLogCount(TYPE_CL)	!= 0)							 
+				 if(log_GetLogCount(8)	!= 0)							 
 				 {
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_CL;
+					 datashow_SensorType=8;
            return;
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+TYPE_pH);						
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+1);						
 				 }
 			 } 						 
 
-			 if(datashow_SensorType == TYPE_CL)
+			 if(datashow_SensorType == 8)
 			 {	
-				 if(log_GetLogCount(TYPE_Chl)	!= 0)
+				 if(log_GetLogCount(9)	!= 0)
 				 {							 
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_Chl;
+					 datashow_SensorType=9;
            return;
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+TYPE_pH);						
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+1);						
 				 }	
 			 }
 			 
-			 if(datashow_SensorType == TYPE_Chl)
+			 if(datashow_SensorType == 9)
 			 {
-				 if(log_GetLogCount(TYPE_Bga) != 0)							 
+				 if(log_GetLogCount(10) != 0)							 
 				 {
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_Bga;
+					 datashow_SensorType=10;
            return;
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+TYPE_pH);						
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+1);						
 				 }
 			 }						 
 					
-			 if(datashow_SensorType == TYPE_Bga)
+			 if(datashow_SensorType == 10)
 			 {
-				 if(log_GetLogCount(TYPE_CODuv) != 0)							 
+				 if(log_GetLogCount(11) != 0)							 
 				 {
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_CODuv;
+					 datashow_SensorType=11;
            return;
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+TYPE_pH);						
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+1);						
 				 }
 			 }
 			 
-			 if(datashow_SensorType == TYPE_CODuv)
+			 if(datashow_SensorType == 11)
 			 {
-				 if(log_GetLogCount(TYPE_MLSS) != 0)							 
+				 if(log_GetLogCount(12) != 0)							 
 				 {
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_MLSS;
+					 datashow_SensorType=12;
            return;
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+TYPE_pH);						
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+1);						
 				 }
 			 }
 
-			 if(datashow_SensorType == TYPE_MLSS)
+			 if(datashow_SensorType == 12)
 			 {
-				 if(log_GetLogCount(TYPE_Oiw) != 0)							 
+				 if(log_GetLogCount(13) != 0)							 
 				 {
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_Oiw;
+					 datashow_SensorType=13;
            return;
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+TYPE_pH);						
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+1);						
 				 }
 			 }
 			 
-			 if(datashow_SensorType == TYPE_Oiw)
+			 if(datashow_SensorType == 13)
 			 {	
-				 if(log_GetLogCount(TYPE_TSS) != 0)							 
+				 if(log_GetLogCount(14) != 0)							 
 				 {
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_TSS;
+					 datashow_SensorType=14;
            return;
 				 }else{
-					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+TYPE_pH);
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+1);
 				 }
 			 }	
-
-			 if(datashow_SensorType == TYPE_TSS)
+			 if(datashow_SensorType == 14)
 			 {	
-				 if(log_GetLogCount(TYPE_DO) != 0)							 
+				 if(log_GetLogCount(15) != 0)							 
 				 {
 					 Get_Search_Flag=1;
-					 datashow_SensorType=TYPE_DO;
+					 datashow_SensorType=15;
            return;
 				 }else{
-					 datashow_SensorType=TYPE_DO;	
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+1);
+				 }
+			 }
+			 if(datashow_SensorType == 15)
+			 {	
+				 if(log_GetLogCount(16) != 0)							 
+				 {
+					 Get_Search_Flag=1;
+					 datashow_SensorType=16;
+           return;
+				 }else{
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+1);
+				 }
+			 }
+			 if(datashow_SensorType == 16)
+			 {	
+				 if(log_GetLogCount(17) != 0)							 
+				 {
+					 Get_Search_Flag=1;
+					 datashow_SensorType=17;
+           return;
+				 }else{
+					 datashow_SensorType=(SENSOR_TYPE)(datashow_SensorType+1);
+				 }
+			 }
+			 if(datashow_SensorType == 17)
+			 {	
+				 if(log_GetLogCount(0) != 0)							 
+				 {
+					 Get_Search_Flag=1;
+					 datashow_SensorType=0;
+           return;
+				 }else{
+					 datashow_SensorType=0;	
 				 }
 			 }
 		 
@@ -1878,6 +1947,15 @@ void btn_OkEscMode_ChangePage(void)
 														LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, 
 														&(interfacial_GetCurrentInterfacial()->label_head));//将校准值变成label显示
 							}
+							else if(get_CurDo()->modbus_id == Cl_DL312_ModbusID)
+							{
+								STD_value =STD_temp;
+								snprintf(cal_arr, 8, "%7.1f", STD_value / 10.0);
+								LabelList_Add(60, 56,  
+														NULL, 0, (uint8_t *)cal_arr, 
+														LABEL_NORMAL, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, 
+														&(interfacial_GetCurrentInterfacial()->label_head));//将校准值变成label显示
+							}
 							else
 							{
 								STD_value = (STD_temp == 0 ? CAL_ZERO_VALUE : STD_temp / 10.0);//计算校准的值
@@ -1906,7 +1984,7 @@ void btn_OkEscMode_ChangePage(void)
 														&(interfacial_GetCurrentInterfacial()->label_head)); 
 							}
 							else if(get_CurDo()->modbus_id == OiW_guohong_ModbusID
-							|| get_CurDo()->modbus_id == LH_DX01_ModbusID)
+							|| get_CurDo()->modbus_id == LH_DX01_ModbusID || get_CurDo()->modbus_id == Cl_DL312_ModbusID )
 							{
 								LabelList_Add(56, 136,
 														NULL, 0, (uint8_t *)get_CurDo()->DOmgl_arr,
@@ -3067,6 +3145,7 @@ void save_setting(void)
 	uint32_t temp_value = 0;
 	int16_t orp_alm_np_value = 0;
 	int16_t temp_int_value=0;
+  float  float_value=0.0;
 	datetime_t temp_time;
 	uint8_t data_702_580;
 
@@ -3192,6 +3271,18 @@ void save_setting(void)
 				case ZS_DZ09_ModbusID:
 					DZ09_rs485_ClearCal(get_CurDo());
 					break;
+//				case Cl_DL312_ModbusID:
+//					DL312_rs485_ClearCal(get_CurDo());
+//					break;
+				
+				case DO_DY05_ModbusID:
+					DY05_rs485_mode(get_CurDo());
+					break;
+
+				case DO_DO59_ModbusID:
+					DO59_rs485_ClearCal(get_CurDo());
+					break;
+				
 				default:
 					break;
 
@@ -3346,7 +3437,15 @@ void save_setting(void)
 					Set_DY12_Press_Value((int16_t)(double_value * 100));
 					Set_DY12_Press_Flag(1);
 					break;	
+					
+				case DO_DY05_ModbusID:  
+					DY05_rs485_SetPressure(get_CurDo(),double_value);	            
+					break;	
 
+				case DO_DO59_ModbusID:  
+					DO59_rs485_SetPressure(get_CurDo(),double_value);	            
+					break;
+				
 				default:
 					break;
 			}
@@ -3384,7 +3483,15 @@ void save_setting(void)
 					Set_DY12_Sal_Value((int16_t)(double_value * 100));
 					Set_DY12_Sal_Flag(1);
 					break;
+					
+				case DO_DY05_ModbusID:  
+					DY05_rs485_SetSalinity(get_CurDo(),double_value);	            
+					break;	
 
+				case DO_DO59_ModbusID:  
+					DO59_rs485_SetSalinity(get_CurDo(),double_value);	            
+					break;
+				
 				default:
 					break;
 			}
@@ -3906,6 +4013,7 @@ void save_setting(void)
 
 		case PAGE_4_CAL_GROUP://标液值管理
 			setting_SetIs_pH_Group(((cur_option == cur_interfacial.option_head) ? 0 : 1));
+		  pH_DpH07_rs485_SetStander(get_CurDo(), setting_GetIs_pH_Group()+1);
 			SettingToFlash();//保存一波设置
 			break;
 		
@@ -4377,6 +4485,28 @@ void save_setting(void)
 						case DO_shenghui_ModbusID:
 							DO_shenghui_rs485_SetTemp(get_CurDo(), temp_value / 100.0);
 							break;
+						
+						case DO_DY05_ModbusID:
+							float_value=temp_value;
+						  float_value=float_value/10.0;
+						
+							if(setting_Get_Temp_Unit())
+							{
+								float_value=float_value - ( (get_CurDo()->temperature.value_f-32)/1.8) + get_CurDo()->NH4_Vol.value_f;										
+							}
+							else
+							{
+								float_value=float_value-get_CurDo()->temperature.value_f + get_CurDo()->NH4_Vol.value_f;							
+							}
+							
+							DY05_rs485_Set_Temp_Cal(get_CurDo(), float_value);
+							break;
+							
+						case DO_DO59_ModbusID:
+					
+							DO59_rs485_Set_Temp_Cal(get_CurDo(), temp_value / 10.0);
+							break;	
+							
 						default:
 							break;
 					}										
@@ -4462,7 +4592,7 @@ void save_setting(void)
 				
 				case TYPE_NH4:
 					switch(get_CurDo()->modbus_id)
-            		{
+          {
 						case NH3N_shenghui_ModbusID:
 							NH3N_shenghui_rs485_SetTemp(get_CurDo(), temp_value / 100.0);
 							break;
@@ -4480,7 +4610,26 @@ void save_setting(void)
 					break;
 				
 				case TYPE_CL:
-
+					switch(get_CurDo()->modbus_id)
+          {
+						case Cl_DL312_ModbusID:
+							float_value=temp_value;
+						  float_value=float_value/10.0;
+						
+							if(setting_Get_Temp_Unit())
+							{
+								float_value=float_value - ( (get_CurDo()->temperature.value_f-32)/1.8) + get_CurDo()->sal.value_f;										
+							}
+							else
+							{
+								float_value=float_value-get_CurDo()->temperature.value_f + get_CurDo()->sal.value_f;												
+							}
+							
+							DL312_rs485_Set_Temp_Cal(get_CurDo(), float_value);
+							break;
+						default:
+							break;
+					}
 					break;
 				
 				case TYPE_Chl:
@@ -4770,18 +4919,29 @@ void save_setting(void)
 										}
 									}
 									break;
+									
 								case DO_shenghui_ModbusID:
 									DO_shenghui_rs485_FullCal(get_CurDo());
 									break;
+								
 								case DO_HF_DY12_ModbusID:
 									DO_HaiFa_DY12_rs485_Set_Cmd_open(get_CurDo());
 									Set_DY12_Full_Flag(1);
 									break;
+								
+								case DO_DY05_ModbusID:
+									DY05_rs485_Set_Slp_Cal(get_CurDo());
+									break;	
+
+								case DO_DO59_ModbusID:
+									DO59_rs485_Set_Slp_Cal(get_CurDo());
+									break;
+								
 								default:
 									break;
 						  	}
-					  	}
-            			else
+					  }
+            else
 					 	{
 							interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunshibai_cn;//校准失败
 							interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)shibai_en;
@@ -4795,6 +4955,7 @@ void save_setting(void)
 					break;
 					
 				case TYPE_MLSS:
+				case TYPE_CL:
 					//这里的话是判断哪个do设备，可能多个do然后就在列表中校准的就不是当前主界面上的do设备
 					OptionList_Destory(&(interfacial_GetCurrentInterfacial()->option_head));  //销毁选项链表
 				
@@ -4825,6 +4986,11 @@ void save_setting(void)
 									MLSS_Tianjian_rs485_Set_Signal(get_CurDo(),p->DOpercent.value_f,STD_value,40214);
 									}
 									break;
+									
+								case Cl_DL312_ModbusID:
+                  DL312_rs485_Set_Frist_Value(get_CurDo(),STD_value/10.0);
+									break;
+									
 								default:
 									break;
 							}
@@ -4937,10 +5103,20 @@ void save_setting(void)
 										DO_shenghui_rs485_ZeroCal(get_CurDo());	
 									}
 									break;
+									
 								case DO_HF_DY12_ModbusID:
 									DO_HaiFa_DY12_rs485_Set_Cmd_open(get_CurDo());
 									Set_DY12_Zero_Flag(1);
 									break;
+
+								case DO_DY05_ModbusID:
+									DY05_rs485_Set_Zero_Cal(get_CurDo());
+									break;
+								
+								case DO_DO59_ModbusID:
+									DO59_rs485_Set_Zero_Cal(get_CurDo());
+									break;	
+								
 								default:
 									break;
 							}
@@ -4959,6 +5135,7 @@ void save_setting(void)
 					break;
 					
 				case TYPE_MLSS:
+				case TYPE_CL:
 					//这里的话是判断哪个do设备，可能多个do然后就在列表中校准的就不是当前主界面上的do设备
 					OptionList_Destory(&(interfacial_GetCurrentInterfacial()->option_head));  //销毁选项链表
 				
@@ -4988,6 +5165,9 @@ void save_setting(void)
 									{
 									MLSS_Tianjian_rs485_Set_Signal(get_CurDo(),p->DOpercent.value_f,STD_value,40218);
 									}
+									break;
+								case Cl_DL312_ModbusID:
+                  DL312_rs485_Set_Secend_Value(get_CurDo(),STD_value/10.0);
 									break;
 								default:
 									break;
@@ -5521,7 +5701,11 @@ void save_setting(void)
 									break;	
 
 								case pH_DpH07_ModbusID:  
-                  pH_DpH07_rs485_Cal_pH(get_CurDo(),0x12);	    							
+									if(!setting_GetIs_pH_Group()){
+                     pH_DpH07_rs485_Cal_pH(get_CurDo(),0x12);										
+									}else{
+                     pH_DpH07_rs485_Cal_pH(get_CurDo(),0x22);										
+									}	    							
 									break;	
 								
 								default:
@@ -5577,7 +5761,11 @@ void save_setting(void)
 									break;	
 
 								case pH_DpH07_ModbusID:  
-                  pH_DpH07_rs485_Cal_pH(get_CurDo(),0x11);	    		        
+									if(!setting_GetIs_pH_Group()){
+                     pH_DpH07_rs485_Cal_pH(get_CurDo(),0x11);										
+									}else{
+                     pH_DpH07_rs485_Cal_pH(get_CurDo(),0x21);										
+									}   		        
 									break;	
 								
 								default:
@@ -5633,7 +5821,11 @@ void save_setting(void)
 									break;	
 
 								case pH_DpH07_ModbusID:  
-                  pH_DpH07_rs485_Cal_pH(get_CurDo(),0x13);	    		          
+									if(!setting_GetIs_pH_Group()){
+                     pH_DpH07_rs485_Cal_pH(get_CurDo(),0x13);										
+									}else{
+                     pH_DpH07_rs485_Cal_pH(get_CurDo(),0x23);										
+									} 		          
 									break;	
 								
 								default:
@@ -7141,6 +7333,7 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 			break;
 
 		case PAGE_5_DO_TWO_FIRST://两点校准的第一个点
+		  temp_SensorType=cur_DO.current_sensor_type;
 			if(temp_FatherPage == PAGE_3_SENSORS)
 			{
 				if(interfacial_GetOptionSensorName()[0] == 'D')
@@ -7151,6 +7344,7 @@ void interfacial_SetPage(PAGE_NUM page_num, uint8_t IsBack)
 				{
 					temp_SensorType = TYPE_MLSS;
 				}
+
 			}
 			else if(temp_FatherPage == PAGE_0_START)
 			{
@@ -7774,9 +7968,11 @@ void interfacial_SetOptionSensorName(uint8_t* value)
 	option_sensor_name = value;
 }
 
-#define Sersor_Number 26    //支持搜索 传感器的数量
+#define Sersor_Number 28    //支持搜索 传感器的数量
 uint8_t CircularSent_Count=1;
 uint8_t GetCircularSent_Flag=0;
+uint8_t GetCircularSent_Flag_0=0;
+uint8_t GetCircularSent_Flag_1=0;
 uint8_t TwoCircular_Flag=0;
 void rs485_Search_Sensor(void){
   	uint8_t CircularSent_isSelect=0;
@@ -7794,11 +7990,11 @@ void rs485_Search_Sensor(void){
 				switch(get_COMADo()->modbus_id)
 				{
 					case DO_shenghui_ModbusID:
-							if(GetCircularSent_Flag == 0){
-								GetCircularSent_Flag=1;
+							if(GetCircularSent_Flag_0 == 0){
+								GetCircularSent_Flag_0=1;
 								DO_shenghui_rs485_GetDOPercent(get_CurDo());
 							}else{
-								GetCircularSent_Flag=0;
+								GetCircularSent_Flag_0=0;
 								DO_shenghui_rs485_GetTempTwoDO(get_CurDo())	;	
 							}
 						break;
@@ -7856,11 +8052,11 @@ void rs485_Search_Sensor(void){
 						break;
 					
 					case Chl_shenghui_ModbusID:
-							if(GetCircularSent_Flag == 0){
-								GetCircularSent_Flag=1;
+							if(GetCircularSent_Flag_1 == 0){
+								GetCircularSent_Flag_1=1;
 								Chl_shenghui_rs485_GetVol(get_CurDo());
 							}else{
-								GetCircularSent_Flag=0;
+								GetCircularSent_Flag_1=0;
 								Chl_shenghui_rs485_GetValue(get_CurDo())	;	
 							}
 						break;
@@ -7902,6 +8098,19 @@ void rs485_Search_Sensor(void){
 					case TDS_DT49_Modbus:
 						TDS_DT49_rs485_GetValue();
 						break;
+					
+					case Cl_DL312_ModbusID:
+						DL312_rs485_GetValue(get_CurDo());
+						break;
+					
+					case DO_DY05_ModbusID:
+						DY05_rs485_GetValue(get_CurDo());
+						break;
+					
+					case DO_DO59_ModbusID:
+						DO59_rs485_GetValue(get_CurDo());
+						break;
+					
 					default:
 						break;
 				}  		
@@ -7911,11 +8120,11 @@ void rs485_Search_Sensor(void){
 				switch(get_COMBDo()->modbus_id)
 				{
 					case DO_shenghui_ModbusID:
-							if(GetCircularSent_Flag == 0){
-								GetCircularSent_Flag=1;
+							if(GetCircularSent_Flag_0 == 0){
+								GetCircularSent_Flag_0=1;
 								DO_shenghui_rs485_GetDOPercent(get_CurDo());
 							}else{
-								GetCircularSent_Flag=0;
+								GetCircularSent_Flag_0=0;
 								DO_shenghui_rs485_GetTempTwoDO(get_CurDo())	;	
 							}
 						break;
@@ -7973,11 +8182,11 @@ void rs485_Search_Sensor(void){
 						break;
 					
 					case Chl_shenghui_ModbusID:
-							if(GetCircularSent_Flag == 0){
-								GetCircularSent_Flag=1;
+							if(GetCircularSent_Flag_1 == 0){
+								GetCircularSent_Flag_1=1;
 								Chl_shenghui_rs485_GetVol(get_CurDo());
 							}else{
-								GetCircularSent_Flag=0;
+								GetCircularSent_Flag_1=0;
 								Chl_shenghui_rs485_GetValue(get_CurDo())	;	
 							}
 						break;
@@ -8020,6 +8229,19 @@ void rs485_Search_Sensor(void){
 					case TDS_DT49_Modbus:
 						TDS_DT49_rs485_GetValue();
 						break;
+
+					case Cl_DL312_ModbusID:
+						DL312_rs485_GetValue(get_CurDo());
+						break;	
+
+					case DO_DY05_ModbusID:
+						DY05_rs485_GetValue(get_CurDo());
+						break;
+
+					case DO_DO59_ModbusID:
+						DO59_rs485_GetValue(get_CurDo());
+						break;
+					
 					default:
 						break;
 				}  		
@@ -8040,14 +8262,14 @@ void rs485_Search_Sensor(void){
 				switch(get_COMADo()->modbus_id)
 				{
 					case DO_shenghui_ModbusID:
-						if(GetCircularSent_Flag == 0)
+						if(GetCircularSent_Flag_0 == 0)
 						{
-							GetCircularSent_Flag=1;
+							GetCircularSent_Flag_0=1;
 							DO_shenghui_rs485_GetDOPercent(get_CurDo());
 						}
 						else
 						{
-							GetCircularSent_Flag=0;
+							GetCircularSent_Flag_0=0;
 							DO_shenghui_rs485_GetTempTwoDO(get_CurDo())	;	
 						}
 					break;
@@ -8105,14 +8327,14 @@ void rs485_Search_Sensor(void){
 						break;
 					
 					case Chl_shenghui_ModbusID:
-						if(GetCircularSent_Flag == 0)
+						if(GetCircularSent_Flag_1 == 0)
 						{
-							GetCircularSent_Flag=1;
+							GetCircularSent_Flag_1=1;
 							Chl_shenghui_rs485_GetVol(get_CurDo());
 						}
 						else
 						{
-							GetCircularSent_Flag=0;
+							GetCircularSent_Flag_1=0;
 							Chl_shenghui_rs485_GetValue(get_CurDo());	
 						}
 						break;
@@ -8155,6 +8377,19 @@ void rs485_Search_Sensor(void){
 					case TDS_DT49_Modbus:
 						TDS_DT49_rs485_GetValue();
 						break;
+					
+					case Cl_DL312_ModbusID:
+						DL312_rs485_GetValue(get_CurDo());
+						break;
+
+					case DO_DY05_ModbusID:
+						DY05_rs485_GetValue(get_CurDo());
+						break;
+
+					case DO_DO59_ModbusID:
+						DO59_rs485_GetValue(get_CurDo());
+						break;
+					
 					default:
 						break;
 				} 		
@@ -8365,7 +8600,31 @@ void rs485_Search_Sensor(void){
 							TDS_DT49_rs485_GetModbusId();
 						}					
 					}
+					
+					if( CircularSent_Count ==26){
 
+						if(get_COMADo()->modbus_id != Cl_DL312_ModbusID ){
+						  CircularSent_isSelect=1;			
+							DL312_rs485_GetModbusId();
+						}					
+					}
+
+					if( CircularSent_Count ==27){
+
+						if(get_COMADo()->modbus_id != DO_DY05_ModbusID ){
+						  CircularSent_isSelect=1;			
+							DY05_rs485_GetModbusId();
+						}					
+					}
+
+					if( CircularSent_Count ==28){
+
+						if(get_COMADo()->modbus_id != DO_DO59_ModbusID ){
+						  CircularSent_isSelect=1;			
+							DO59_rs485_GetModbusId();
+						}					
+					}
+					
 					if(CircularSent_Count == Sersor_Number){
 						CircularSent_Count=0;
 					}				
@@ -8508,6 +8767,25 @@ void rs485_Search_Sensor(void){
 					CircularSent_isSelect=1;	
 					TDS_DT49_rs485_GetModbusId();
 				}
+				
+				if(CircularSent_Count == 26)
+				{
+					CircularSent_isSelect=1;	
+					DL312_rs485_GetModbusId();
+				}
+
+				if(CircularSent_Count == 27)
+				{
+					CircularSent_isSelect=1;	
+					DY05_rs485_GetModbusId();
+				}
+
+				if(CircularSent_Count == 28)
+				{
+					CircularSent_isSelect=1;	
+					DO59_rs485_GetModbusId();
+				}
+				
 				if(CircularSent_Count == Sersor_Number){
 					CircularSent_Count=0;
 				}				
@@ -8877,7 +9155,22 @@ void interfacial_refresh(void)                                                  
 							break;
 						
 						case TYPE_CL:
+							LabelList_Add( 0, 66, (uint8_t *)cl_lvlizi_cn, sizeof(cl_lvlizi_cn), (uint8_t *)cl_lvlizi_en,  LABEL_NORMAL, LABEL_xinziku, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);
+							LabelList_Add( 54,  66, NULL, 0, (uint8_t *)get_CurDo()->DOmgl_arr,       LABEL_MEDIUM, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //EC
 
+							LabelList_Add( 128, 66, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_MGL, DONT_HAVE_PARENTHESIS, &label_head);									
+
+							LabelList_Add( 0, 112, (uint8_t *)wendu_cn, sizeof(wendu_cn), (uint8_t *)wendu_en, LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //temperature						
+							LabelList_Add( 62, 112, NULL, 0, (uint8_t *)get_CurDo()->temperature_arr, LABEL_MEDIUM, LABEL_NUMBERORENG, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head);  //temperature
+							
+							if(setting_Get_Temp_Unit())
+							{
+								LabelList_Add( 120, 114, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_FAHRENHEIT, DONT_HAVE_PARENTHESIS, &label_head);//°F								 
+							}
+							else
+							{
+								LabelList_Add( 120, 114, NULL, 0, NULL,  LABEL_NORMAL, LABEL_UINT, UINT_CELSIUS, DONT_HAVE_PARENTHESIS, &label_head);//℃						 
+							}
 							break;
 						
 						case TYPE_Chl:

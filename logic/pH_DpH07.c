@@ -82,7 +82,52 @@ void pH_DpH07_rs485_GetSHWVersion(PtrToDOProbe ptd)
 	
 }
 
+/*获取国标和美标*/
+void pH_DpH07_rs485_GetStander(PtrToDOProbe ptd)
+{
+	if(ptd == NULL) return;
+	rs485_usart.tx_buf[0] = pH_DpH07_ModbusID;
+	rs485_usart.tx_buf[1] = 0x03;
+	rs485_usart.tx_buf[2] = 0x08;
+	rs485_usart.tx_buf[3] = 0x0a;
+	rs485_usart.tx_buf[4] = 0x00;
+	rs485_usart.tx_buf[5] = 0x01;
+	
+	SetCrc(rs485_usart.tx_buf, rs485_usart.tx_size = 8);
+	
+	rs485_SetCircularSentStatus();
+	
+	rs485_SetSentType(DO_SendType_Set_Mes_mode);
+	
+}
+void pH_DpH07_rs485_SetStander(PtrToDOProbe ptd, uint16_t Value)
+{
+	if(ptd == NULL) return;
+	uint16_u Cal_Value;
+  Cal_Value.value_f=Value;
+	rs485_usart.tx_buf[0]  = pH_DpH07_ModbusID;
+	rs485_usart.tx_buf[1]  = 0x06;
+	rs485_usart.tx_buf[2]  = 0x08;
+	rs485_usart.tx_buf[3]  = 0x0a;
+	rs485_usart.tx_buf[4]  = Cal_Value.value_arr[1];
+	rs485_usart.tx_buf[5]  = Cal_Value.value_arr[0];
 
+	SetCrc(rs485_usart.tx_buf, rs485_usart.tx_size = 8);
+	
+	rs485_SetCircularSentStatus();
+	
+	rs485_SetSentType(DO_SendType_Set_Mes_Time);
+}
+
+void pH_DpH07_SetStander(PtrToDOProbe ptd,uint8_t *dat)
+{
+	if(ptd == NULL) return;
+	uint16_u Cal_Value;
+	Cal_Value.value_f=0;
+	Cal_Value.value_arr[0]=dat[1];
+	Cal_Value.value_arr[1]=dat[0];
+	setting_SetIs_pH_Group(Cal_Value.value_f == 1 ? 0 : 1);  		
+}
 
 
 // pH 标定   0x11:6.86  0x12:4.01  0x13:9.18      0x21:7.00  0x22:4.00  0x23:10.01
