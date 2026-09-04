@@ -181,12 +181,12 @@ void hardware_init(void)
 	set_BeeOn();             //开机响下蜂鸣器
 #endif
 	
-	bmp280.init(&hspi1);                           //bmp280初始化在spi1口上
-	
-	if(bmp280_readId() == 0x58)                    //测试读取bmp280的id来反馈是否和bmp280通讯正常 
+	bmp280.init(&hspi1);                           //气压传感器初始化在spi1口上(内部根据ID自动判别BMP280/SPA06-003)
+
+	if(bmp280_GetType() != BARO_NONE)              //读取传感器类型来反馈是否和气压传感器通讯正常(兼容bmp280和SPA06-003)
 	{
 		flag_Bmp280On =1;                            //不正常就不采集不然采集的话会卡在while里
-	}	
+	}
 	HYM8563_init();                                //RTC初始化
 	lcdware_init();
 }

@@ -101,7 +101,7 @@ STATIC uint8_t AncestorPage_OptionIndex = 0;//阿太界面所选的标签下标
 STATIC uint8_t flag_NeedWarning = 0;
 
 HARDWARE_VERSION hardware_version; //硬件版本
-const uint8_t software_version[] = "V2.2.7";  //软件版本
+const uint8_t software_version[] = "V2.2.8";  //软件版本
 
 //SETTING_FIRSTRUN_JUDGE 维护这个变量,清除历史记录和恢复初始化数值
 

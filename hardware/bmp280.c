@@ -1,6 +1,15 @@
 #include "bmp280.h"
+#include "spa06.h"
 
 void bmp280_Init(SPI_HandleTypeDef *hspi);
+
+/*当前气压传感器类型(bmp280_Init时根据ID自动判别)*/
+static BaroType_t g_baroType = BARO_NONE;
+
+BaroType_t bmp280_GetType(void)
+{
+	return g_baroType;
+}
 
 bmp280_t bmp280 = {
 	.init = bmp280_Init,
@@ -288,33 +297,58 @@ double BMP280_Get_Temperature(void)
 
 void bmp280_Init(SPI_HandleTypeDef *hspi)
 {
-	bmp280.hspi = hspi;	
-	
-	GetCompensation();
-	
-	BMP280_Write_Byte(BMP280_RESET_REG,BMP280_RESET_VALUE);	//往复位寄存器写入给定值	
-	
-	HAL_Delay(20);
-	
-	BMP_OVERSAMPLE_MODE			BMP_OVERSAMPLE_MODEStructure;
-	BMP_OVERSAMPLE_MODEStructure.P_Osample = BMP280_P_MODE_3;
-	BMP_OVERSAMPLE_MODEStructure.T_Osample = BMP280_T_MODE_1;
-	BMP_OVERSAMPLE_MODEStructure.WORKMODE  = BMP280_NORMAL_MODE;
-	BMP280_Set_TemOversamp(&BMP_OVERSAMPLE_MODEStructure);
-	
-	BMP_CONFIG					BMP_CONFIGStructure;
-	BMP_CONFIGStructure.T_SB = BMP280_T_SB1;
-	BMP_CONFIGStructure.FILTER_COEFFICIENT = BMP280_FILTER_MODE_4;
-	BMP_CONFIGStructure.SPI_EN = ENABLE;
-	BMP280_Set_Standby_FILTER(&BMP_CONFIGStructure);
-	
-	BMP280_Write_Byte(0x74, 0xff); //一定要加这个不然数据不会变
-	
-	HAL_Delay(10);
+	bmp280.hspi = hspi;
+
+	/* 判型1：SPA06-003 读ID寄存器0x0D (先判SPA06, 避免BMP280读帧破坏其接口切换) */
+	if (spa06_Init(hspi))
+	{
+		g_baroType = BARO_SPA06;
+	}
+	else if (BMP280_Read_Byte(BMP280_CHIPID_REG) == 0x58)	/* 判型2：BMP280 读ID寄存器0xD0 */
+	{
+		g_baroType = BARO_BMP280;
+
+		/* ↓ 原BMP280初始化流程(已验证)，保持不变 ↓ */
+		GetCompensation();
+
+		BMP280_Write_Byte(BMP280_RESET_REG, BMP280_RESET_VALUE);	//往复位寄存器写入给定值
+
+		HAL_Delay(20);
+
+		BMP_OVERSAMPLE_MODE			BMP_OVERSAMPLE_MODEStructure;
+		BMP_OVERSAMPLE_MODEStructure.P_Osample = BMP280_P_MODE_3;
+		BMP_OVERSAMPLE_MODEStructure.T_Osample = BMP280_T_MODE_1;
+		BMP_OVERSAMPLE_MODEStructure.WORKMODE  = BMP280_NORMAL_MODE;
+		BMP280_Set_TemOversamp(&BMP_OVERSAMPLE_MODEStructure);
+
+		BMP_CONFIG					BMP_CONFIGStructure;
+		BMP_CONFIGStructure.T_SB = BMP280_T_SB1;
+		BMP_CONFIGStructure.FILTER_COEFFICIENT = BMP280_FILTER_MODE_4;
+		BMP_CONFIGStructure.SPI_EN = ENABLE;
+		BMP280_Set_Standby_FILTER(&BMP_CONFIGStructure);
+
+		BMP280_Write_Byte(0x74, 0xff); //一定要加这个不然数据不会变
+
+		HAL_Delay(10);
+	}
+	else
+	{
+		g_baroType = BARO_NONE;	/*未识别到传感器，不启动采集*/
+	}
 }
 
 void bmp280_UpdateValue(void)
 {
+	if (g_baroType == BARO_SPA06)         /*SPA06-003*/
+	{
+		spa06_UpdateValue();
+		return;
+	}
+	if (g_baroType != BARO_BMP280)        /*未识别到传感器，不采集*/
+	{
+		return;
+	}
+
 	while(BMP280_GetStatus(BMP280_MEASURING) != RESET);
 	while(BMP280_GetStatus(BMP280_IM_UPDATE) != RESET);
 	bmp280.temperature = BMP280_Get_Temperature();
@@ -323,11 +357,19 @@ void bmp280_UpdateValue(void)
 
 double bmp280_GetTemp(void)
 {
+	if (g_baroType == BARO_SPA06)
+	{
+		return spa06_GetTemp();
+	}
 	return bmp280.temperature;
 }
 
 double bmp280_GetPress(void)
 {
+	if (g_baroType == BARO_SPA06)
+	{
+		return spa06_GetPress();
+	}
 	return bmp280.pressure/1000.0;
 }
 

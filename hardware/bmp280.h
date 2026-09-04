@@ -161,6 +161,15 @@ typedef struct{
 
 extern bmp280_t bmp280; //外部调用结构体
 
+/*气压传感器类型(bmp280_Init时根据ID自动判别)*/
+typedef enum {
+	BARO_NONE   = 0,   /*未识别到传感器*/
+	BARO_BMP280 = 1,   /*BMP280  ID寄存器0xD0=0x58*/
+	BARO_SPA06  = 2    /*SPA06-003 ID寄存器0x0D=0x10/0x11*/
+} BaroType_t;
+
+BaroType_t bmp280_GetType(void); //获取当前传感器类型
+
 uint8_t bmp280_readId(void); //测试用 用于读取id
 
 void bmp280_UpdateValue(void);

@@ -766,6 +766,11 @@
               <FilePath>..\hardware\bmp280.c</FilePath>
             </File>
             <File>
+              <FileName>spa06.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\hardware\spa06.c</FilePath>
+            </File>
+            <File>
               <FileName>lcd_drive.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\hardware\lcd_drive.c</FilePath>
