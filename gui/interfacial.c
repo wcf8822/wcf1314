@@ -40,6 +40,7 @@
 #include "OiW_Guohong.h"
 #include "OiW_yushan.h"
 #include "DO_HaiFa_DY12.h"
+#include "DO_HaiFa_DY56.h"
 #include "DX01.h"
 #include "MLSS_lanchang.h"
 #include "EC_DE40.h"
@@ -101,7 +102,7 @@ STATIC uint8_t AncestorPage_OptionIndex = 0;//阿太界面所选的标签下标
 STATIC uint8_t flag_NeedWarning = 0;
 
 HARDWARE_VERSION hardware_version; //硬件版本
-const uint8_t software_version[] = "V2.2.8";  //软件版本
+const uint8_t software_version[] = "V2.2.9";  //软件版本
 
 //SETTING_FIRSTRUN_JUDGE 维护这个变量,清除历史记录和恢复初始化数值
 
@@ -3265,6 +3266,11 @@ void save_setting(void)
 					DO_HaiFa_DY12_rs485_ClearCal(get_CurDo());
 					break;
 
+				case DO_HF_DY56_ModbusID:
+					DO_HaiFa_DY56_rs485_Set_Cmd_open(get_CurDo());
+					Set_DY56_ClearCal_Flag(1);
+					break;
+
 				case LH_DX01_ModbusID:
 					DX01_rs485_ClearCal(get_CurDo());
 					break;
@@ -3437,6 +3443,17 @@ void save_setting(void)
 					Set_DY12_Press_Value((int16_t)(double_value * 100));
 					Set_DY12_Press_Flag(1);
 					break;	
+
+				case DO_HF_DY56_ModbusID:  
+					if(double_value >= 150)
+					{
+						double_value = 150;
+					}
+					setting_SetAirCompensate(double_value - bmp280_GetPress());
+					DO_HaiFa_DY56_rs485_Set_Cmd_open(get_CurDo());	         
+					Set_DY56_Press_Value((int16_t)(double_value * 100));
+					Set_DY56_Press_Flag(1);
+					break;	
 					
 				case DO_DY05_ModbusID:  
 					DY05_rs485_SetPressure(get_CurDo(),double_value);	            
@@ -3482,6 +3499,18 @@ void save_setting(void)
 					DO_HaiFa_DY12_rs485_Set_Cmd_open(get_CurDo());	         
 					Set_DY12_Sal_Value((int16_t)(double_value * 100));
 					Set_DY12_Sal_Flag(1);
+					break;
+
+				case DO_HF_DY56_ModbusID:  
+					if(double_value >= 100)
+					{
+						double_value = 100;
+					}
+					setting_SetSalinity(double_value);  //更新设置中的盐度
+
+					DO_HaiFa_DY56_rs485_Set_Cmd_open(get_CurDo());	         
+					Set_DY56_Sal_Value((int16_t)(double_value * 100));
+					Set_DY56_Sal_Flag(1);
 					break;
 					
 				case DO_DY05_ModbusID:  
@@ -4482,6 +4511,14 @@ void save_setting(void)
 						case DO_HF1012_ModbusID:
 							DO_rs485_SetTemp(get_CurDo(), temp_value / 10.0);	
 							break;
+						case DO_HF_DY56_ModbusID:
+							float_value=temp_value;
+							float_value=float_value/10.0;
+							float_value=float_value-get_CurDo()->temperature.value_f+get_CurDo()->NH4_Vol.value_f;
+							DO_HaiFa_DY56_rs485_Set_Cmd_open(get_CurDo());
+							Set_DY56_Temp_Cal_Value((int16_t)(float_value*100));
+							Set_DY56_Temp_Cal_Flag(1);
+							break;
 						case DO_shenghui_ModbusID:
 							DO_shenghui_rs485_SetTemp(get_CurDo(), temp_value / 100.0);
 							break;
@@ -4928,6 +4965,11 @@ void save_setting(void)
 									DO_HaiFa_DY12_rs485_Set_Cmd_open(get_CurDo());
 									Set_DY12_Full_Flag(1);
 									break;
+
+								case DO_HF_DY56_ModbusID:
+									DO_HaiFa_DY56_rs485_Set_Cmd_open(get_CurDo());
+									Set_DY56_Full_Flag(1);
+									break;
 								
 								case DO_DY05_ModbusID:
 									DY05_rs485_Set_Slp_Cal(get_CurDo());
@@ -5107,6 +5149,11 @@ void save_setting(void)
 								case DO_HF_DY12_ModbusID:
 									DO_HaiFa_DY12_rs485_Set_Cmd_open(get_CurDo());
 									Set_DY12_Zero_Flag(1);
+									break;
+
+								case DO_HF_DY56_ModbusID:
+									DO_HaiFa_DY56_rs485_Set_Cmd_open(get_CurDo());
+									Set_DY56_Zero_Flag(1);
 									break;
 
 								case DO_DY05_ModbusID:
@@ -7980,7 +8027,7 @@ void rs485_Search_Sensor(void){
   	{	
 		if(setting_Get_Type() == 0)//702
 		{
-			DO_rs485_GetTempTwoDO(get_CurDo());//D702只发海发溶解氧
+			DO_HaiFa_DY56_rs485_GetValue(get_CurDo());//D702只发海发溶解氧
 		}
 		else//580
 		{
@@ -8001,6 +8048,10 @@ void rs485_Search_Sensor(void){
 
 					case DO_HF1012_ModbusID:
 						DO_rs485_GetTempTwoDO(get_CurDo());
+						break;
+					
+					case DO_HF_DY56_ModbusID:
+						DO_HaiFa_DY56_rs485_GetValue(get_CurDo());
 						break;
 					
 					case NH3N_DN02_ModbusID:
@@ -8133,6 +8184,10 @@ void rs485_Search_Sensor(void){
 						DO_rs485_GetTempTwoDO(get_CurDo());
 						break;
 					
+					case DO_HF_DY56_ModbusID:
+						DO_HaiFa_DY56_rs485_GetValue(get_CurDo());
+						break;
+					
 					case NH3N_DN02_ModbusID:
 						NH3N_DN02_rs485_GetValue(get_CurDo());	
 						break;
@@ -8252,7 +8307,7 @@ void rs485_Search_Sensor(void){
 	{   //只识别到一根传感器
 		if(setting_Get_Type() == 0)//702
 		{
-			DO_rs485_GetTempTwoDO(get_CurDo());//D702只发海发溶解氧
+			DO_HaiFa_DY56_rs485_GetValue(get_CurDo());//D702只发海发溶解氧
 		}
 		else//580
 		{
@@ -8276,6 +8331,10 @@ void rs485_Search_Sensor(void){
 							
 					case DO_HF1012_ModbusID:
 						DO_rs485_GetTempTwoDO(get_CurDo());
+						break;
+					
+					case DO_HF_DY56_ModbusID:
+						DO_HaiFa_DY56_rs485_GetValue(get_CurDo());
 						break;
 					
 					case NH3N_DN02_ModbusID:
@@ -8401,10 +8460,10 @@ void rs485_Search_Sensor(void){
 					CircularSent_Count++;
 					if( CircularSent_Count ==1 )
 					{
-						if(get_COMADo()->modbus_id != DO_HF1012_ModbusID )
+						if(get_COMADo()->modbus_id != DO_HF_DY56_ModbusID )
 						{	
 							CircularSent_isSelect=1;
-							DO_rs485_GetModbusId();
+							DO_HaiFa_DY56_rs485_GetModbusId();
 						}
 					}
 					
@@ -8636,7 +8695,7 @@ void rs485_Search_Sensor(void){
 	{                                                 //两根传感器都没接
 		if(setting_Get_Type() == 0)//702
 		{
-			DO_rs485_GetModbusId();
+			DO_HaiFa_DY56_rs485_GetModbusId();
 		}
 		else
 		{
@@ -8645,7 +8704,7 @@ void rs485_Search_Sensor(void){
 				CircularSent_Count++;
 				if( CircularSent_Count ==1 ){
 					CircularSent_isSelect=1;			
-					DO_rs485_GetModbusId();
+					DO_HaiFa_DY56_rs485_GetModbusId();
 				}
 				if( CircularSent_Count ==2){
 					CircularSent_isSelect=1;		

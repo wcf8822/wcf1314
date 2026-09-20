@@ -1361,12 +1361,12 @@ void generate_cal_DO(PtrToInterfacial interfacial, list_option* option_head, man
 		{
 			case TYPE_DO:
 					
-				if(factory == manufacturer_hyphive || get_CurDo()->modbus_id == DO_DY05_ModbusID || get_CurDo()->modbus_id == DO_DO59_ModbusID)
+				if(factory == manufacturer_hyphive || get_CurDo()->modbus_id == DO_HF_DY56_ModbusID || get_CurDo()->modbus_id == DO_DY05_ModbusID || get_CurDo()->modbus_id == DO_DO59_ModbusID)
 				{//海发的显示温度校准
 					OptionList_Add(option_index++, (uint8_t *)wendu_cn,     sizeof(wendu_cn),     (uint8_t *)wendu_en, PAGE_5_TEMP,     OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &(*option_head));
 				}
 				OptionList_Add(option_index++, (uint8_t *)manyang_cn,   sizeof(manyang_cn),   (uint8_t *)manyang_en,       PAGE_5_DO_ONE_First,      OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &(*option_head));
-				if(get_CurDo()->modbus_id == DO_HF_DY12_ModbusID || get_CurDo()->modbus_id == DO_DY05_ModbusID || get_CurDo()->modbus_id == DO_DO59_ModbusID)
+				if(get_CurDo()->modbus_id == DO_HF_DY12_ModbusID || get_CurDo()->modbus_id == DO_HF_DY56_ModbusID || get_CurDo()->modbus_id == DO_DY05_ModbusID || get_CurDo()->modbus_id == DO_DO59_ModbusID)
 				{
 					OptionList_Add(option_index++, (uint8_t *)lingdian_cn, sizeof(lingdian_cn), (uint8_t *)lingdian_en,     PAGE_5_DO_TWO_FIRST, OPTION_LARGE, CAN_BE_SELECTED, NOT_LANGUAGE_OPTION, NOT_ENG_ONLY, NULL, &(*option_head));
 				}
@@ -1878,7 +1878,7 @@ void generate_TwoPointFirst(PtrToInterfacial interfacial, SENSOR_TYPE sensor_typ
 	switch (sensor_type)
 	{
 		case TYPE_DO:
-			if(get_CurDo()->modbus_id == DO_HF_DY12_ModbusID || get_CurDo()->modbus_id == DO_DY05_ModbusID || get_CurDo()->modbus_id == DO_DO59_ModbusID)
+			if(get_CurDo()->modbus_id == DO_HF_DY12_ModbusID || get_CurDo()->modbus_id == DO_HF_DY56_ModbusID || get_CurDo()->modbus_id == DO_DY05_ModbusID || get_CurDo()->modbus_id == DO_DO59_ModbusID)
 			{
 				LabelList_Add( 0, 36, (uint8_t *)lingdian_cn, sizeof(lingdian_cn), (uint8_t *)lingdian_en,  LABEL_NORMAL, LABEL_STRING, UINT_NONE, DONT_HAVE_PARENTHESIS, &label_head); //零点
 			}
@@ -1969,7 +1969,7 @@ void generate_TwoPointFirst(PtrToInterfacial interfacial, SENSOR_TYPE sensor_typ
 		interfacial->ChnContent_size = sizeof(dierdian_cn);
 		interfacial->content_eng = (uint8_t *)dierdian_en;
 	}
-	else if((sensor_type == TYPE_DO) && ( (get_CurDo()->modbus_id == DO_HF_DY12_ModbusID) || get_CurDo()->modbus_id == DO_DY05_ModbusID || get_CurDo()->modbus_id == DO_DO59_ModbusID ) )
+	else if((sensor_type == TYPE_DO) && ( (get_CurDo()->modbus_id == DO_HF_DY12_ModbusID) || get_CurDo()->modbus_id == DO_HF_DY56_ModbusID || get_CurDo()->modbus_id == DO_DY05_ModbusID || get_CurDo()->modbus_id == DO_DO59_ModbusID ) )
 	{
 		interfacial->option_head = option_head;
 		interfacial->label_head = label_head;

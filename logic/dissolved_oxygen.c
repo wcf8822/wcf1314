@@ -11,6 +11,7 @@
 #include "log.h"
 #include "logic.h"
 #include "DO_HaiFa_DY12.h"
+#include "DO_HaiFa_DY56.h"
 #include "DY05.h"
 #include "DO59.h"
 #include "math.h"
@@ -184,6 +185,7 @@ void DO_AddProbe(uint8_t ModbusId)//这里得添加名字
 	{
 		case DO_shenghui_ModbusID:
 		case DO_HF1012_ModbusID:
+		case DO_HF_DY56_ModbusID:
 		case DO_HF_DY12_ModbusID:
 		case DO_DY05_ModbusID:
 		case DO_DO59_ModbusID:
@@ -1444,6 +1446,12 @@ void DO_UpdatePressSal(PtrToDOProbe *DO_head) //更新DO设备的气压值和盐
 					Set_DY12_Press_Value((int16_t)(press * 100));
 					DO_HaiFa_DY12_rs485_Set_Cmd_open(get_CurDo());
 					break;
+
+				case DO_HF_DY56_ModbusID:  
+					Set_DY56_Press_Flag(1);       
+					Set_DY56_Press_Value((int16_t)(press * 100));
+					DO_HaiFa_DY56_rs485_Set_Cmd_open(get_CurDo());
+					break;
 				
 				case DO_DY05_ModbusID:  
           DY05_rs485_SetPressure(get_CurDo(),press);	 				
@@ -1475,6 +1483,12 @@ void DO_UpdatePressSal(PtrToDOProbe *DO_head) //更新DO设备的气压值和盐
 					Set_DY12_Sal_Flag(1);       
 					Set_DY12_Sal_Value((int16_t)(sal * 100));
 					DO_HaiFa_DY12_rs485_Set_Cmd_open(get_CurDo());
+					break;
+
+				case DO_HF_DY56_ModbusID:
+					Set_DY56_Sal_Flag(1);       
+					Set_DY56_Sal_Value((int16_t)(sal * 100));
+					DO_HaiFa_DY56_rs485_Set_Cmd_open(get_CurDo());
 					break;
 				
 				case DO_DY05_ModbusID:  

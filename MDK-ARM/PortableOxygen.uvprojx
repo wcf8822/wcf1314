@@ -946,6 +946,11 @@
               <FilePath>..\logic\DO_HaiFa_DY12.c</FilePath>
             </File>
             <File>
+              <FileName>DO_HaiFa_DY56.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\logic\DO_HaiFa_DY56.c</FilePath>
+            </File>
+            <File>
               <FileName>DX01.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\logic\DX01.c</FilePath>

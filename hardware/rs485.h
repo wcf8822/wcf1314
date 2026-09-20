@@ -18,7 +18,8 @@
 #define RESEND_MAX 4 //最大重发数，超过这个数就认为设备断开连接了
 
 #define DO_shenghui_ModbusID 90
-#define DO_HF1012_ModbusID 81
+#define DO_HF1012_ModbusID 254
+#define DO_HF_DY56_ModbusID 81
 #define DO_HF_DY12_ModbusID 33
 
 #define pH_DpH07_ModbusID 1

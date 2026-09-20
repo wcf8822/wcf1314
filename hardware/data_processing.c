@@ -27,6 +27,7 @@
 #include "OiW_Guohong.h"
 #include "OiW_yushan.h"
 #include "DO_HaiFa_DY12.h"
+#include "DO_HaiFa_DY56.h"
 #include "EC_DE40.h"
 #include "DX01.h"
 #include "MLSS_lanchang.h"
@@ -35,6 +36,7 @@
 #include "DL312.h"
 #include "DY05.h"
 #include "DO59.h"
+#include "bmp280.h"
 
 uint8_t DC18_DC17_flag;		//17,18切换标志位
 
@@ -2381,7 +2383,7 @@ void DO_HF_DY12_DataHandle(void){
 				uint8_t DO_ID =DO_HF_DY12_ModbusID;
 				DO_AddProbe(DO_ID);//在所有设备树中添加溶解氧节点
 				rs485_DevicePlus();//添加下设备树上的设备个数
-				DO_HaiFa_DY12_rs485_SetSN_SH(get_COMADo());
+				DO_HaiFa_DY12_rs485_SetSN_SH(get_COMADo()->modbus_id == DO_HF_DY12_ModbusID ? get_COMADo() : get_COMBDo());
 			}
 			break;
 		
@@ -2469,6 +2471,217 @@ void DO_HF_DY12_DataHandle(void){
 				{
 					generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
 				}
+			}
+			break;
+
+  		default:
+			break;
+	}
+
+}
+
+
+/*海发DY56溶解氧传感器  串口数据处理*/
+void DO_HF_DY56_DataHandle(void){
+	switch(rs485_GetSentType())
+	{
+		case DO_SendType_GetModbusId:   //溶解氧获取modbus id
+			if( rs485_usart.rx_buf[1] == 0x03)
+			{
+				uint8_t DO_ID =DO_HF_DY56_ModbusID;
+				DO_AddProbe(DO_ID);//在所有设备树中添加溶解氧节点
+				rs485_DevicePlus();//添加下设备树上的设备个数
+				GetCircularSent_Flag=0;
+				//重连即重置所有 pending 标志，避免上次中断的写流程残留导致误触发
+				Set_DY56_ClearCal_Flag(0);
+				Set_DY56_Sal_Flag(0);
+				Set_DY56_Press_Flag(0);
+				Set_DY56_Temp_Cal_Flag(0);
+				Set_DY56_Zero_Flag(0);
+				Set_DY56_Full_Flag(0);
+				Clear_DY56_Temp_Cal_Pending();
+				DO_HaiFa_DY56_rs485_SetSN_SH(get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo());
+				DO_HaiFa_DY56_rs485_GetSalinity(get_COMADo());
+			}
+			break;
+		
+		case DO_SendType_GetSalinity:  //获取溶解氧设置的盐度值
+			if( rs485_usart.rx_buf[1] == 0x03 && rs485_usart.rx_buf[2] == 0x02)
+			{
+				close_circle();
+				DO_HaiFa_DY56_SetSalinityArr(get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo(), &(rs485_usart.rx_buf[3]));
+				DO_HaiFa_DY56_rs485_GetPressure(get_COMADo());
+			}
+			break;
+		
+		case DO_SendType_GetPressure: //获取溶解氧设置的气压值
+			if( rs485_usart.rx_buf[1] == 0x03 && rs485_usart.rx_buf[2] == 0x02)
+			{
+				close_circle();
+				DO_HaiFa_DY56_SetPressureArr(get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo(), &(rs485_usart.rx_buf[3]));
+				DO_HaiFa_DY56_rs485_Get_Temp_Cal(get_COMADo());
+			}
+			break;
+		
+		case DO_SendType_GetTempTwoDO:
+			if(rs485_usart.rx_buf[1] == 0x03 && rs485_usart.rx_buf[2] == 0x10)
+			{
+				close_circle();
+				DO_HaiFa_DY56_UpdateTemp2DO(get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo(),  &(rs485_usart.rx_buf[3]));
+				DO_SetIsGetedValue(get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo());//设置do设备已经有数据了
+				DO_SetIsInit(get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo());
+			}
+			break;
+		
+		case DO_SendType_GetTemperature: //读取温度偏移量
+			if(rs485_usart.rx_buf[1] == 0x03 && rs485_usart.rx_buf[2] == 0x02)
+			{
+				close_circle();
+				DO_HaiFa_DY56_SetTemp_Cal_value(get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo(), &(rs485_usart.rx_buf[3]));
+				DO_SetIsInit(get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo());
+			}
+			break;
+		
+		case DO_SendType_SetSalinity:
+			if( rs485_usart.rx_buf[1] == 0x06 && rs485_usart.rx_buf[2] == 0x00)//校准返回
+			{
+				close_circle();
+				if(Get_DY56_ClearCal_Flag())
+				{
+					//恢复出厂：盐度已设0，接着写气压 101.32K
+					DO_HaiFa_DY56_rs485_Set_Press(get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo(), 10132);
+				}
+				else
+				{
+					DO_HaiFa_DY56_rs485_Set_Cmd_close(get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo());
+				}
+			}
+			break;
+
+		case DO_SendType_SetPressure:
+			if( rs485_usart.rx_buf[1] == 0x06 && rs485_usart.rx_buf[2] == 0x00)//校准返回
+			{
+				close_circle();
+				if(Get_DY56_ClearCal_Flag())
+				{
+					//恢复出厂：气压已设，接着写温度偏移 0
+					DO_HaiFa_DY56_rs485_Set_Temp_Cal(get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo(), 0);
+				}
+				else
+				{
+					DO_HaiFa_DY56_rs485_Set_Cmd_close(get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo());
+				}
+			}
+			break;
+
+		case DO_SendType_SetTemp:
+			if( rs485_usart.rx_buf[1] == 0x06 && rs485_usart.rx_buf[2] == 0x00)//校准返回
+			{
+				close_circle();
+				{
+					PtrToDOProbe ptd = get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo();
+					//写成功后回填本地温度偏移量，保证下次累计校准用最新偏移
+					if(Get_DY56_ClearCal_Flag())
+					{
+						ptd->NH4_Vol.value_f = 0.0f;//恢复出厂：温度偏移清零
+						//恢复出厂成功：同步本地 setting 缓存，界面盐度/气压设置页才能正确刷新
+						setting_SetSalinity(0.0f);
+						setting_SetAirCompensate(101.32 - bmp280_GetPress());
+						set_SalArr(0.0f);
+						set_PressArr(bmp280_GetPress());
+						SettingToFlash();
+					}
+					else
+					{
+						ptd->NH4_Vol.value_f = (float)Get_DY56_Set_Temp_Cal_Value() / 100.0f;//温度校准：回填新偏移
+					}
+				}
+				Set_DY56_ClearCal_Flag(0);
+				DO_HaiFa_DY56_rs485_Set_Cmd_close(get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo());
+			}
+			break;
+
+		case DO_SendType_SetZeroCal:
+			if( rs485_usart.rx_buf[1] == 0x06 && rs485_usart.rx_buf[2] == 0x00)//校准返回
+			{
+				close_circle();
+				DO_HaiFa_DY56_rs485_Set_Cmd_close(get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo());
+			}
+			break;
+			
+		case DO_SendType_Stop:
+			if( rs485_usart.rx_buf[1] == 0x06 && rs485_usart.rx_buf[2] == 0x00)//校准返回
+			{
+				close_circle();
+				if(interfacial_GetCurPage() == PAGE_3_SALT
+				|| interfacial_GetCurPage() == PAGE_3_PRESSURE
+				|| interfacial_GetCurPage() == PAGE_5_TEMP
+				|| interfacial_GetCurPage() == PAGE_1_RESETCAL)
+				{
+					generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+				}
+				else if(interfacial_GetCurPage() == PAGE_5_DO_ONE_First
+				|| interfacial_GetCurPage() == PAGE_5_DO_TWO_FIRST)
+				{
+					generate_MessageBox(MESSAGE_SUCCESSFUL, 1);
+					interfacial_GetCurrentInterfacial()->label_head->next_label->content_chn = (uint8_t *)jiaozhunchenggong_cn;//校准成功
+					interfacial_GetCurrentInterfacial()->label_head->next_label->content_eng = (uint8_t *)chenggong_en;
+					interfacial_GetCurrentInterfacial()->label_head->next_label->ChnContent_size = sizeof(jiaozhunchenggong_cn);
+				}
+				DO_HaiFa_DY56_rs485_GetValue(get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo());
+			}
+			break;
+		
+		case DO_SendType_SetFullCal:
+			if( rs485_usart.rx_buf[1] == 0x06 && rs485_usart.rx_buf[2] == 0x00)//校准返回
+			{
+				close_circle();
+				DO_HaiFa_DY56_rs485_Set_Cmd_close(get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo());
+			}
+			break;
+
+		case DO_SendType_Start:
+			if(rs485_usart.rx_buf[1] == 0x06 && rs485_usart.rx_buf[3] == 0x28)//校准返回
+			{
+				close_circle();
+				if(Get_DY56_ClearCal_Flag())
+				{
+					DO_HaiFa_DY56_rs485_ClearCal(get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo());
+				}
+				else if(Get_DY56_Set_Sal())
+				{
+					Set_DY56_Sal_Flag(0);
+					DO_HaiFa_DY56_rs485_Set_Sal(get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo(),Get_DY56_Set_Sal_Value());
+				}
+				else if(Get_DY56_Set_Press())
+				{
+					Set_DY56_Press_Flag(0);
+					DO_HaiFa_DY56_rs485_Set_Press(get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo(),Get_DY56_Set_PressValue());
+				}
+				else if(Get_DY56_Set_Temp_Cal())
+				{
+					Set_DY56_Temp_Cal_Flag(0);
+					DO_HaiFa_DY56_rs485_Set_Temp_Cal(get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo(),Get_DY56_Set_Temp_Cal_Value());
+				}
+				else if(Get_DY56_Set_Zero_Cal())
+				{
+					Set_DY56_Zero_Flag(0);
+					DO_HaiFa_DY56_rs485_Set_Cal(get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo(),3);
+				}
+				else if(Get_DY56_Set_Full_Cal())
+				{
+					Set_DY56_Full_Flag(0);
+					DO_HaiFa_DY56_rs485_Set_Cal(get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo(),4);
+				}
+			}
+			break;
+
+		case DO_SendType_HyphiveClearCal:
+			if( rs485_usart.rx_buf[1] == 0x06 && rs485_usart.rx_buf[4] == 0xFE)
+			{
+				close_circle();
+				//恢复出厂指令已下发，接着写盐度=0
+				DO_HaiFa_DY56_rs485_Set_Sal(get_COMADo()->modbus_id == DO_HF_DY56_ModbusID ? get_COMADo() : get_COMBDo(), 0);
 			}
 			break;
 
@@ -3266,6 +3479,10 @@ void rs485_DataHandle(void)
           	  DO_HF1012_DataHandle();					
 			    break;
 				
+				case DO_HF_DY56_ModbusID:  
+          	  DO_HF_DY56_DataHandle();					
+			    break;
+
 				case NH3N_DN02_ModbusID:  
           	  NH3N_DN02_DataHandle();				
 			    break;
