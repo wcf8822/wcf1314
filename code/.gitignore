@@ -1,0 +1,58 @@
+#==============================================
+# PortableOxygen  STM32L1xx / Keil MDK-ARM
+#==============================================
+
+# ---- 操作系统生成文件 ----
+*.lnk
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# ---- 压缩包 ----
+*.rar
+*.zip
+*.7z
+
+# ---- Keil MDK 编译中间文件 ----
+*.o
+*.d
+*.crf
+*.htm
+*.dep
+*.map
+*.bak
+*.bak_*
+*.lnp
+*.lst
+*.ini
+*.iex
+*.sct
+*.scvd
+*.fed
+*.dbg*
+*._2i
+
+# ---- Keil MDK 临时文件 / 日志 ----
+*.uvguix
+*.uvguix.*
+JLinkLog.txt
+
+# ---- Keil MDK / RTE 生成目录 ----
+RTE/
+Objects/
+Listings/
+DebugConfig/
+Templates/
+Examples/
+
+# ---- STM32CubeMX 生成文件 ----
+.mxproject
+
+# ---- 保留工程文件、源码及固件产物（团队约定需入库） ----
+!*.uvprojx
+!*.h
+!*.c
+!*.ioc
+!*.axf
+!*.bin
+!*.hex
