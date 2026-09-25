@@ -6,7 +6,7 @@
 
 
 
-void HAL_UART_IDLE_HANDLER(UART_HandleTypeDef *huart);//¿ÕÏÐÖÐ¶Ï
+void HAL_UART_IDLE_HANDLER(UART_HandleTypeDef *huart);//空闲中断处理函数
 
 
 
